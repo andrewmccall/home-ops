@@ -6,6 +6,6 @@ k3s_server:
   service-cidr: 10.43.0.0/16
   cluster-domain: cluster.milkyway
   tls-san:
-    - "betelguese"
+    - "k8s-master"
   node-label:
     - "k3s-upgrade=true"

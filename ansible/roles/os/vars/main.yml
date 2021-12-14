@@ -2,6 +2,7 @@
 ansible_become: yes
 packages:
   install:
+    - linux-modules-extra-raspi
     - apt-transport-https
     - arptables
     - ebtables
