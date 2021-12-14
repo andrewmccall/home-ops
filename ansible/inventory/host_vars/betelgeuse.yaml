@@ -1,0 +1,9 @@
+---
+pi_config:
+  #disable_camera_led: 1
+
+ansible_python_interpreter: /usr/local/python3/bin/python3
+ansible_user: andrewmccall
+
+longhorn_enabled: no
+longhorn_device: /dev/sda2

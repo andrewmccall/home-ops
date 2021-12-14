@@ -1,0 +1,23 @@
+network:
+    ssid: ENC[AES256_GCM,data:gOaRIcb59yhGwYB9UNE=,iv:eu3KWGPa723TszwybwJapatenmtppX6uk5qgTJ+t0Rs=,tag:X748kh/rj7VJ0EXY5Yaj/w==,type:str]
+    password: ENC[AES256_GCM,data:5Vm/j3N3O5NYTtXzFCTrlA==,iv:A+HwZTPNhTS2nqponFSHP/7ux+a2BF2rfXQZAiIPLN8=,tag:Krnh6UmViW1zN4OpYhcTGg==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1evdn7cpxtushtz0rpdg6dnau3hgk4kcpwvjk2s4fnh0pat0n9pgsl0r48k
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSAySDlFUENoNDIwSS9GU3F2
+            eEFJZ2dyTWM0SVVDNW1oV3dja0ZLaDQvcnl3CmlRcnhVdnJ4enN1RUdOMnFHWVE5
+            NTd3WVh2VEJ2dk5YVitOMG9wMlNLbDgKLS0tIGJoTW80MldMN3BzSXhKWlZUdWpV
+            RVZGTS9qQVVKaXBDOCtPOWhPNUhuMEEKfPNWrAuRaEwiYN2aU7NuqguipqxcTVlO
+            vypIK5Ew4QHVYXBT6y0R84g9dPJe5KyFgweNHTmY1++J7ITgZuIyTQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2021-12-14T11:09:49Z"
+    mac: ENC[AES256_GCM,data:WOFDx4QWVXhuNJnw97rGKuGeDGiNU8mRKGS9nA2UvRP3Zs0WbRNUXUweY1s6O9EGrk+dQG/NljDTelq1tLIIxGcL+YWIjs5y4yteH27LQLQ75YTewDS3BcsuVGBqT06/qwCmHs6+NI4kwUolKdrqPpqQ9nM/4ctT//wrTr0nVwM=,iv:cx6Cdkk5ieG96ewuUSDnHq2gKzVT89gkdG4j59XG3WE=,tag:TxLoOolVwUXvxHngRhFj6w==,type:str]
+    pgp: []
+    unencrypted_suffix: _unencrypted
+    version: 3.7.1

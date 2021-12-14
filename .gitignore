@@ -1,0 +1,11 @@
+# ansible roles
+ansible/roles/xanmanning.k3s/
+
+# ansible-lint cache
+.cache/
+
+# k8s
+kubeconfig
+
+# direnv
+.direnv/

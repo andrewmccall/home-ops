@@ -1,0 +1,11 @@
+---
+# ./all.yaml
+# This file setups everything calling the sub playbooks to build it all.
+
+- import_playbook: bootstrap.yaml
+  
+# Import hosts specific stuff next
+- import_playbook: betelguese.yaml
+
+# Setup the k3s cluster now that we've done the specific setup
+- import_playbook: cluster/cluster.yaml

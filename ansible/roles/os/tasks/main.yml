@@ -1,0 +1,44 @@
+---
+- import_tasks: time.yml
+  tags:
+    - time
+
+- import_tasks: packages.yml
+  tags:
+    - packages
+
+- import_tasks: power-button.yml
+  tags:
+    - power-button
+
+- import_tasks: motd.yml
+  tags:
+    - motd
+
+- import_tasks: kernel.yml
+  tags:
+    - kernel
+
+- import_tasks: network.yml
+  tags:
+    - network
+
+- import_tasks: filesystem.yml
+  tags:
+    - filesystem
+
+- import_tasks: pi.yml
+  tags:
+    - pi
+
+- import_tasks: journald.yml
+  tags:
+    - journald
+
+- import_tasks: unattended-upgrades.yml
+  tags:
+    - unattended-upgrades
+
+- import_tasks: terminfo.yml
+  tags:
+    - terminfo

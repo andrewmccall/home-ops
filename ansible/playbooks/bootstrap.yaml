@@ -1,0 +1,47 @@
+---
+- hosts: kubernetes
+  vars:
+    user: andrewmccall
+    github_user: andrewmccall
+    ssh_authorized_keys: |
+      ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDLeBpFcFmHrNeTaTSaL44tZXYvYNpv3HBEJp6sBrDKn andrewmccall
+  become: yes
+  tasks:
+    - name: add user
+      user:
+        name: "{{ user }}"
+        shell: /bin/bash
+
+    - name: add user to sudoers nopasswd
+      copy:
+        dest: /etc/sudoers.d/020_{{ user }}-nopasswd
+        content: "{{ user }} ALL=(ALL) NOPASSWD: ALL"
+        mode: 0440
+
+    - name: add user SSH public keys
+      ansible.posix.authorized_key:
+        user: "{{ user }}"
+        key: "{{ ssh_authorized_keys }}"
+        exclusive: no
+      notify: restart sshd
+
+    - name: add gh public keys
+      ansible.posix.authorized_key:
+        user: "{{ user }}"
+        key: "http://github.com/{{ github_user }}.keys"
+        exclusive: no
+      notify: restart sshd
+
+    - name: disable SSH password authentication
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regex: "^#?PasswordAuthentication"
+        line: "PasswordAuthentication no"
+      notify: restart sshd
+
+  handlers:
+    - name: restart sshd service
+      systemd:
+        name: sshd.service
+        state: restarted
+      listen: restart sshd

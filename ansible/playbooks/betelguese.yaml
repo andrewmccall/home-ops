@@ -1,0 +1,21 @@
+---
+- hosts:
+    - betelguese
+  vars_prompt:
+    - name: "restart_confirmation"
+      prompt: "Restart when complete? [Y/n]"
+      default: "n"
+      private: no
+  roles:
+    # - os # We'll get this for betelguese from the cluster setup.
+    - printer3d
+  tasks:
+    - name: flush handlers
+      meta: flush_handlers
+    - name: reboot
+      ignore_errors: yes  # noqa ignore-errors
+      reboot:
+        msg: "Rebooting..."
+      when: restart_confirmation == "Y"
+      tags:
+        - always

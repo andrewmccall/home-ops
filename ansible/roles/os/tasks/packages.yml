@@ -1,0 +1,56 @@
+---
+- name: packages | gather the package facts
+  package_facts:
+    manager: auto
+
+- name: packages | upgrade all packages
+  apt:
+    upgrade: full
+    update_cache: yes
+    cache_valid_time: 3600
+    autoclean: yes
+    autoremove: yes
+
+- name: packages | install packages
+  apt:
+    name: "{{ packages.install }}"
+    update_cache: yes
+    cache_valid_time: 3600
+    autoclean: yes
+  when: packages.install
+
+- name: packages | remove lxd
+  community.general.snap:
+    name:
+      - lxd
+    state: absent
+  when:
+    - '"snapd" in ansible_facts.packages'
+    - '"snapd" in packages.remove'
+
+- name: packages | remove core20
+  community.general.snap:
+    name:
+      - core20
+    state: absent
+  when:
+    - '"snapd" in ansible_facts.packages'
+    - '"snapd" in packages.remove'
+
+
+- name: packages | remove snaps
+  community.general.snap:
+    name:
+      - snapd
+    state: absent
+  when:
+    - '"snapd" in ansible_facts.packages'
+    - '"snapd" in packages.remove'
+
+- name: packages | remove packages
+  apt:
+    name: "{{ packages.remove }}"
+    state: absent
+    autoremove: yes
+    purge: yes
+  when: packages.remove

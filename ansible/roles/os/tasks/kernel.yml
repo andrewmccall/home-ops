@@ -1,0 +1,66 @@
+---
+- name: kernel | check that grub exists
+  stat:
+    path: /etc/default/grub
+  register: grub
+
+- name: kernel | adjust grub cmdline linux default
+  become: yes
+  replace:
+    path: /etc/default/grub
+    regexp: '^(GRUB_CMDLINE_LINUX_DEFAULT="(?:(?![ ]?{{ item.option | regex_escape }}=).)*)(?:[ ]?{{ item.option | regex_escape }}=\S+)?(.*")$'
+    replace: '\1 {{ item.option }}={{ item.value }}\2'
+  loop:
+    - option: apparmor
+      value: 0
+    - option: mitigations
+      value: "off"
+    - option: pti
+      value: "off"
+  notify: grub configuration changed
+  when:
+    - grub.stat.exists
+    - '"kubernetes" in group_names'
+
+- name: kernel | adjust cmdline.txt (Ubuntu)
+  lineinfile:
+    path: /boot/firmware/cmdline.txt
+    backrefs: true
+    regexp: '^(.*splash)$'
+    line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+  when:
+    - ansible_architecture | regex_search('arm|aarch')
+    - ansible_distribution == "Ubuntu"
+    - '"kubernetes" in group_names'
+
+- name: kernel | adjust cmdline.txt (Debian)
+  lineinfile:
+    path: /boot/cmdline.txt
+    backrefs: true
+    regexp: '^(.*rootwait)$'
+    line: '\1 cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory'
+  when:
+    - ansible_architecture | regex_search('arm|aarch')
+    - ansible_distribution == "Debian"
+    - '"kubernetes" in group_names'
+
+- name: kernel | enable modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - br_netfilter
+    - overlay
+    #- rbd
+  when: '"kubernetes" in group_names'
+
+- name: kernel | enable modules on boot
+  copy:
+    content: "{{ item }}"
+    dest: "/etc/modules-load.d/{{ item }}.conf"
+    mode: 0644
+  loop:
+    - br_netfilter
+    - overlay
+    #- rbd
+  when: '"kubernetes" in group_names'
