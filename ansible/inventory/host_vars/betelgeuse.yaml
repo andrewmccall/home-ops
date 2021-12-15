@@ -7,7 +7,8 @@ ansible_user: andrewmccall
 
 longhorn_enabled: no
 longhorn_device: /dev/sda2
+
 k3s_server:
   node-label:
-    - "k3s-upgrade=true"
+    - "k3s-upgrade=true"  
     - "printer3d=true"
