@@ -1,0 +1,27 @@
+#cloud-config
+
+# This is the user-data configuration file for cloud-init.The cloud-init documentation has more details:
+#
+# https://cloudinit.readthedocs.io/
+#
+
+users:
+  - default
+  - name: andrewmccall
+    gecos: Andrew McCall
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    ssh_import_id:
+      - gh:andrewmccall
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDLeBpFcFmHrNeTaTSaL44tZXYvYNpv3HBEJp6sBrDKn andrewmccall
+
+# Enable password authesntication with the SSH daemon
+ssh_pwauth: false
+
+# Update packages
+package_update: true
+package_upgrade: true
+
+locale: en_GB

@@ -9,3 +9,5 @@ kubeconfig
 
 # direnv
 .direnv/
+
+.DS_Store
