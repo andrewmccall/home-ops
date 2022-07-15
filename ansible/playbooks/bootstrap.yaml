@@ -10,7 +10,7 @@
     - name: add user
       user:
         name: "{{ user }}"
-        shell: /bin/bash
+        shell: /bin/zsh
 
     - name: add user to sudoers nopasswd
       copy:

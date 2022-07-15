@@ -19,7 +19,7 @@ autoinstall:
     layout:
       name: lvm
 
-  user-data: 
+  user-data:
     users:
       - default
       - name: andrewmccall
@@ -32,12 +32,14 @@ autoinstall:
         passwd: "$6$kW4vfBM9kGgq4hr$TFtHW7.3jOECR9UCBuw9NrdSMJETzSVoNQGcVv2y.RqRUzWDEtYhYRkGvIpB6ml1fh/fZEVIgKbSXI9L1B6xF."
         ssh_authorized_keys:
           - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDLeBpFcFmHrNeTaTSaL44tZXYvYNpv3HBEJp6sBrDKn andrewmccall
+          - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIANd6mx0yVpXjQNH401mB8GXz0u79oLpIfIY6/Ajg3+b andrewmccall@LeDesktop
       - name: ansible
         sudo: ALL=(ALL) NOPASSWD:ALL
         groups: users, admin
         lock_passwd: true
         ssh_authorized_keys:
-          - ssh-rsa AAAAC3NzaC1lZDI1NTE5AAAAIDLeBpFcFmHrNeTaTSaL44tZXYvYNpv3HBEJp6sBrDKn andrewmccall
+          - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDLeBpFcFmHrNeTaTSaL44tZXYvYNpv3HBEJp6sBrDKn andrewmccall
+          - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIANd6mx0yVpXjQNH401mB8GXz0u79oLpIfIY6/Ajg3+b andrewmccall@LeDesktop
 
     # Enable password authesntication with the SSH daemon
     ssh_pwauth: false
