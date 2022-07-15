@@ -3,8 +3,4 @@ kubernetes:
   children:
     master:
       hosts:
-        betelguese
-  
-printer3d:
-  hosts:
-    betelguese
+        vecna

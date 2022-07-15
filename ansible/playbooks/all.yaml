@@ -5,7 +5,7 @@
 - import_playbook: bootstrap.yaml
   
 # Import hosts specific stuff next
-- import_playbook: betelguese.yaml
+- import_playbook: vecna.yaml
 
 # Setup the k3s cluster now that we've done the specific setup
 - import_playbook: cluster/cluster.yaml

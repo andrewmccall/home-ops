@@ -1,5 +1,6 @@
 ---
 - name: journald | limit size to 1GB
+  when: ansible_architecture | regex_search('arm|aarch')
   lineinfile:
     path: /etc/systemd/journald.conf
     regex: "^#?SystemMaxUse="

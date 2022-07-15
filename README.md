@@ -17,10 +17,13 @@ _...with Ansible, Kubernetes and flex :sailboat:
 * Create an internal DNS server and share that. 
 * 
 
+
+-append 'autoinstall ds=nocloud-net;s=http://_gateway:3003/'
+
 ## :open_book: Overview
 This repo contains everything I use to setup and manage my home network. 
 
-* An internal DNS server, that is authorative for *.home.andrewmccall.com
+* An internal DNS server for *.home.andrewmccall.com
 * k8s cluster that runs on all my machines. 
 * Everything is deployed as a docker container usually using labels to get it in the right place
 * All machines are ubuntu servers
@@ -65,6 +68,15 @@ Once the ansible config is created the server can be started, on boot the server
 
 ## :gear: Hardware
 Here is a list of what runs on my network. 
+
+In the Rack!
+1U DSL Modems x2 on custom printed 1U brackets. 
+1U Unify USG and 12V meanwell PSU in custom bracket and enclosure. 
+1U Patch Panel. 
+1U TPLink Switch.
+4U betelguese home server.   
+
+Elsewhere on the network: 
 
 | Host             | Device                  | Storage                  | Purpose                                      |
 |------------------|-------------------------|--------------------------|----------------------------------------------|

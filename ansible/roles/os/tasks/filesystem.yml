@@ -27,7 +27,9 @@
   block:
     - name: filesystem | disable swap
       command: swapoff -a
-      when: ansible_swaptotal_mb > 0
+      when: 
+        - ansible_swaptotal_mb > 0
+        - ansible_architecture | regex_search('arm|aarch')
     - name: filesystem | disable swap system start
       ansible.posix.mount:
         name: "{{ item }}"
