@@ -11,3 +11,5 @@ kubeconfig
 .direnv/
 
 .DS_Store
+
+.venv
