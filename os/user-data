@@ -31,14 +31,14 @@ autoinstall:
           - gh:andrewmccall
         passwd: "$6$kW4vfBM9kGgq4hr$TFtHW7.3jOECR9UCBuw9NrdSMJETzSVoNQGcVv2y.RqRUzWDEtYhYRkGvIpB6ml1fh/fZEVIgKbSXI9L1B6xF."
         ssh_authorized_keys:
-          - sh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM8NL5vRJzCWYvUahdXkmya55Duubbyz9D20uT6i12GV andrewmccall@happy-adventure
+          - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM8NL5vRJzCWYvUahdXkmya55Duubbyz9D20uT6i12GV andrewmccall@happy-adventure
           - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIANd6mx0yVpXjQNH401mB8GXz0u79oLpIfIY6/Ajg3+b andrewmccall@LeDesktop
       - name: ansible
         sudo: ALL=(ALL) NOPASSWD:ALL
         groups: users, admin
         lock_passwd: true
         ssh_authorized_keys:
-          - sh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM8NL5vRJzCWYvUahdXkmya55Duubbyz9D20uT6i12GV andrewmccall@happy-adventure
+          - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM8NL5vRJzCWYvUahdXkmya55Duubbyz9D20uT6i12GV andrewmccall@happy-adventure
           - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIANd6mx0yVpXjQNH401mB8GXz0u79oLpIfIY6/Ajg3+b andrewmccall@LeDesktop
 
     # Enable password authesntication with the SSH daemon
