@@ -2,6 +2,7 @@
 # Run the OS if we need it for any other hosts, then install the cluster
 - import_playbook: os.yaml
 - import_playbook: k3s.yaml
+- import_playbook: calico.yaml
 
 # Build the k3s cluster
 #import_playbook: longhorn.yaml

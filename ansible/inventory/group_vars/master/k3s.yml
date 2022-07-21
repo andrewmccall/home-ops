@@ -3,3 +3,19 @@ k3s_control_node: yes
 k3s_server:
   node-label:
     - "k3s-upgrade=true"
+
+  disable:
+  #  - servicelb
+  #  - traefik
+  #  - local-storage
+  #  - metrics-server
+  disable-network-policy: yes
+  disable-cloud-controller: yes
+  cluster-cidr: 10.42.0.0/16
+  service-cidr: 10.43.0.0/16
+  cluster-domain: cluster.home.andrewmcall.com
+  etcd-expose-metrics: true
+  tls-san:
+    - "k8s-master"
+  node-label:
+    - "k3s-upgrade=true"
