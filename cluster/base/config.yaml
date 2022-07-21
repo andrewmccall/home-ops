@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-config
+  namespace: flux-system
+data:
+  K8S_CLUSTER_CIDR: 10.42.0.0/16
+  K8S_SERVICE_CIDR: 10.43.0.0/16
+  SERVER_CIDR: 10.0.1.0/24
+  ROUTER_IP: 10.0.0.1
+  INGRESS_NGINX_IP: 10.44.0.1
+  COREDNS_IP: 10.44.0.4
+  LOCAL_DOMAIN: home.andrewmccall.com
+  CLUSTER_DOMAIN: cluster.home.andrewmccall.com
