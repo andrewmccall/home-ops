@@ -53,3 +53,57 @@ spec:
         kind: NetworkPolicy
         metadata:
           name: not-used
+  patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      namespace: flux-system
+      name: source-controller
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args/0
+        value: --events-addr=http://notification-controller.flux-system.svc.cluster.home.andrewmccall.com/
+      - op: replace
+        path: /spec/template/spec/containers/0/args/6
+        value: --storage-adv-addr=source-controller.flux-system.svc.cluster.home.andrewmccall.com
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      namespace: flux-system
+      name: helm-controller
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args/0
+        value: --events-addr=http://notification-controller.flux-system.svc.cluster.home.andrewmccall.com
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      namespace: flux-system
+      name: image-automation-controller
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args/0
+        value: --events-addr=http://notification-controller.flux-system.svc.cluster.home.andrewmccall.com
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      namespace: flux-system
+      name: image-reflector-controller
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args/0
+        value: --events-addr=http://notification-controller.flux-system.svc.cluster.home.andrewmccall.com
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      namespace: flux-system
+      name: kustomize-controller
+    patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args/0
+        value: --events-addr=http://notification-controller.flux-system.svc.cluster.home.andrewmccall.com
