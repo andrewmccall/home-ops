@@ -6,3 +6,5 @@ resources:
   - helm-repositories
   - config.yaml
   - secrets.yaml
+  - core.yaml
+  - apps.yaml

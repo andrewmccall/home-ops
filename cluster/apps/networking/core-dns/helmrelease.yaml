@@ -22,6 +22,13 @@ spec:
       externalIPs:
         - ${COREDNS_IP}
       externalTrafficPolicy: Local
+    zoneFiles:
+      - filename: home.db
+        domain: home.${DOMAIN}
+        contents: |
+          $TTL 300 ;
+          home.${DOMAIN}.       IN SOA    ns.dns.${DOMAIN}. hostmaster.${DOMAIN}. 2021072001 7200 1800 86400 30
+          vecna.home.${DOMAIN}  IN A  10.0.0.250
     servers:
       # only 1 protocol per port so scheme is required here to limit to udp
       # feature gate MixedProtocolLBService allows multi-protocol per port
@@ -44,6 +51,8 @@ spec:
               pods insecure
               fallthrough in-addr.arpa ip6.arpa
               ttl 30
+          - name: file
+            parameters: /etc/coredns/home.db home.${DOMAIN}
           - name: etcd
             parameters: ${DOMAIN}
             configBlock: |-
