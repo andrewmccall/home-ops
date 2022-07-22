@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - core-dns.yaml
   - k8s-at-home.yaml
+  - bitnami.yaml
