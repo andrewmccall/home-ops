@@ -2,7 +2,7 @@
 k3s_control_node: yes
 k3s_server:
   flannel-backend: 'none'
-  disable:
+  #disable:
   #  - servicelb
   #  - traefik
   #  - local-storage
