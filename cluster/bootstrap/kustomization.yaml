@@ -8,5 +8,34 @@ patchesJson6902:
     group: apps
     version: v1
     kind: Deployment
+    namespace: flux-system
     name: source-controller
-  path: patch.yaml
+  path: patch-source-controller.yaml
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    namespace: flux-system
+    name: helm-controller
+  path: patch-deployment.yaml
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    namespace: flux-system
+    name: image-automation-controller
+  path: patch-deployment.yaml
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    namespace: flux-system
+    name: image-reflector-controller
+  path: patch-deployment.yaml
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    namespace: flux-system
+    name: kustomize-controller
+  path: patch-deployment.yaml
