@@ -22,7 +22,7 @@ metadata:
   name: flux-installation
   namespace: flux-system
 spec:
-  interval: 10m
+  interval: 1m
   path: ./manifests/install
   prune: true
   wait: true
@@ -60,7 +60,7 @@ spec:
       kind: Deployment
       namespace: flux-system
       name: source-controller
-    patch: |-
+    patch: 
       - op: replace
         path: /spec/template/spec/containers/0/args/0
         value: --events-addr=http://notification-controller.flux-system.svc.cluster.home.andrewmccall.com/
@@ -73,7 +73,7 @@ spec:
       kind: Deployment
       namespace: flux-system
       name: helm-controller
-    patch: |-
+    patch: 
       - op: replace
         path: /spec/template/spec/containers/0/args/0
         value: --events-addr=http://notification-controller.flux-system.svc.cluster.home.andrewmccall.com
@@ -83,7 +83,7 @@ spec:
       kind: Deployment
       namespace: flux-system
       name: image-automation-controller
-    patch: |-
+    patch: 
       - op: replace
         path: /spec/template/spec/containers/0/args/0
         value: --events-addr=http://notification-controller.flux-system.svc.cluster.home.andrewmccall.com
@@ -93,7 +93,7 @@ spec:
       kind: Deployment
       namespace: flux-system
       name: image-reflector-controller
-    patch: |-
+    patch:
       - op: replace
         path: /spec/template/spec/containers/0/args/0
         value: --events-addr=http://notification-controller.flux-system.svc.cluster.home.andrewmccall.com
@@ -103,7 +103,7 @@ spec:
       kind: Deployment
       namespace: flux-system
       name: kustomize-controller
-    patch: |-
+    patch: 
       - op: replace
         path: /spec/template/spec/containers/0/args/0
         value: --events-addr=http://notification-controller.flux-system.svc.cluster.home.andrewmccall.com
