@@ -15,14 +15,13 @@ kubectl -n flux-system create secret generic sops-age \
 Genrate a key
 ```
 flux create secret git flux-cluster \
-    --url=ssh://git@github.com/andrewmccall/home-ops \
+    --url=ssh://git@github.com/andrewmccall/home-ops
   ```
 
 put the key as a deploy key in github
 
 Install Flux
 ```bash
-kubectl apply --kustomize=./cluster/bootstrap
 kubectl apply --kustomize=./cluster/base/flux-system
 ```
 
