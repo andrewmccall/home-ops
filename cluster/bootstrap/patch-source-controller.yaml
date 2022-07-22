@@ -3,4 +3,4 @@
   value: --events-addr=http://notification-controller.flux-system.svc.cluster.home.andrewmccall.com/
 - op: replace
   path: /spec/template/spec/containers/0/args/6
-  value:  --storage-adv-addr=source-controller.$(RUNTIME_NAMESPACE).svc.cluster.home.andrewmccall.
+  value:  --storage-adv-addr=source-controller.flux-system.svc.cluster.home.andrewmccall.com
