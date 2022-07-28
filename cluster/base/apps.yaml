@@ -7,11 +7,10 @@ metadata:
 spec:
   interval: 10m
   dependsOn:
+    - name: crds
     - name: core
   path: ./cluster/apps
   prune: true
-  dependsOn:
-    - name: crds
   sourceRef:
     kind: GitRepository
     name: flux-cluster
