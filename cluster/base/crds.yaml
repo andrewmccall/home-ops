@@ -2,14 +2,12 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
 kind: Kustomization
 metadata:
-  name: core
+  name: crds
   namespace: flux-system
 spec:
   interval: 10m0s
-  path: ./cluster/core
+  path: ./cluster/crds
   prune: false
-  dependsOn:
-    - name: crds
   sourceRef:
     kind: GitRepository
     name: flux-cluster
