@@ -21,6 +21,6 @@ spec:
     serviceType: LoadBalancer
     service:
       externalIPs:
-        - ${COREDNS_IP}
+        - 10.0.0.5
       externalTrafficPolicy: Local
 
