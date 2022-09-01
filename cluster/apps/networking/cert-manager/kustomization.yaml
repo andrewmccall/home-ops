@@ -4,7 +4,8 @@ kind: Kustomization
 resources:
   - helmrelease.yaml
   - cloudflare-api-token-secret.enc.yaml
-  #- letsencrypt-staging-clusterissuer.yaml
-  #- letsencrypt-production-clusterissuer.yaml
+  # The below need to be uncommented for the first run, not ideal.
+  - letsencrypt-staging-clusterissuer.yaml
+  - letsencrypt-production-clusterissuer.yaml
 
 
