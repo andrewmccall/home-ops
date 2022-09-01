@@ -13,7 +13,6 @@ spec:
         kind: HelmRepository
         name: k8s-at-home
         namespace: flux-system
-  
   interval: 5m0s
   values:
     replicaCount: 1
@@ -21,6 +20,6 @@ spec:
     serviceType: LoadBalancer
     service:
       externalIPs:
-        - 10.0.0.5
+        - ${UNIFI_IP}
       externalTrafficPolicy: Local
 

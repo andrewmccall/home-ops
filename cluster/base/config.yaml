@@ -10,5 +10,6 @@ data:
   ROUTER_IP: 10.0.0.1
   INGRESS_NGINX_IP: 10.44.0.1
   COREDNS_IP: 10.44.0.4
+  UNIFI_IP: 10.44.0.5
   LOCAL_DOMAIN: home.andrewmccall.com
   CLUSTER_DOMAIN: cluster.home.andrewmccall.com
