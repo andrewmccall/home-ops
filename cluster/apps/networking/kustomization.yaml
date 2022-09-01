@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
 - etcd-extdns
 - core-dns
+- cert-manager
