@@ -4,3 +4,4 @@ resources:
 - etcd-extdns
 - core-dns
 - cert-manager
+- unifi
