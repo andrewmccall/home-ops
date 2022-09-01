@@ -35,13 +35,13 @@ spec:
       # feature gate MixedProtocolLBService allows multi-protocol per port
       # for LoadBalancer
       - zones:
-          - zone: .
-            scheme: dns://
-            use_tcp: false
           - zone: ${CLUSTER_DOMAIN}.
             scheme: dns://
           - zone: home.${DOMAIN}.
             scheme: dns://
+          - zone: .
+            scheme: dns://
+            use_tcp: false
         port: 53
         plugins:
           - name: errors
