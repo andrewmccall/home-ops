@@ -17,9 +17,9 @@ spec:
   values: 
     replicaCount: 1
     isClusterService: false
+    serviceType: LoadBalancer
     service:
       main:
-        serviceType: LoadBalancer
         externalIPs:
           - ${UNIFI_IP}
         externalTrafficPolicy: Local
