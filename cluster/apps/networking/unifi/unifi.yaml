@@ -14,3 +14,11 @@ spec:
         kind: HelmRepository
         name: k8s-at-home
         namespace: flux-system
+  values: 
+    replicaCount: 1
+    isClusterService: false
+    serviceType: LoadBalancer
+    service:
+      externalIPs:
+        - ${COREDNS_IP}
+      externalTrafficPolicy: Local
