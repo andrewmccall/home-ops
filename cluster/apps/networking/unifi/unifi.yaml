@@ -15,11 +15,11 @@ spec:
         name: k8s-at-home
         namespace: flux-system
   values: 
-    replicaCount: 1
+    replicas: 1
     isClusterService: false
-    serviceType: LoadBalancer
     service:
       main:
+        type: LoadBalancer
         externalIPs:
           - ${UNIFI_IP}
         externalTrafficPolicy: Local
