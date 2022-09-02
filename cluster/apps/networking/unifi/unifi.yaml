@@ -20,5 +20,5 @@ spec:
     serviceType: LoadBalancer
     service:
       externalIPs:
-        - ${COREDNS_IP}
+        - ${UNIFI_IP}
       externalTrafficPolicy: Local
