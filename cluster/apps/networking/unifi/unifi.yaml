@@ -23,3 +23,9 @@ spec:
         externalIPs:
           - ${UNIFI_IP}
         externalTrafficPolicy: Local
+    persistence:
+      config:
+        enabled: true
+        type: pvc
+        accessMode: ReadWriteOnce
+        size: 1Gi
