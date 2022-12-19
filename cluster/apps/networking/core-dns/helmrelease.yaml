@@ -30,6 +30,7 @@ spec:
           home.${DOMAIN}.       IN SOA    ns.home.${DOMAIN}. hostmaster.${DOMAIN}. 2021072001 7200 1800 86400 30
           ns.home.${DOMAIN}.     IN A      ${COREDNS_IP}
           vecna.home.${DOMAIN}.  IN A      10.0.0.250
+          unifi.home.${DOMAIN}.  IN A      ${UNIFI_IP}
     servers:
       # only 1 protocol per port so scheme is required here to limit to udp
       # feature gate MixedProtocolLBService allows multi-protocol per port
