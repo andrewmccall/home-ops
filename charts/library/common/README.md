@@ -1,6 +1,6 @@
 # common
 
-![Version: 0.0.17](https://img.shields.io/badge/Version-0.0.17-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
+![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 
 Function library for home-ops charts.
 
@@ -30,7 +30,7 @@ Include this chart as a dependency in your `Chart.yaml` e.g.
 dependencies:
 - name: common
   version: 4.5.1
-  repository: https://home-ops.andrewmccall.com/charts/
+  repository: https://home-ops.andrewmccall.com/charts/library/
 ```
 
 For more information, take a look at the [Docs](http://home-ops.andrewmccall.com/).
