@@ -2,7 +2,7 @@
 
 ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![Type: library](https://img.shields.io/badge/Type-library-informational?style=flat-square)
 
-Function library for home-ops charts
+Function library for home-ops charts.
 
 Since a lot of the home-ops charts follow a similar pattern, this library was built to reduce maintenance cost between the charts that use it and try achieve a goal of being DRY.
 
