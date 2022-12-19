@@ -88,7 +88,7 @@ jobs:
         commit_user_name: home-ops[bot]
         commit_user_email: home-ops[bot]@users.noreply.github.com
         commit_author: hone-ops[bot] <home-ops[bot]@users.noreply.github.com>
-        file_pattern: charts/**/
+        file_pattern: charts/**
 
   release-charts:
     runs-on: ubuntu-20.04
