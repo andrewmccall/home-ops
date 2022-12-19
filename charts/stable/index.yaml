@@ -3,6 +3,33 @@ entries:
   unifi:
   - apiVersion: v2
     appVersion: v7.1.68
+    created: "2022-12-19T21:53:30.909496311Z"
+    dependencies:
+    - name: common
+      repository: https://home-ops.andrewmccall.com/charts/library/
+      version: 1.0.0
+    - condition: mongodb.enabled
+      name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: 12.1.22
+    description: Ubiquiti Network's Unifi Controller
+    digest: e7cdb7016e754ce2a5cff4e06cd58e67a9a241a5f745a8cd3b40f8ea50acc583
+    home: https://github.com/andrewmccall/home-ops/tree/master/charts/stable/unifi
+    icon: https://prd-www-cdn.ubnt.com/static/favicon-152.png
+    keywords:
+    - ubiquiti
+    - unifi
+    maintainers:
+    - email: andrew@andrewmccall.com
+      name: Andrew McCall
+    name: unifi
+    sources:
+    - https://github.com/jacobalberty/unifi-docker
+    urls:
+    - https://github.com/andrewmccall/home-ops/releases/download/unifi-1.0.0/unifi-1.0.0.tgz
+    version: 1.0.0
+  - apiVersion: v2
+    appVersion: v7.1.68
     created: "2022-12-19T21:30:22.658780145Z"
     dependencies:
     - name: common
@@ -28,4 +55,4 @@ entries:
     urls:
     - https://github.com/andrewmccall/home-ops/releases/download/unifi-0.0.10/unifi-0.0.10.tgz
     version: 0.0.10
-generated: "2022-12-19T21:30:22.658792246Z"
+generated: "2022-12-19T21:53:30.909547911Z"
