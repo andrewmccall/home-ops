@@ -17,7 +17,7 @@ maintainers:
 dependencies:
   - name: common
     repository: https://home-ops.andrewmccall.com/charts/library/
-    version: 1.0.0
+    version: 0.0.17
   - name: mongodb
     version: 12.1.22
     repository: https://charts.bitnami.com/bitnami
