@@ -2,6 +2,24 @@ apiVersion: v1
 entries:
   common:
   - apiVersion: v2
+    created: "2022-12-19T21:46:02.871197059Z"
+    description: Function library for home-ops charts.
+    digest: 5ee96a184910d7297185f6e05e166853fcefb133f663a294ce89f9df8a2d238f
+    home: https://github.com/andrewmccall/home-ops/tree/main/charts/library/common
+    keywords:
+    - home-ops
+    - k8s-at-home
+    - common
+    kubeVersion: '>=1.16.0-0'
+    maintainers:
+    - email: andrew@andrewmccall.com
+      name: Andrew McCall
+    name: common
+    type: library
+    urls:
+    - https://github.com/andrewmccall/home-ops/releases/download/common-1.0.0/common-1.0.0.tgz
+    version: 1.0.0
+  - apiVersion: v2
     created: "2022-12-19T21:28:04.496075971Z"
     description: Function library for home-ops charts.
     digest: 73d95413854e08e7563f49fc51c9668bc2544988de563c2ecf6552bdac59f7b3
@@ -19,4 +37,4 @@ entries:
     urls:
     - https://github.com/andrewmccall/home-ops/releases/download/common-0.0.17/common-0.0.17.tgz
     version: 0.0.17
-generated: "2022-12-19T21:28:04.496092971Z"
+generated: "2022-12-19T21:46:02.871205759Z"
