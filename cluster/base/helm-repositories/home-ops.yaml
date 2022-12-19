@@ -6,5 +6,5 @@ metadata:
   namespace: flux-system
 spec:
   interval: 1h
-  url: https://home-ops.andrewmccall.com/
+  url: https://home-ops.andrewmccall.com/charts/stable
 
