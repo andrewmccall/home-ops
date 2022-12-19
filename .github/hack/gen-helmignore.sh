@@ -9,7 +9,7 @@ set -eu
 repository=$(git rev-parse --show-toplevel)
 
 # Templates to copy into each chart directory
-helmignore="${repository}/hack/templates/.helmignore"
+helmignore="${repository}/.github/hack/templates/.helmignore"
 
 # Gather all charts using the common library, excluding common-test
 charts=$(find "${repository}" -name "Chart.yaml" -exec grep -l "\- name\: common" {} \;)

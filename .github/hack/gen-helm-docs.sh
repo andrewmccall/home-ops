@@ -14,9 +14,9 @@ command -v helm-docs >/dev/null 2>&1 || {
 repository=$(git rev-parse --show-toplevel)
 
 # Templates to copy into each chart directory
-readme_template="${repository}/hack/templates/README.md.gotmpl"
-readme_config_template="${repository}/hack/templates/README_CONFIG.md.gotmpl"
-readme_changelog_template="${repository}/hack/templates/README_CHANGELOG.md.gotmpl"
+readme_template="${repository}/.github/hack/templates/README.md.gotmpl"
+readme_config_template="${repository}/.github/hack/templates/README_CONFIG.md.gotmpl"
+readme_changelog_template="${repository}/.github/hack/templates/README_CHANGELOG.md.gotmpl"
 
 # Gather all charts using the common library, excluding common-test
 charts=$(find "${repository}" -name "Chart.yaml")
@@ -30,14 +30,14 @@ if [ $# -ge 1 ] && [ -n "$1" ] && [ -n "$2" ]; then
         exit 1
     fi
 else
-    root="${repository}/charts/stable"
+    root="${repository}/charts"
 fi
 
 for chart in ${charts}; do
     chart_directory="$(dirname "${chart}")"
     echo "-] Copying templates to ${chart_directory}"
     # Copy README template into each Chart directory, overwrite if exists
-    cp "${readme_template}" "${chart_directory}"
+    cp -n "${readme_template}" "${chart_directory}"
     # Copy CONFIG template to each Chart directory, do not overwrite if exists
     cp -n "${readme_config_template}" "${chart_directory}" || true
     # Copy CHANGELOG template to each Chart directory, do not overwrite if exists
