@@ -17,6 +17,8 @@ spec:
   values:
     replicaCount: 1
     isClusterService: false
+    serviceAccount:
+      create: true
     serviceType: LoadBalancer
     service:
       externalIPs:
