@@ -1,6 +1,0 @@
----
-k3s_control_node: no
-
-k3s_agent:
-  node-label:
-    - "k3s-upgrade=true"
