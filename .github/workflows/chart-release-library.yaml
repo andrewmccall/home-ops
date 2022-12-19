@@ -1,4 +1,4 @@
-name: "Charts: Release Common"
+name: "Charts: Release Library"
 
 concurrency: helm-release
 
