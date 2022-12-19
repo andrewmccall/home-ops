@@ -8,7 +8,7 @@ on:
     branches:
     - main
     paths:
-    - 'charts/common/**'
+    - 'charts/library/**'
 
 jobs:
   generate-readme:
@@ -35,7 +35,7 @@ jobs:
         list-files: shell
         filters: |
           addedOrModified:
-            - added|modified: 'charts/common/**'
+            - added|modified: 'charts/library/**'
 
     - name: Install Helm
       if: steps.filter.outputs.addedOrModified == 'true'
@@ -88,7 +88,7 @@ jobs:
         commit_user_name: home-ops[bot]
         commit_user_email: home-ops[bot]@users.noreply.github.com
         commit_author: hone-ops[bot] <home-ops[bot]@users.noreply.github.com>
-        file_pattern: charts/common/**
+        file_pattern: charts/library/**
 
   release-charts:
     runs-on: ubuntu-20.04
@@ -122,9 +122,9 @@ jobs:
     - name: Run chart-releaser
       uses: helm/chart-releaser-action@v1.4.0
       with:
-        charts_dir: charts/common/*
+        charts_dir: charts/library/*
         charts_repo_url: https://home-ops.andrewmccall.com
       env:
         CR_TOKEN: "${{ steps.get-app-token.outputs.token }}"
         CR_SKIP_EXISTING: "true"
-        CR_PAGES_INDEX_PATH: "/charts/common/index.yaml"
+        CR_PAGES_INDEX_PATH: "/charts/library/index.yaml"

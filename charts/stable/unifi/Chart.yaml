@@ -16,7 +16,7 @@ maintainers:
     email: andrew@andrewmccall.com
 dependencies:
   - name: common
-    repository: https://home-ops.andrewmccall.com/charts/common/
+    repository: https://home-ops.andrewmccall.com/charts/library/
     version: 1.0.0
   - name: mongodb
     version: 12.1.22
