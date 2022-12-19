@@ -1,0 +1,14 @@
+apiVersion: v2
+name: common
+description: Function library for home-ops charts
+type: library
+version: 1.0.0
+kubeVersion: ">=1.16.0-0"
+keywords:
+  - home-ops
+  - k8s-at-home
+  - common
+home: https://github.com/andrewmccall/home-ops/tree/main/charts/library/common
+maintainers:
+  - name: Andrew McCall
+    email: andrew@andrewmccall.com

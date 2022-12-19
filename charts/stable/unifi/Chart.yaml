@@ -1,0 +1,24 @@
+---
+apiVersion: v2
+appVersion: v7.1.68
+description: Ubiquiti Network's Unifi Controller
+name: unifi
+version: 1.0.0
+keywords:
+  - ubiquiti
+  - unifi
+home: https://github.com/andrewmccall/home-ops/tree/master/charts/stable/unifi
+icon: https://prd-www-cdn.ubnt.com/static/favicon-152.png
+sources:
+  - https://github.com/jacobalberty/unifi-docker
+maintainers:
+  - name: Andrew McCall
+    email: andrew@andrewmccall.com
+dependencies:
+  - name: common
+    repository: https://home-ops.andrewmccall.com
+    version: 1.0.0
+  - name: mongodb
+    version: 12.1.22
+    repository: https://charts.bitnami.com/bitnami
+    condition: mongodb.enabled
