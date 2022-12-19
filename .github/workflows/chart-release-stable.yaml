@@ -127,4 +127,4 @@ jobs:
       env:
         CR_TOKEN: "${{ steps.get-app-token.outputs.token }}"
         CR_SKIP_EXISTING: "true"
-        CR_PAGES_INDEX_PATH: "/charts/stable/index.yaml"
+        CR_PAGES_INDEX_PATH: "charts/stable/index.yaml"
