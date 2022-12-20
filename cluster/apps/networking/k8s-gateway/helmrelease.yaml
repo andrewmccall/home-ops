@@ -29,6 +29,7 @@ spec:
         - ${DOMAIN}
     extraZonePlugins:
       - name: log
+      - name: debug
       - name: errors
       - name: health
         configBlock: |-

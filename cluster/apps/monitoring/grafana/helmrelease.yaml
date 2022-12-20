@@ -40,6 +40,7 @@ spec:
       enabled: true
     ingress:
       enabled: true
+      ingressClassName: nginx
       annotations:
         external-dns.alpha.kubernetes.io/hostname: "grafana.${DOMAIN}"
         cert-manager.home.arpa/enabled: "true"
