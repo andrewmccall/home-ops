@@ -16,7 +16,7 @@ spec:
         namespace: flux-system
   values:
     installCRDs: false
-    replicaCount: 3
+    replicaCount: 1
     serviceMonitor:
       enabled: true
     topologySpreadConstraints:
