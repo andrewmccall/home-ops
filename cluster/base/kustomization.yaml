@@ -5,7 +5,7 @@ resources:
   - flux-system
   - helm-repositories
   - config.yaml
-  - secrets.yaml
+  - secrets.enc.yaml
   - crds.yaml
   - core.yaml
   - apps.yaml
