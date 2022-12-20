@@ -9,7 +9,8 @@ data:
   K8S_SERVICE_CIDR: 10.43.0.0/16
   ROUTER_IP: 10.0.0.1
   INGRESS_NGINX_IP: 10.44.0.1
-  COREDNS_IP: 10.44.0.4
-  UNIFI_IP: 10.44.0.5
+  COREDNS_IP:   10.44.0.1
+  UNIFI_IP:     10.44.0.2
+  VECTOR_IP:    10.44.0.10
   LOCAL_DOMAIN: home.andrewmccall.com
   CLUSTER_DOMAIN: cluster.home.andrewmccall.com
