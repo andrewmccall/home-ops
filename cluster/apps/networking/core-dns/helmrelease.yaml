@@ -26,13 +26,13 @@ spec:
       externalTrafficPolicy: Local
     zoneFiles:
       - filename: home.db
-        domain: home.${DOMAIN}
+        domain: ${DOMAIN}
         contents: |
           $TTL 300 ;
-          home.${DOMAIN}.       IN SOA    ns.home.${DOMAIN}. hostmaster.${DOMAIN}. 2021072001 7200 1800 86400 30
-          ns.home.${DOMAIN}.     IN A      ${COREDNS_IP}
-          vecna.home.${DOMAIN}.  IN A      10.0.0.250
-          unifi.home.${DOMAIN}.  IN A      ${UNIFI_IP}
+          ${DOMAIN}.       IN SOA    ns.${DOMAIN}. hostmaster.${DOMAIN}. 2021072001 7200 1800 86400 30
+          ns.${DOMAIN}.     IN A      ${COREDNS_IP}
+          vecna.${DOMAIN}.  IN A      10.0.0.250
+          unifi.${DOMAIN}.  IN A      ${UNIFI_IP}
     servers:
       # only 1 protocol per port so scheme is required here to limit to udp
       # feature gate MixedProtocolLBService allows multi-protocol per port
@@ -40,7 +40,7 @@ spec:
       - zones:
           - zone: ${CLUSTER_DOMAIN}.
             scheme: dns://
-          - zone: home.${DOMAIN}.
+          - zone: ${DOMAIN}.
             scheme: dns://
           - zone: .
             scheme: dns://
@@ -53,7 +53,7 @@ spec:
               lameduck 5s
           - name: ready
           - name: file
-            parameters: /etc/coredns/home.db home.${DOMAIN}
+            parameters: /etc/coredns/home.db ${DOMAIN}
           - name: kubernetes
             parameters: ${CLUSTER_DOMAIN} in-addr.arpa ip6.arpa
             configBlock: |-
@@ -61,9 +61,9 @@ spec:
               fallthrough in-addr.arpa ip6.arpa
               ttl 30
           - name: k8s_external 
-            parameters: home.${DOMAIN}
+            parameters: ${DOMAIN}
           - name: etcd
-            parameters: home.${DOMAIN}
+            parameters: ${DOMAIN}
             configBlock: |-
               path /skydns
               endpoint http://etcd-extdns:2379
