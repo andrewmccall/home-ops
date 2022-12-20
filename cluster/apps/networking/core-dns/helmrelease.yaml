@@ -69,7 +69,8 @@ spec:
               endpoint http://etcd-extdns:2379
           #- name: prometheus
           #  parameters: 0.0.0.0:9153
-          - name: forward ${DOMAIN} k8s-gateway:53
+          - name: forward 
+            parameters: ${DOMAIN} k8s-gateway:53
           - name: forward
             parameters: . 10.0.0.1:53
           - name: cache
