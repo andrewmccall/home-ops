@@ -27,10 +27,6 @@ spec:
       externalIPs:
         - ${K8S_GATEWAY_IP}
       externalTrafficPolicy: Local
-    fallthrough:
-      enabled: true
-      zones:
-        - ${DOMAIN}
     extraZonePlugins:
       - name: log
       - name: errors
