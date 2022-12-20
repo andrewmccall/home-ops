@@ -70,7 +70,7 @@ spec:
           #- name: prometheus
           #  parameters: 0.0.0.0:9153
           - name: forward 
-            parameters: ${DOMAIN} k8s-gateway:53
+            parameters: ${DOMAIN} ${K8S_GATEWAY_IP}:53
           - name: forward
             parameters: . 10.0.0.1:53
           - name: cache

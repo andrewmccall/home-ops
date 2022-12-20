@@ -24,6 +24,9 @@ spec:
     domain: ${DOMAIN}
     service:
       type: LoadBalancer
+      externalIPs:
+        - ${K8S_GATEWAY_IP}
+      externalTrafficPolicy: Local
     fallthrough:
       enabled: true
       zones:
@@ -37,6 +40,10 @@ spec:
       - name: ready
       - name: prometheus
         parameters: 0.0.0.0:9153
+      - name: forward
+        parameters: . tls://1.1.1.1 tls://1.0.0.1
+        configBlock: |-
+          tls_servername cloudflare-dns.com
       - name: loop
       - name: reload
       - name: loadbalance
