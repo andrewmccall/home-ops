@@ -26,7 +26,8 @@ spec:
     fallthrough:
       enabled: true
       zones:
-        - ${DOMAIN}
+        - andromeda.${DOMAIN}
+        - sunflower.${DOMAIN}
     extraZonePlugins:
       - name: log
       - name: debug
