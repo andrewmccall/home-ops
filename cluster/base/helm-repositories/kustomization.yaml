@@ -10,3 +10,5 @@ resources:
   - prometheus-community.yaml
   - vector.yaml
   - k8s-gateway.yaml
+  - kyverno.yaml
+  - node-feature-discovery.yaml
