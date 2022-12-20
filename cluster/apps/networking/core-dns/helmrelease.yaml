@@ -60,7 +60,7 @@ spec:
               pods insecure
               fallthrough in-addr.arpa ip6.arpa
               ttl 30
-          - name: k8s_external 
+          - name: k8s_external
             parameters: ${DOMAIN}
           - name: etcd
             parameters: ${DOMAIN}
@@ -69,8 +69,8 @@ spec:
               endpoint http://etcd-extdns:2379
           #- name: prometheus
           #  parameters: 0.0.0.0:9153
-          - name: forward 
-            parameters: ${DOMAIN} ${K8S_GATEWAY_IP}:53
+          #- name: forward
+          #  parameters: ${DOMAIN} ${K8S_GATEWAY_IP}:53
           - name: forward
             parameters: . 10.0.0.1:53
           - name: cache
