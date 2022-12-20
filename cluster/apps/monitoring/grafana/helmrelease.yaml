@@ -40,7 +40,6 @@ spec:
       enabled: true
     ingress:
       enabled: true
-      ingressClassName: nginx
       annotations:
         external-dns.home.arpa/enabled: "true"
         cert-manager.home.arpa/enabled: "true"
