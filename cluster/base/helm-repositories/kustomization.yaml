@@ -6,3 +6,6 @@ resources:
   - home-ops.yaml
   - bitnami.yaml
   - jetstack.yaml
+  - grafana.yaml
+  - prometheus-community.yaml
+  - vector.yaml
