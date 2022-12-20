@@ -15,4 +15,4 @@ spec:
             email: andrew@andrewmccall.com
             apiTokenSecretRef:
               name: cloudflare-api-token
-              key: api-token
+              key: cloudflare_api_token
