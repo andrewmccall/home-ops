@@ -41,7 +41,7 @@ spec:
       - name: prometheus
         parameters: 0.0.0.0:9153
       - name: forward
-        parameters: . tls://1.1.1.1 tls://1.0.0.1
+        parameters: . ${COREDNS_IP}
         configBlock: |-
           tls_servername cloudflare-dns.com
       - name: loop
