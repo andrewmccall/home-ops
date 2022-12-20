@@ -9,6 +9,7 @@ spec:
   chart:
     spec:
       chart: cert-manager
+      # renovate: datasource=helm registryUrl=https://charts.jetstack.io/ cert-manager
       version: v1.10.1
       sourceRef:
         kind: HelmRepository
@@ -29,4 +30,3 @@ spec:
       servicemonitor:
         enabled: true
         prometheusInstance: monitoring
- 
