@@ -14,14 +14,14 @@ spec:
         kind: HelmRepository
         name: home-ops
         namespace: flux-system
-  values: 
+  values:
     replicas: 1
     isClusterService: false
     service:
       main:
         type: LoadBalancer
         externalIPs:
-          - ${UNIFI_IP}
+          - ${UNIFI_IP}2
         externalTrafficPolicy: Local
     persistence:
       config:
