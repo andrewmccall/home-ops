@@ -24,8 +24,6 @@ spec:
     policy: sync
     domainFilters:
       - ${DOMAIN}
-    extraArgs:
-      - --annotation-filter=external-dns.home.arpa/enabled in (true)
     serviceMonitor:
       enabled: true
     resources:
