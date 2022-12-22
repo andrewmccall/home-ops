@@ -5,5 +5,5 @@ resources:
   - etcd-extdns
   - core-dns
   - cert-manager
-  - k8s-gateway
+  - external-dns
   - unifi
