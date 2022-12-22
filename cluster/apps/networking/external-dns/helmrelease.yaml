@@ -26,7 +26,6 @@ spec:
       - ${DOMAIN}
     extraArgs:
       - --annotation-filter=external-dns.home.arpa/enabled in (true)
-      - --log-level=debug # debug only
     serviceMonitor:
       enabled: true
     resources:
