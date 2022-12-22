@@ -3,7 +3,7 @@ kind: Kustomization
 resources:
   - cloudflare-api-token-secret.enc.yaml
   - etcd-extdns
-  - core-dns
   - cert-manager
-  - external-dns
+  #- core-dns
+  #- external-dns
   - unifi
