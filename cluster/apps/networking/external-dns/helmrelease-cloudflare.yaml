@@ -17,16 +17,15 @@ spec:
   values:
     sources:
       - ingress
-    provider: coredns
-    env:
-      - name: ETCD_URLS
-        value: http://etcd-extdns:2379
+    provider: cloudflare
+    cloudflare:
+      secretName: cloudflare-api-token
     policy: sync
     domainFilters:
       - ${DOMAIN}
     extraArgs:
+      - --cloudflare-proxied
       - --annotation-filter=external-dns.home.arpa/enabled in (true)
-      - --log-level=debug # debug only
     serviceMonitor:
       enabled: true
     resources:
