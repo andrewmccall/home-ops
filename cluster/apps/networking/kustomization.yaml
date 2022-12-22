@@ -4,6 +4,6 @@ resources:
   - cloudflare-api-token-secret.enc.yaml
   - etcd-extdns
   - cert-manager
-  #- core-dns
+  - core-dns
   #- external-dns
   - unifi
