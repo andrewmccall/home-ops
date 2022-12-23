@@ -60,6 +60,8 @@ spec:
               pods insecure
               fallthrough in-addr.arpa ip6.arpa
               ttl 30
+          - name: k8s_external
+            parameters: ${CLUSTER_DOMAIN}
           - name: etcd
             parameters: ${DOMAIN}
             configBlock: |-
