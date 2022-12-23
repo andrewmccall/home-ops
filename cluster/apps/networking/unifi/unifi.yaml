@@ -21,7 +21,7 @@ spec:
     service:
       main:
         annotations:
-          external-dns.alpha.kubernetes.io/hostname: "unific.${DOMAIN}"
+          external-dns.alpha.kubernetes.io/hostname: "unifi.${DOMAIN}"
         type: LoadBalancer
         externalIPs:
           - ${UNIFI_IP}
