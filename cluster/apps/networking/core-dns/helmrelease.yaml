@@ -55,10 +55,6 @@ spec:
             configBlock: |-
               lameduck 5s
           - name: ready
-          - name: file
-            parameters: /etc/coredns/home.db ${DOMAIN}
-            configBlock: |-
-              fallthrough
           - name: kubernetes
             parameters: ${CLUSTER_DOMAIN} in-addr.arpa ip6.arpa
             configBlock: |-
@@ -68,8 +64,11 @@ spec:
           - name: etcd
             parameters: ${DOMAIN}
             configBlock: |-
+              fallthrough
               path /skydns
               endpoint http://etcd-extdns:2379
+          - name: file
+            parameters: /etc/coredns/home.db ${DOMAIN}
           #- name: prometheus
           #  parameters: 0.0.0.0:9153
           - name: forward
