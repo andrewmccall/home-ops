@@ -56,7 +56,7 @@ spec:
               lameduck 5s
           - name: ready
           - name: kubernetes
-            parameters: ${CLUSTER_DOMAIN}
+            parameters: ${CLUSTER_DOMAIN}.${DOMAIN}
             configBlock: |-
               pods insecure
               ttl 30
