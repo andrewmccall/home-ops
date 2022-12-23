@@ -43,7 +43,7 @@ spec:
       annotations:
         external-dns.alpha.kubernetes.io/hostname: "grafana.${DOMAIN}"
         cert-manager.home.arpa/enabled: "true"
-        #auth.home.arpa/enabled: "true"
+        auth.home.arpa/enabled: "true"
       hosts:
         - &host grafana.${DOMAIN}
       tls:

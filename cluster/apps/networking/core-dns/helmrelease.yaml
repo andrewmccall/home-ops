@@ -50,7 +50,6 @@ spec:
         port: 53
         plugins:
           - name: debug
-          - name: errors
           - name: health
             configBlock: |-
               lameduck 5s
