@@ -55,17 +55,17 @@ spec:
             configBlock: |-
               lameduck 5s
           - name: ready
-          - name: kubernetes
-            parameters: ${CLUSTER_DOMAIN}.${DOMAIN}
-            configBlock: |-
-              pods insecure
-              ttl 30
           - name: etcd
             parameters: ${DOMAIN}
             configBlock: |-
               fallthrough
               path /skydns
               endpoint http://etcd-extdns.networking.svc.${CLUSTER_DOMAIN}.${DOMAIN}:2379
+          - name: kubernetes
+            parameters: ${CLUSTER_DOMAIN}.${DOMAIN}
+            configBlock: |-
+              pods insecure
+              ttl 30
           #- name: file
           #  parameters: /etc/coredns/home.db ${DOMAIN}
           #- name: prometheus
