@@ -40,7 +40,7 @@ spec:
       # feature gate MixedProtocolLBService allows multi-protocol per port
       # for LoadBalancer
       - zones:
-          - zone: ${CLUSTER_DOMAIN}.
+          - zone: ${CLUSTER_DOMAIN}.${DOMAIN}
             scheme: dns://
           - zone: ${DOMAIN}.
             scheme: dns://
