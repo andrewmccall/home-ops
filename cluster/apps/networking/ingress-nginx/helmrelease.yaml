@@ -17,7 +17,7 @@ spec:
         namespace: flux-system
   values:
     controller:
-      replicaCount: 2
+      replicaCount: 1
       service:
         externalIPs:
           - ${INGRESS_NGINX_IP}
@@ -41,7 +41,7 @@ spec:
       ingressClassResource:
         default: true
       extraArgs:
-        default-ssl-certificate: networking/${DOMAIN/./-}-tls
+        default-ssl-certificate: networking/ingress-tls
       resources:
         requests:
           cpu: 100m
