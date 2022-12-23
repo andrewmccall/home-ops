@@ -68,8 +68,8 @@ spec:
               fallthrough
               path /skydns
               endpoint http://etcd-extdns:2379
-          - name: file
-            parameters: /etc/coredns/home.db ${DOMAIN}
+          #- name: file
+          #  parameters: /etc/coredns/home.db ${DOMAIN}
           #- name: prometheus
           #  parameters: 0.0.0.0:9153
           - name: forward
