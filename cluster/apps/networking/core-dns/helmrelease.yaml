@@ -34,7 +34,7 @@ spec:
           ns.${DOMAIN}.       IN A      ${COREDNS_IP}
           vecna.${DOMAIN}.    IN A      10.0.0.250
           unifi.${DOMAIN}.    IN A      ${UNIFI_IP}
-          home.${DOMAIN}.     IN A      ${INGRESS_NGINX_IP}
+          ${DOMAIN}.          IN A      ${INGRESS_NGINX_IP}
     servers:
       # only 1 protocol per port so scheme is required here to limit to udp
       # feature gate MixedProtocolLBService allows multi-protocol per port
