@@ -9,7 +9,8 @@ spec:
   chart:
     spec:
       chart: unifi
-      reconcileStrategy: ChartVersion
+      # renovate: datasource=helm registryUrl=https://home-ops.andrewmccall.com/charts/stable chart=unifi
+      version: 1.0.0
       sourceRef:
         kind: HelmRepository
         name: home-ops
@@ -19,9 +20,11 @@ spec:
     isClusterService: false
     service:
       main:
+        annotations:
+          external-dns.alpha.kubernetes.io/hostname: "unific.${DOMAIN}"
         type: LoadBalancer
         externalIPs:
-          - ${UNIFI_IP}2
+          - ${UNIFI_IP}
         externalTrafficPolicy: Local
     persistence:
       config:
