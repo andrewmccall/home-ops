@@ -59,7 +59,6 @@ spec:
             parameters: ${CLUSTER_DOMAIN}
             configBlock: |-
               pods insecure
-              fallthrough
               ttl 30
           - name: etcd
             parameters: ${DOMAIN}
