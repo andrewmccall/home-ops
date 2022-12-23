@@ -68,6 +68,8 @@ spec:
               ttl 30
           - name: file
             parameters: /etc/coredns/home.db ${DOMAIN}
+            configBlock: |-
+              fallthrough
           - name: prometheus
             parameters: 0.0.0.0:9153
           - name: forward
