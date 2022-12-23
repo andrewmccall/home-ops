@@ -49,6 +49,7 @@ spec:
             use_tcp: false
         port: 53
         plugins:
+          - name: log
           - name: debug
           - name: health
             configBlock: |-
