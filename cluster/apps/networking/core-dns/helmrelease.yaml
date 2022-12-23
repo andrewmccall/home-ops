@@ -60,7 +60,7 @@ spec:
             configBlock: |-
               fallthrough
               path /skydns
-              endpoint http://etcd-extdns.networking.svc.${CLUSTER_DOMAIN}.${DOMAIN}:2379
+              endpoint http://${ETCD_EXTDNS_IP}:2379
           - name: kubernetes
             parameters: ${CLUSTER_DOMAIN}.${DOMAIN}
             configBlock: |-
