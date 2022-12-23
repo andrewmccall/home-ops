@@ -21,7 +21,7 @@ spec:
     loki:
       auth_enabled: false
       storage:
-        type: 'filesystem'
+        type: "filesystem"
       commonConfig:
         replication_factor: 1
     gateway:
