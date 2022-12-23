@@ -56,13 +56,13 @@ spec:
               lameduck 5s
           - name: ready
           - name: kubernetes
-            parameters: ${CLUSTER_DOMAIN} in-addr.arpa ip6.arpa
+            parameters: ${CLUSTER_DOMAIN}
             configBlock: |-
               pods insecure
-              fallthrough in-addr.arpa ip6.arpa
+              fallthrough
               ttl 30
           - name: k8s_external
-            parameters: ${CLUSTER_DOMAIN}
+            parameters: ${CLUSTER_DOMAIN}.${DOMAIN}
           - name: etcd
             parameters: ${DOMAIN}
             configBlock: |-
