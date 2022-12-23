@@ -66,10 +66,10 @@ spec:
             configBlock: |-
               pods insecure
               ttl 30
-          #- name: file
-          #  parameters: /etc/coredns/home.db ${DOMAIN}
-          #- name: prometheus
-          #  parameters: 0.0.0.0:9153
+          - name: file
+            parameters: /etc/coredns/home.db ${DOMAIN}
+          - name: prometheus
+            parameters: 0.0.0.0:9153
           - name: forward
             parameters: . 10.0.0.1:53
           - name: cache
