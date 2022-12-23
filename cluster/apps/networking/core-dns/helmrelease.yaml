@@ -61,8 +61,6 @@ spec:
               pods insecure
               fallthrough
               ttl 30
-          - name: k8s_external
-            parameters: ${CLUSTER_DOMAIN}.${DOMAIN}
           - name: etcd
             parameters: ${DOMAIN}
             configBlock: |-
