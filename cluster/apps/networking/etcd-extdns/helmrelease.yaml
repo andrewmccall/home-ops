@@ -26,4 +26,5 @@ spec:
       enabled: true
       serviceMonitor:
         enabled: true
-    clusterIP: ${ETCD_EXTDNS_IP}
+    service:
+      clusterIP: ${ETCD_EXTDNS_IP}
