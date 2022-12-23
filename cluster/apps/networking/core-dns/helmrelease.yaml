@@ -65,7 +65,7 @@ spec:
             configBlock: |-
               fallthrough
               path /skydns
-              endpoint http://etcd-extdns:2379
+              endpoint http://etcd-extdns.networking.svc.${CLUSTER_DOMAIN}.${DOMAIN}:2379
           #- name: file
           #  parameters: /etc/coredns/home.db ${DOMAIN}
           #- name: prometheus
