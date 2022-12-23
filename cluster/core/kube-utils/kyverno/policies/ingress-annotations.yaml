@@ -24,7 +24,7 @@ spec:
         patchStrategicMerge:
           metadata:
             annotations:
-              +(external-dns.alpha.kubernetes.io/target): ${DOMAIN}
+              +(external-dns.alpha.kubernetes.io/target): ingress.${DOMAIN}
     - name: cert-manager
       match:
         any:
