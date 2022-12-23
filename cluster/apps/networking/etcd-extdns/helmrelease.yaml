@@ -9,6 +9,7 @@ spec:
   chart:
     spec:
       chart: etcd
+      # renovate: datasource=helm registryUrl=https://charts.bitnami.com/bitnami chart=etcd
       version: 8.5.11
       sourceRef:
         kind: HelmRepository
