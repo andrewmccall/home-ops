@@ -16,9 +16,6 @@ spec:
         name: home-ops
         namespace: flux-system
   values:
-    minecraftServer:
-      eula: "TRUE"
-      serverName: "McMinecraft"
     service:
       main:
         annotations:
@@ -31,3 +28,7 @@ spec:
       config:
         enabled: true
         existingClaim: minecraft-bedrock-pvc
+
+    minecraftServer:
+      eula: "TRUE"
+      serverName: "McMinecraft"

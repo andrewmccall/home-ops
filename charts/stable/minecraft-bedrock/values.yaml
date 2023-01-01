@@ -19,6 +19,7 @@ service:
   main:
     ports:
       server:
+        enabled: true
         port: 19132
         protocol: UDP
 
