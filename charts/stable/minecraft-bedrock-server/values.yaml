@@ -33,6 +33,8 @@ persistence:
     mountPath: /data
 
 probes:
+  startup:
+    enabled: false
   rediness:
     enabled: true
     spec:
