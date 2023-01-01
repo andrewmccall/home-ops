@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: grafana-config
-  namespace: monitoring
+  name: minecraft-pvc
+  namespace: games
   labels:
     k10.kasten.io/backup: "true"
 spec:
