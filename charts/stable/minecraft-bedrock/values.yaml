@@ -18,6 +18,8 @@ image:
 service:
   main:
     ports:
+      http:
+        enabled: "false"
       server:
         enabled: true
         port: 19132
