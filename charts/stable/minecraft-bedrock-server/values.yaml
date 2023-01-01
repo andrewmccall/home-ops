@@ -31,3 +31,27 @@ persistence:
   config:
     enabled: true
     mountPath: /data
+
+probes:
+  rediness:
+    enabled: true
+    spec:
+      exec:
+        command:
+          - mc-monitor
+          - status-bedrock
+          - --host
+          # force health check against IPv4 port
+          - 127.0.0.1
+      initialDelaySeconds: 30
+  liveness:
+    enabled: true
+    spec:
+      exec:
+        command:
+          - mc-monitor
+          - status-bedrock
+          - --host
+          # force health check against IPv4 port
+          - 127.0.0.1
+      initialDelaySeconds: 30
