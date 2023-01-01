@@ -3,7 +3,7 @@ apiVersion: v2
 appVersion: v1.19.51
 description: Minecraft Bedrock Server
 name: minecraft-bedrock-server
-version: 0.11.5
+version: 0.11.6
 keywords:
   - minecraft
   - game

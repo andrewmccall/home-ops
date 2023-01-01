@@ -37,6 +37,7 @@ probes:
     enabled: false
   rediness:
     enabled: true
+    custom: true
     spec:
       exec:
         command:
@@ -48,6 +49,7 @@ probes:
       initialDelaySeconds: 30
   liveness:
     enabled: true
+    custom: true
     spec:
       exec:
         command:
