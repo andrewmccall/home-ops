@@ -9,7 +9,7 @@ image:
   # -- image repository
   repository: itzg/minecraft-bedrock-server
   # @default -- chart.appVersion
-  tag:
+  tag: latest
   # -- image pull policy
   pullPolicy: IfNotPresent
 
