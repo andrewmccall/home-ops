@@ -1,6 +1,6 @@
 # minecraft-bedrock
 
-![Version: 0.0.9](https://img.shields.io/badge/Version-0.0.9-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
+![Version: 0.9.0](https://img.shields.io/badge/Version-0.9.0-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
 
 Minecraft Bedrock Server
 
