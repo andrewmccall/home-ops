@@ -1,6 +1,6 @@
 # minecraft-bedrock-server
 
-![Version: 0.11.2](https://img.shields.io/badge/Version-0.11.2-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
+![Version: 0.11.3](https://img.shields.io/badge/Version-0.11.3-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
 
 Minecraft Bedrock Server
 
@@ -38,7 +38,7 @@ Read through the [values.yaml](./values.yaml) file. It has several commented out
 |-----|------|---------|-------------|
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy |
 | image.repository | string | `"itzg/minecraft-bedrock-server"` | image repository |
-| image.tag | string | `nil` |  |
+| image.tag | string | `"latest"` |  |
 | persistence | object | See values.yaml | Configure persistence settings for the chart under this key. |
 | service | object | See values.yaml | Configures service settings for the chart. |
 
