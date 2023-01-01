@@ -1,4 +1,4 @@
-# minecraft-bedrock
+# minecraft-bedrock-server
 
 ![Version: 0.11.2](https://img.shields.io/badge/Version-0.11.2-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
 
