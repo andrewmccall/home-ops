@@ -8,8 +8,8 @@ spec:
   interval: 10m
   chart:
     spec:
-      chart: minecraft-bedrock
-      # renovate: datasource=helm registryUrl=https://home-ops.andrewmccall.com/charts/stable chart=minecraft-bedrock
+      chart: minecraft-bedrock-server
+      # renovate: datasource=helm registryUrl=https://home-ops.andrewmccall.com/charts/stable chart=minecraft-bedrock-server
       version: 0.11.2
       sourceRef:
         kind: HelmRepository
