@@ -1,6 +1,6 @@
 # minecraft-bedrock-server
 
-![Version: 0.11.5](https://img.shields.io/badge/Version-0.11.5-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
+![Version: 0.11.6](https://img.shields.io/badge/Version-0.11.6-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
 
 Minecraft Bedrock Server
 
@@ -40,12 +40,14 @@ Read through the [values.yaml](./values.yaml) file. It has several commented out
 | image.repository | string | `"itzg/minecraft-bedrock-server"` | image repository |
 | image.tag | string | `"latest"` |  |
 | persistence | object | See values.yaml | Configure persistence settings for the chart under this key. |
+| probes.liveness.custom | bool | `true` |  |
 | probes.liveness.enabled | bool | `true` |  |
 | probes.liveness.spec.exec.command[0] | string | `"mc-monitor"` |  |
 | probes.liveness.spec.exec.command[1] | string | `"status-bedrock"` |  |
 | probes.liveness.spec.exec.command[2] | string | `"--host"` |  |
 | probes.liveness.spec.exec.command[3] | string | `"127.0.0.1"` |  |
 | probes.liveness.spec.initialDelaySeconds | int | `30` |  |
+| probes.rediness.custom | bool | `true` |  |
 | probes.rediness.enabled | bool | `true` |  |
 | probes.rediness.spec.exec.command[0] | string | `"mc-monitor"` |  |
 | probes.rediness.spec.exec.command[1] | string | `"status-bedrock"` |  |
