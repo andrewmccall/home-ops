@@ -52,6 +52,7 @@ Read through the [values.yaml](./values.yaml) file. It has several commented out
 | probes.rediness.spec.exec.command[2] | string | `"--host"` |  |
 | probes.rediness.spec.exec.command[3] | string | `"127.0.0.1"` |  |
 | probes.rediness.spec.initialDelaySeconds | int | `30` |  |
+| probes.startup.enabled | bool | `false` |  |
 | service | object | See values.yaml | Configures service settings for the chart. |
 
 ## Changelog
