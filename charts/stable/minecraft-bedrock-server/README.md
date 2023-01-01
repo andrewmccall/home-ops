@@ -1,6 +1,6 @@
 # minecraft-bedrock-server
 
-![Version: 0.11.6](https://img.shields.io/badge/Version-0.11.6-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
+![Version: 0.11.7](https://img.shields.io/badge/Version-0.11.7-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
 
 Minecraft Bedrock Server
 
@@ -47,13 +47,13 @@ Read through the [values.yaml](./values.yaml) file. It has several commented out
 | probes.liveness.spec.exec.command[2] | string | `"--host"` |  |
 | probes.liveness.spec.exec.command[3] | string | `"127.0.0.1"` |  |
 | probes.liveness.spec.initialDelaySeconds | int | `30` |  |
-| probes.rediness.custom | bool | `true` |  |
-| probes.rediness.enabled | bool | `true` |  |
-| probes.rediness.spec.exec.command[0] | string | `"mc-monitor"` |  |
-| probes.rediness.spec.exec.command[1] | string | `"status-bedrock"` |  |
-| probes.rediness.spec.exec.command[2] | string | `"--host"` |  |
-| probes.rediness.spec.exec.command[3] | string | `"127.0.0.1"` |  |
-| probes.rediness.spec.initialDelaySeconds | int | `30` |  |
+| probes.readiness.custom | bool | `true` |  |
+| probes.readiness.enabled | bool | `true` |  |
+| probes.readiness.spec.exec.command[0] | string | `"mc-monitor"` |  |
+| probes.readiness.spec.exec.command[1] | string | `"status-bedrock"` |  |
+| probes.readiness.spec.exec.command[2] | string | `"--host"` |  |
+| probes.readiness.spec.exec.command[3] | string | `"127.0.0.1"` |  |
+| probes.readiness.spec.initialDelaySeconds | int | `30` |  |
 | probes.startup.enabled | bool | `false` |  |
 | service | object | See values.yaml | Configures service settings for the chart. |
 
