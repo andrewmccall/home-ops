@@ -35,7 +35,7 @@ persistence:
 probes:
   startup:
     enabled: false
-  rediness:
+  readiness:
     enabled: true
     custom: true
     spec:
