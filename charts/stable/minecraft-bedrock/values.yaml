@@ -19,7 +19,7 @@ service:
   main:
     ports:
       http:
-        enabled: "false"
+        enabled: false
       server:
         enabled: true
         port: 19132
