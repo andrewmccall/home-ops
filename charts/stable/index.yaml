@@ -158,6 +158,28 @@ entries:
   minecraft-bedrock-server:
   - apiVersion: v2
     appVersion: v1.19.51
+    created: "2023-01-01T23:08:54.993996053Z"
+    dependencies:
+    - name: common
+      repository: https://home-ops.andrewmccall.com/charts/library/
+      version: 1.0.1
+    description: Minecraft Bedrock Server
+    digest: dfb5e14f14b3c02d430abde51a61024d4cc4227693d0d548d03988bcf3179a08
+    home: https://github.com/andrewmccall/home-ops/tree/master/charts/stable/minecraft-bedrock-server
+    keywords:
+    - minecraft
+    - game
+    maintainers:
+    - email: andrew@andrewmccall.com
+      name: Andrew McCall
+    name: minecraft-bedrock-server
+    sources:
+    - https://github.com/itzg/
+    urls:
+    - https://github.com/andrewmccall/home-ops/releases/download/minecraft-bedrock-server-0.11.7/minecraft-bedrock-server-0.11.7.tgz
+    version: 0.11.7
+  - apiVersion: v2
+    appVersion: v1.19.51
     created: "2023-01-01T22:46:22.24848915Z"
     dependencies:
     - name: common
@@ -348,4 +370,4 @@ entries:
     urls:
     - https://github.com/andrewmccall/home-ops/releases/download/unifi-0.0.10/unifi-0.0.10.tgz
     version: 0.0.10
-generated: "2023-01-01T22:46:22.248624552Z"
+generated: "2023-01-01T23:08:54.994198356Z"
