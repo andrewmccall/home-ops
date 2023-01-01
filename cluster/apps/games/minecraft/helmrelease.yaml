@@ -28,5 +28,6 @@ spec:
           - ${MINECRAFT_IP}
         externalTrafficPolicy: Local
     persistence:
-      enabled: true
-      existingClaim: minecraft-pvc
+      config:
+        enabled: true
+        existingClaim: minecraft-pvc
