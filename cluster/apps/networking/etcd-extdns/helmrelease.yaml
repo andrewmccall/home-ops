@@ -19,7 +19,6 @@ spec:
     auth:
       rbac:
         create: false
-    clusterDomain: ${CLUSTER_DOMAIN}
     persistence:
       enabled: false
     metrics:
