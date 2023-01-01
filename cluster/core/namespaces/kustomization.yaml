@@ -5,3 +5,4 @@ resources:
   - kyverno.yaml
   - networking.yaml
   - monitoring.yaml
+  - games.yaml
