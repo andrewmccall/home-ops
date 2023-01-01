@@ -30,4 +30,4 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: minecraft-pvc
+        existingClaim: minecraft-bedrock-pvc
