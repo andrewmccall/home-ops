@@ -24,11 +24,6 @@ spec:
         externalIPs:
           - ${MINECRAFT_IP}
         externalTrafficPolicy: Local
-        ports:
-        server:
-          enabled: true
-          port: 19132
-          protocol: UDP
     persistence:
       config:
         enabled: true
