@@ -10,7 +10,7 @@ spec:
     spec:
       chart: minecraft-bedrock-server
       # renovate: datasource=helm registryUrl=https://home-ops.andrewmccall.com/charts/stable chart=minecraft-bedrock-server
-      version: 0.11.7
+      version: 0.11.8
       sourceRef:
         kind: HelmRepository
         name: home-ops
@@ -32,4 +32,4 @@ spec:
     minecraftServer:
       eula: "TRUE"
       serverName: "home server"
-      ops: "2535422346066711"
+      ops: ${MINECRAFT_OPS}
