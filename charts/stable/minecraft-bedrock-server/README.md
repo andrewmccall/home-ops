@@ -1,6 +1,6 @@
 # minecraft-bedrock-server
 
-![Version: 0.11.7](https://img.shields.io/badge/Version-0.11.7-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
+![Version: 0.11.8](https://img.shields.io/badge/Version-0.11.8-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
 
 Minecraft Bedrock Server
 
@@ -39,6 +39,28 @@ Read through the [values.yaml](./values.yaml) file. It has several commented out
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy |
 | image.repository | string | `"itzg/minecraft-bedrock-server"` | image repository |
 | image.tag | string | `"latest"` |  |
+| minecraftServer.cheats | bool | `false` |  |
+| minecraftServer.defaultPermission | string | `"member"` |  |
+| minecraftServer.difficulty | string | `"normal"` |  |
+| minecraftServer.eula | string | `"FALSE"` |  |
+| minecraftServer.gameMode | string | `"survival"` |  |
+| minecraftServer.levelName | string | `"level"` |  |
+| minecraftServer.levelSeed | string | `nil` |  |
+| minecraftServer.levelType | string | `"DEFAULT"` |  |
+| minecraftServer.maxPlayers | int | `10` |  |
+| minecraftServer.maxThreads | int | `8` |  |
+| minecraftServer.members | string | `nil` |  |
+| minecraftServer.onlineMode | bool | `true` |  |
+| minecraftServer.ops | string | `nil` |  |
+| minecraftServer.playerIdleTimeout | int | `0` |  |
+| minecraftServer.serverName | string | `"Dedicated Server"` |  |
+| minecraftServer.texturepackRequired | bool | `false` |  |
+| minecraftServer.tickDistance | int | `4` |  |
+| minecraftServer.version | string | `"LATEST"` |  |
+| minecraftServer.viewDistance | int | `10` |  |
+| minecraftServer.visitors | string | `nil` |  |
+| minecraftServer.whitelist | string | `nil` |  |
+| minecraftServer.whitelistUsers | string | `nil` |  |
 | persistence | object | See values.yaml | Configure persistence settings for the chart under this key. |
 | probes.liveness.custom | bool | `true` |  |
 | probes.liveness.enabled | bool | `true` |  |
