@@ -33,3 +33,4 @@ spec:
       eula: "TRUE"
       serverName: "home server"
       ops: ${MINECRAFT_OPS}
+      difficulty: normal
