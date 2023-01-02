@@ -31,4 +31,5 @@ spec:
 
     minecraftServer:
       eula: "TRUE"
-      serverName: "Dig!!"
+      serverName: "home server"
+      ops: "2535422346066711"
