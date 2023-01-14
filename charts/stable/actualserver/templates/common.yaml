@@ -1,0 +1,4 @@
+{{- include "common.values.setup" . }}
+
+{{/* Render the templates */}}
+{{ include "common.all" . }}
