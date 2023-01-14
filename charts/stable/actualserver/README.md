@@ -1,10 +1,12 @@
 # actualserver
 
-Actual Server
+![Version: 0.0.9](https://img.shields.io/badge/Version-0.0.9-informational?style=flat-square) ![AppVersion: v23.1.12](https://img.shields.io/badge/AppVersion-v23.1.12-informational?style=flat-square)
+
+Actual server
 
 ## Source Code
 
-* 
+* <https://github.com/actualbudget/actual-server>
 
 ## Requirements
 
@@ -36,24 +38,10 @@ Read through the [values.yaml](./values.yaml) file. It has several commented out
 |-----|------|---------|-------------|
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy |
 | image.repository | string | `"jlongster/actual-server"` | image repository |
-| image.tag | string | `"latest"` |  |
+| image.tag | string | `"23.1.12"` |  |
 | persistence | object | See values.yaml | Configure persistence settings for the chart under this key. |
-| probes.liveness.custom | bool | `true` |  |
-| probes.liveness.enabled | bool | `true` |  |
-| probes.liveness.spec.exec.command[0] | string | `"mc-monitor"` |  |
-| probes.liveness.spec.exec.command[1] | string | `"status-bedrock"` |  |
-| probes.liveness.spec.exec.command[2] | string | `"--host"` |  |
-| probes.liveness.spec.exec.command[3] | string | `"127.0.0.1"` |  |
-| probes.liveness.spec.initialDelaySeconds | int | `30` |  |
-| probes.readiness.custom | bool | `true` |  |
-| probes.readiness.enabled | bool | `true` |  |
-| probes.readiness.spec.exec.command[0] | string | `"mc-monitor"` |  |
-| probes.readiness.spec.exec.command[1] | string | `"status-bedrock"` |  |
-| probes.readiness.spec.exec.command[2] | string | `"--host"` |  |
-| probes.readiness.spec.exec.command[3] | string | `"127.0.0.1"` |  |
-| probes.readiness.spec.initialDelaySeconds | int | `30` |  |
-| probes.startup.enabled | bool | `false` |  |
 | service | object | See values.yaml | Configures service settings for the chart. |
+| service.main.ports.http | object | See values.yaml | Configure Web interface + API port |
 
 ## Changelog
 
@@ -63,7 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### [1.0.0]
 
-Intial chart for jlongster/actual-server
+Initial release of chart
 
 #### Added
 
