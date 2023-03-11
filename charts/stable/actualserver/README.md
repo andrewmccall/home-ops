@@ -38,7 +38,7 @@ Read through the [values.yaml](./values.yaml) file. It has several commented out
 |-----|------|---------|-------------|
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy |
 | image.repository | string | `"jlongster/actual-server"` | image repository |
-| image.tag | string | `"23.1.12"` |  |
+| image.tag | string | `"23.3.1"` |  |
 | persistence | object | See values.yaml | Configure persistence settings for the chart under this key. |
 | service | object | See values.yaml | Configures service settings for the chart. |
 | service.main.ports.http | object | See values.yaml | Configure Web interface + API port |
