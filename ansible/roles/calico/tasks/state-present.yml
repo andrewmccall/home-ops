@@ -1,7 +1,7 @@
 ---
 - name: download tigera operator manifest
   get_url:
-    url: https://docs.projectcalico.org/manifests/tigera-operator.yaml
+    url: https://raw.githubusercontent.com/projectcalico/calico/master/manifests/tigera-operator.yaml
     dest: /tmp/tigera-operator.yaml
     mode: '0664'
   run_once: yes
