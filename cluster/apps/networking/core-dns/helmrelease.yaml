@@ -17,7 +17,7 @@ spec:
         namespace: flux-system
   values:
     replicaCount: 1
-    isClusterService: true
+    isClusterService: false
     serviceAccount:
       create: true
     serviceType: LoadBalancer
