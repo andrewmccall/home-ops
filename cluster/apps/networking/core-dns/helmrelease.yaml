@@ -59,25 +59,6 @@ spec:
               fallthrough
               path /skydns
               endpoint http://${ETCD_EXTDNS_IP}:2379
-          - name: kubernetes
-            parameters: ${CLUSTER_DOMAIN}.${DOMAIN}
-            configBlock: |-
-              pods insecure
-              ttl 30
-          - name: file
-            parameters: /etc/coredns/home.db ${DOMAIN}
-          - name: prometheus
-            parameters: 0.0.0.0:9153
-          - name: forward
-            parameters: . 10.0.0.1:53
-          - name: cache
-          - name: loop
-          - name: reload
-    prometheus:
-      service:
-        enabled: true
-      monitor:
-        enabled: true
     affinity:
       podAntiAffinity:
         requiredDuringSchedulingIgnoredDuringExecution:
