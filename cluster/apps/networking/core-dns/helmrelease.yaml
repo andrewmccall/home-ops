@@ -25,14 +25,6 @@ spec:
       externalIPs:
         - ${COREDNS_IP}
       externalTrafficPolicy: Local
-    zoneFiles:
-      - filename: home.db
-        domain: ${DOMAIN}
-        contents: |
-          $TTL 300 ;
-          ${DOMAIN}.          IN SOA    ns.${DOMAIN}. hostmaster.${DOMAIN}. 2021072001 7200 1800 86400 30
-          ns.${DOMAIN}.       IN A      ${COREDNS_IP}
-          vecna.${DOMAIN}.    IN A      10.0.0.250
     servers:
       # only 1 protocol per port so scheme is required here to limit to udp
       # feature gate MixedProtocolLBService allows multi-protocol per port
@@ -58,8 +50,10 @@ spec:
               fallthrough
               path /skydns
               endpoint http://${ETCD_EXTDNS_IP}:2379
-          - name: file
-            parameters: /etc/coredns/home.db
+          - name: hosts
+            configBlock: |-
+              10.0.0.250 vecna vecna.${DOMAIN}
+              fallthrough
     resources:
       requests:
         cpu: 100m
