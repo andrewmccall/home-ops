@@ -16,6 +16,7 @@ spec:
         name: bitnami
         namespace: flux-system
   values:
+    logLevel: "debug"
     auth:
       rbac:
         create: false
