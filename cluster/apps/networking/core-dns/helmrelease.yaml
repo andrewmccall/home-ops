@@ -58,20 +58,6 @@ spec:
               fallthrough
               path /skydns
               endpoint http://${ETCD_EXTDNS_IP}:2379
-    affinity:
-      podAntiAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          - labelSelector:
-              matchExpressions:
-                - key: app.kubernetes.io/name
-                  operator: In
-                  values:
-                    - coredns
-                - key: app.kubernetes.io/instance
-                  operator: In
-                  values:
-                    - coredns
-            topologyKey: kubernetes.io/hostname
     resources:
       requests:
         cpu: 100m
