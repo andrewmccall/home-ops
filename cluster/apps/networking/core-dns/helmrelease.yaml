@@ -59,7 +59,7 @@ spec:
               path /skydns
               endpoint http://${ETCD_EXTDNS_IP}:2379
           - name: file
-            parameters: /etc/coredns/home.db ${DOMAIN}
+            parameters: /etc/coredns/home.db
     resources:
       requests:
         cpu: 100m
