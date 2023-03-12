@@ -20,7 +20,7 @@ spec:
     provider: coredns
     env:
       - name: ETCD_URLS
-        value: http://etcd-extdns:2379
+        value: http://${ETCD_EXTDNS_IP}:2379
     policy: sync
     resources:
       requests:
