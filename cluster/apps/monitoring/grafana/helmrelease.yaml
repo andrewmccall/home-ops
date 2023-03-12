@@ -44,11 +44,9 @@ spec:
         external-dns.home.arpa/enabled: "true"
         cert-manager.home.arpa/enabled: "true"
         auth.home.arpa/enabled: "true"
-      hosts:
-        - &host grafana.${DOMAIN}
       tls:
         - hosts:
-            - *host
+            - grafana.${DOMAIN}
           secretName: grafana-tls
     persistence:
       enabled: true
