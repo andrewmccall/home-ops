@@ -58,6 +58,8 @@ spec:
               fallthrough
               path /skydns
               endpoint http://${ETCD_EXTDNS_IP}:2379
+          - name: file
+            parameters: /etc/coredns/home.db ${DOMAIN}
     resources:
       requests:
         cpu: 100m
