@@ -54,7 +54,6 @@ spec:
               lameduck 5s
           - name: ready
           - name: etcd
-            parameters: ${DOMAIN}
             configBlock: |-
               fallthrough
               path /skydns
