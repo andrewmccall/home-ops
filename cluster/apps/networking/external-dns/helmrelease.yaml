@@ -16,15 +16,12 @@ spec:
         name: external-dns
         namespace: flux-system
   values:
+    logLevel: debug
     provider: coredns
     env:
       - name: ETCD_URLS
         value: http://etcd-extdns:2379
     policy: sync
-    domainFilters:
-      - ${DOMAIN}
-    serviceMonitor:
-      enabled: true
     resources:
       requests:
         cpu: 50m
