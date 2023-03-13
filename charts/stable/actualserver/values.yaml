@@ -9,7 +9,7 @@ image:
   # -- image repository
   repository: jlongster/actual-server
   # @default -- chart.appVersion
-  tag: 23.3.1
+  tag: 23.3.2
   # -- image pull policy
   pullPolicy: IfNotPresent
 
