@@ -14,7 +14,7 @@ Minecraft Bedrock Server
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://home-ops.andrewmccall.com/charts/library/ | common | 1.0.1 |
+| https://home-ops.andrewmccall.com/charts/library/ | common | 1.0.2 |
 
 ## Installing the Chart
 
