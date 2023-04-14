@@ -16,4 +16,4 @@ maintainers:
 dependencies:
   - name: common
     repository: https://home-ops.andrewmccall.com/charts/library/
-    version: 1.0.1
+    version: 1.0.2
