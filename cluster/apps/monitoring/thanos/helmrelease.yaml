@@ -10,7 +10,7 @@ spec:
     spec:
       chart: thanos
       # renovate: datasource=helm registryUrl=https://charts.bitnami.com/bitnami chart=thanos
-      version: 12.4.2
+      version: 12.8.0
       sourceRef:
         kind: HelmRepository
         name: bitnami
