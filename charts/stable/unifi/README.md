@@ -14,7 +14,7 @@ Ubiquiti Network's Unifi Controller
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | mongodb | 13.9.4 |
+| https://charts.bitnami.com/bitnami | mongodb | 13.16.3 |
 | https://home-ops.andrewmccall.com/charts/library/ | common | 1.0.2 |
 
 ## Installing the Chart
