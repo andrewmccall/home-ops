@@ -1,0 +1,127 @@
+---
+- name: Include common role
+  ansible.builtin.include_role:
+    name: 3dprinter/common
+
+# prereqs
+# https://github.com/Klipper3d/klipper/blob/master/scripts/install-octopi.sh
+# TODO split this out based on platform
+- name: Install packages (ubuntu/debian)
+  ansible.builtin.apt:
+    pkg:
+      - build-essential
+      - python3-virtualenv
+      - python3-dev
+      - libffi-dev
+      - libncurses-dev
+      - git
+      - libusb-dev
+      - avrdude 
+      - gcc-avr 
+      - binutils-avr 
+      - avr-libc
+      - stm32flash 
+      - dfu-util 
+      - libnewlib-arm-none-eabi
+      - gcc-arm-none-eabi 
+      - binutils-arm-none-eabi 
+      - libusb-1.0-0
+
+- name: Create directory structure
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ user_config.username }}"
+    group: "{{ user_config.group }}"
+    mode: "775"
+  loop:
+    - "{{ base_dir }}"
+    - "{{ base_dir }}/data/config"
+    - "{{ base_dir }}/klipper"
+    - "{{ base_dir }}/config"
+    - "{{ log_config.filename | dirname }}"
+
+- name: Clone klipper repo
+  ansible.builtin.git: # noqa latest
+    repo: "{{ repo_path }}"
+    dest: "{{ base_dir }}/klipper/repo"
+    update: true
+  become: true
+  become_user: "{{ user_config.username }}"
+
+- name: Create virtualenv
+  ansible.builtin.pip:
+    virtualenv: "{{ base_dir }}/klipper/venv"
+    requirements: "{{ base_dir }}/klipper/repo/scripts/klippy-requirements.txt"
+  become: true
+  become_user: "{{ user_config.username }}"
+
+- name: Check for base printer.cfg
+  ansible.builtin.stat:
+    path: "{{ base_dir }}/klipper/repo/config/{{ config.base_file }}"
+  when: "config.custom_file_path is not defined or not config.custom_file_path"
+  register: base_printer_cfg
+  tags:
+    - printer_cfg
+
+- name: Read base printer.cfg file
+  ansible.builtin.slurp:
+    src: "{{ base_printer_cfg.stat.path }}"
+  register: base_printer_cfg_raw
+  when:
+    - "config.custom_file_path is not defined or not config.custom_file_path"
+    - "base_printer_cfg.stat.exists"
+  tags:
+    - printer_cfg
+
+- name: Configure basic printer.cfg
+  ansible.builtin.template:
+    src: klipper.cfg.j2
+    dest: "{{ config_file }}"
+    mode: "644"
+    force: "{{ config.overwrite }}"
+  notify: Restart klipper
+  when:
+    - "config.custom_file_path is not defined or not config.custom_file_path"
+    - "base_printer_cfg.stat.exists"
+  tags:
+    - printer_cfg
+
+# FUTURE IMPROVEMENT: permit fetching file from a URL.
+- name: Setup custom printer.cfg
+  ansible.builtin.template:
+    src: "{{ config.custom_file_path }}"
+    dest: "{{ config_file }}"
+    mode: "644"
+    force: "{{ config.overwrite }}"
+  notify: Restart klipper
+  when: "config.custom_file_path is defined and config.custom_file_path"
+  tags:
+    - printer_cfg
+
+- name: Clone klipper_macros repo
+  ansible.builtin.git: # noqa latest
+    repo: "{{ macro_repo_path }}"
+    dest: "{{ base_dir }}/data/config/klipper-macros"
+    update: true
+  become: true
+  become_user: "{{ user_config.username }}"
+
+- name: Create systemd unit file
+  ansible.builtin.template:
+    src: klipper.service.j2
+    dest: /etc/systemd/system/klipper.service
+    mode: "644"
+  notify: Restart klipper
+
+- name: Enable systemd unit
+  ansible.builtin.systemd:
+    daemon_reload: true
+    enabled: true
+    name: klipper.service
+  notify: Restart klipper
+
+- name: Setup logrotate
+  ansible.builtin.include_role:
+    name: 3dprinter/common
+    tasks_from: logrotate

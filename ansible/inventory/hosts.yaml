@@ -4,3 +4,6 @@ kubernetes:
     master:
       hosts:
         vecna
+printer_3d:
+  hosts:
+    gond

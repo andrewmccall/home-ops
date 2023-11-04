@@ -1,0 +1,8 @@
+---
+nginx:
+  server_name: "_"
+
+webcam:
+  enabled: false
+
+config_repo: "https://github.com/fluidd-core/fluidd-config.git"

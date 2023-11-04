@@ -1,5 +1,5 @@
 ---
-- hosts: kubernetes
+- hosts: all
   vars:
     user: andrewmccall
     github_user: andrewmccall

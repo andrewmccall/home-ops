@@ -1,0 +1,12 @@
+---
+base_dir: "/opt/3dprinter"
+config_file: "/opt/3dprinter/data/config/printer.cfg"
+
+user_config:
+  username: "klipper"
+  group: "3dprinter"
+  additional_groups:
+    - dialout
+
+# /var/run/$service autocreated by systemd
+uds_path: "/var/run/klipper/klippy.socket"

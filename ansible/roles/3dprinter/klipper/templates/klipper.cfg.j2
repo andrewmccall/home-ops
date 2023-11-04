@@ -1,0 +1,15 @@
+{%- if config.custom_file_path or config.overwrite %}
+{{ ansible_managed }}
+{%- endif %}
+{{ base_printer_cfg_raw.content | b64decode }}
+{%- if config.extra_file %}
+{% include config.extra_file %}
+{%- endif %}
+
+{%- if virtual_sdcard_path %}
+# BEGIN {{ ansible_managed }}
+[virtual_sdcard]
+path: {{ virtual_sdcard_path }}
+on_error_gcode: CANCEL_PRINT
+# END {{ ansible_managed }}
+{%- endif %}

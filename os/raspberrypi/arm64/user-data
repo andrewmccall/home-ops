@@ -1,0 +1,49 @@
+#cloud-config
+
+# This is the user-data configuration file for cloud-init.The cloud-init documentation has more details:
+#
+# https://cloudinit.readthedocs.io/
+#
+
+fqdn: HOSTNAME.local
+
+users:
+  - default
+  - name: andrewmccall
+    gecos: Andrew McCall
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    ssh_import_id:
+      - gh:andrewmccall
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDLeBpFcFmHrNeTaTSaL44tZXYvYNpv3HBEJp6sBrDKn andrewmccall
+  - name: ansible
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    lock_passwd: true
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM8NL5vRJzCWYvUahdXkmya55Duubbyz9D20uT6i12GV andrewmccall@happy-adventure
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIANd6mx0yVpXjQNH401mB8GXz0u79oLpIfIY6/Ajg3+b andrewmccall@LeDesktop
+    
+# Enable password authesntication with the SSH daemon
+ssh_pwauth: false
+
+# Update packages
+package_update: true
+package_upgrade: true
+
+locale: en_GB
+
+## Install additional packages on first boot
+#packages:
+#- pwgen
+#- pastebinit
+#- [libpython2.7, 2.7.3-0ubuntu3.1]
+
+
+## Run arbitrary commands at rc.local like time
+#runcmd:
+#- [ ls, -l, / ]
+#- [ sh, -xc, "echo $(date) ': hello world!'" ]
+#- [ wget, "http://ubuntu.com", -O, /run/mydir/index.html ]

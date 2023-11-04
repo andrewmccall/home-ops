@@ -1,0 +1,103 @@
+---
+- name: Include common role
+  ansible.builtin.include_role:
+    name: 3dprinter/common
+
+# prereqs
+# TODO split this out based on platform
+- name: Install packages (ubuntu/debian)
+  ansible.builtin.apt:
+    pkg:
+      - nginx
+      - unzip
+
+- name: Create directory structure
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ user_config.username }}"
+    group: "{{ user_config.group }}"
+    mode: "775"
+  loop:
+    - "{{ base_dir }}"
+    - "{{ base_dir }}/fluidd"
+
+- name: ensure fluidd version file exists
+  copy:
+    content: "0"
+    dest: "{{ base_dir }}/fluidd/.version"
+    force: false
+    owner: "{{ user_config.username }}"
+    group: "{{ user_config.group }}"
+    mode: "775"
+
+- name: Get current fluidd version
+  ansible.builtin.slurp:
+    src: "{{ base_dir }}/fluidd/.version"
+  register: fluidd_current_version
+
+- name: Find latest fluidd release
+  community.general.github_release:
+    user: fluidd-core
+    repo: fluidd
+    action: latest_release
+  become: no
+  delegate_to: localhost
+  register: fluidd_latest_tag
+
+- name: Determine if fluidd needs to be upgraded
+  ansible.builtin.set_fact:
+    fluidd_needs_upgrade: "{{ (fluidd_current_version.content | b64decode) != fluidd_latest_tag.tag }}"
+
+- name: Create temp directory
+  ansible.builtin.tempfile:
+    state: directory
+  when: fluidd_needs_upgrade
+  register: fluidd_download_dir
+
+- name: Download latest fluidd release
+  ansible.builtin.get_url:
+    url: "https://github.com/fluidd-core/fluidd/releases/download/{{ fluidd_latest_tag.tag }}/fluidd.zip"
+    dest: "{{ fluidd_download_dir.path }}/fluidd.zip"
+    mode: "666"
+  when: fluidd_needs_upgrade
+
+- name: Unpack fluidd
+  ansible.builtin.unarchive:
+    src: "{{ fluidd_download_dir.path }}/fluidd.zip"
+    dest: "{{ base_dir }}/fluidd"
+    remote_src: true
+    owner: "{{ user_config.username }}"
+    group: "{{ user_config.group }}"
+  when: fluidd_needs_upgrade
+
+- name: Disable default nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload nginx
+
+- name: Configure nginx site
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/fluidd
+    mode: "644"
+    owner: root
+    group: root
+  notify: Reload nginx
+
+- name: Enable nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/fluidd
+    src: /etc/nginx/sites-available/fluidd
+    state: link
+  notify: Reload nginx
+
+# TODO maybe handle letsencrypt certs. or link out to recommended module
+# TODO webcam shenanigans more than on/off
+
+- name: Enable nginx systemd unit
+  ansible.builtin.systemd:
+    enabled: true
+    name: nginx.service
+  notify: Restart nginx

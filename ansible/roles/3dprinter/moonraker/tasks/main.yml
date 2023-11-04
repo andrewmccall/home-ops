@@ -1,0 +1,77 @@
+---
+- name: Include common role
+  ansible.builtin.include_role:
+    name: 3dprinter/common
+
+# prereqs
+# TODO split this out based on platform
+- name: Install packages (ubuntu/debian)
+  ansible.builtin.apt:
+    pkg:
+      - python3-virtualenv
+      - git
+      - libsodium23 # required for moonraker's auth component to load
+      - policykit-1
+
+- name: Create directory structure
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    owner: "{{ user_config.username }}"
+    group: "{{ user_config.group }}"
+    mode: "775"
+  loop:
+    - "{{ base_dir }}"
+    - "{{ base_dir }}/moonraker"
+    - "{{ base_dir }}/data"
+
+- name: Clone moonraker repo # noqa latest
+  ansible.builtin.git:
+    repo: "{{ repo_path }}"
+    dest: "{{ base_dir }}/moonraker/repo"
+    update: true
+  become: true
+  become_user: "{{ user_config.username }}"
+
+- name: Create virtualenv
+  ansible.builtin.pip:
+    virtualenv: "{{ base_dir }}/moonraker/venv"
+    requirements: "{{ base_dir }}/moonraker/repo/scripts/moonraker-requirements.txt"
+  become: true
+  become_user: "{{ user_config.username }}"
+
+- name: Create systemd unit file
+  ansible.builtin.template:
+    src: moonraker.service.j2
+    dest: /etc/systemd/system/moonraker.service
+    mode: "664"
+  notify: Restart moonraker
+
+- name: Enable systemd unit
+  ansible.builtin.systemd:
+    daemon_reload: true
+    enabled: true
+    state: started
+    name: moonraker.service
+  notify: Restart moonraker
+
+- name: Setup logrotate
+  ansible.builtin.include_role:
+    name: 3dprinter/common
+    tasks_from: logrotate
+
+- name: Configure moonraker
+  ansible.builtin.template:
+    src: moonraker.conf.j2
+    dest: "{{ moonraker.config_file }}"
+    owner: "{{ user_config.username }}"
+    group: "{{ user_config.group }}"
+    mode: "664"
+  notify: Restart moonraker
+# TODO moonraker polkit
+
+- name: Add moonraker polkit rules
+  ansible.builtin.command:
+    cmd: "{{ base_dir }}/moonraker/repo/scripts/set-policykit-rules.sh --root --disable-systemctl"
+    creates: /etc/polkit-1/localauthority/50-local.d/10-moonraker.pkla
+  notify: Restart moonraker

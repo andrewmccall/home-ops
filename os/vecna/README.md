@@ -4,7 +4,7 @@ This folder contains the base stuff needed to flash a drive and bring up an OS. 
 
 Network stuff encrupted with sops/age
 
-``` $ sops --age age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq vars.yaml > vars.enc.yaml ```
+``` $ sops --age age1evdn7cpxtushtz0rpdg6dnau3hgk4kcpwvjk2s4fnh0pat0n9pgsl0r48k vars.yaml > vars.enc.yaml ```
 
 
 # Booting servers
