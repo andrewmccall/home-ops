@@ -9,35 +9,46 @@
 
 set -e
 
-#hostname and device are required.
-hostname=$1
-device=$2
+
+TEMP=$(/usr/local/opt/gnu-getopt/bin/getopt -o 'f,d:,h:,v:' -l 'full,skipFlash,host:,device:,version:' \
+              -n 'test.sh' -- "$@")
+
+
+if [ $? != 0 ] ; then echo "Terminating..." >&2 ; exit 1 ; fi
+
+# Note the quotes around '$TEMP': they are essential!
+eval set -- "$TEMP"
+
+version=
+skipFlash=
+hostname=
+device=
+full=
+
+while true; do
+  case "$1" in
+    -v | --version ) version="$2"; shift 2 ;;
+    -h | --host ) hostname="$2"; shift 2 ;;
+    -d | --device ) device="$2"; shift 2 ;;
+    --skipFlash ) skipFlash=true; shift ;;
+    -f | --full ) full=true; shift ;;
+    * ) break ;;
+  esac
+done
+
 
 if [ -z $device ] || [ -z $hostname ]; then
-    echo "Usage: ./flash.sh <HOSTNAME> <DEVICE> [ARCH] [VERSION] "
+    echo "Usage: ./flash.sh --host <HOSTNAME> --device <DEVICE> [--version <VERSION>] [--skipFlash]"
     exit 1;
 fi;
 
-if [ ! -e /dev/$device ]; then
-    echo "No such device found: /dev/$device"
-    exit 1;
-fi;
-
-# Arch and version are optional.
-arch=$3
-version=$4
-
-if [ -z $arch ]; then
-    arch='arm64'
-fi;
-
-if [ ! -d $arch ]; then
-    echo "No such arch found: $arch"
+if [ ! -e $device ]; then
+    echo "No such device found: $device"
     exit 1;
 fi;
 
 if [ -z $version ]; then
-    version='22.04.3'
+    version='2023-10-10'
 fi;
 
 
@@ -45,49 +56,59 @@ workdir=/tmp/homeops
 
 mkdir -p $workdir/{images,mnt}/
 
-#Donwload image
-image="/tmp/homeops/images/ubuntu-server-$version-$arch.img"
-if [ ! -f $image ]; then
-    url="https://cdimage.ubuntu.com/releases/22.04/release/ubuntu-$version-preinstalled-server-arm64+raspi.img.xz"
-    echo "Fetching image $url"
-    curl $url --output $image
-fi;
+if [ ! "$skipFlash" = true ]; then
 
-filesize=$(xz -l /tmp/homeops/images/ubuntu-server-$version-$arch.img | tail -n -1 | awk '{print $5}' | sed 's/,//g' | sed 's/\.*//g')
+    #Donwload image
+    url="https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-$version/$version-raspios-bookworm-arm64-lite.img.xz"
+    image="/tmp/homeops/images/raspios_arm64-lite.img"
+    if [ "$full" = true  ]; then
+        url="https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-$version/$version-raspios-bookworm-arm64.img.xz"
+        image="/tmp/homeops/images/raspios_arm64.img"
+    fi;
+    
+    if [ ! -f $image ]; then
+        echo "Fetching image $url"
+        curl $url --output $image.xz
+    fi;
 
-filesize=$((filesize * 1024 * 1024 / 10))
+    echo "Decompressing image..."
+    xz -d $image.xz
+    
+    # do the flashinng.
+    echo "Flashing disk $device, with $image this may take a few minutes"
 
-# do the flashinng.
-echo "Unmounting and flashing disk /dev/$device, this may take a few minutes"
-diskutil unmountDisk /dev/$device
-xzcat $image | pv -s ${filesize} | dd of=/dev/$device bs=4m && sync
+    /Applications/Raspberry\ Pi\ Imager.app/Contents/MacOS/rpi-imager --cli  $image $device
 
-echo "SSD flashed."
-sleep 10;
+    echo "SSD flashed."
+    sleep 10;
 
-echo "Please remove and re-insert SSD."
-while [ ! -e /dev/$device ]; do
-    sleep 1;
-done
+    echo "Please remove and re-insert SSD."
+    while [ ! -e $device ]; do
+        sleep 1;
+    done
+fi; 
 
 # mount the disk
-echo "Remounting disk /dev/$device to $workdir/mnt"
-diskutil unmountDisk /dev/$device
-diskutil mount -mountPoint $workdir/mnt /dev/${device}s1 
+echo "Remounting disk $device to $workdir/mnt"
+diskutil unmountDisk $device
+diskutil mount -mountPoint $workdir/mnt ${device}s1 
 
 # copy the configs and set the hostname
 echo "Applying config"
 
-cp ./${arch}/* ${workdir}/mnt/
-sed -i '' "s/HOSTNAME/${hostname}/g" $workdir/mnt/user-data
+cp ./config/* ${workdir}/mnt/
+sed -i '' "s/NEW_HOSTNAME/${hostname}/g" $workdir/mnt/firstrun.sh
 
 dec=$(sops -d ../vars.enc.yaml)
 network_ssid=$(printf '%s' "$dec" | yq e ".network.ssid" -)
-network_password=$(printf '%s' "$dec" | yq e ".network.password" -)
+network_password=$(printf '%s' "$dec" | yq e ".network.psk" -)
+user_password=$(printf '%s' "$dec" | yq e ".user-pass" -)
 
-sed -i '' "s/network_ssid/${network_ssid}/g" $workdir/mnt/network-config
-sed -i '' "s/network_password/${network_password}/g" $workdir/mnt/network-config
+
+sed -i '' "s/NETWORK_SSID/${network_ssid}/g" $workdir/mnt/firstrun.sh
+sed -i '' "s/NETWORK_PSK/${network_password}/g" $workdir/mnt/firstrun.sh
+sed -i '' "s/USER_PASSWORD/${user_password}/g" $workdir/mnt/firstrun.sh
 
 # unmount the disk, so we can boot a pi. 
-diskutil unmountDisk /dev/$device
+diskutil unmountDisk $device
 echo "Disk imaged, you can remove the card."
