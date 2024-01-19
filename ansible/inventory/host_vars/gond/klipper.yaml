@@ -1,0 +1,3 @@
+config:
+  custom_file_path: 3dprinter/klipper/printer.cfg
+  overwrite: false

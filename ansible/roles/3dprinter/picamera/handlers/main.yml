@@ -1,7 +1,5 @@
----
-# handlers file for klipper
 
-- name: Restart klipper
-  ansible.builtin.systemd:
-    name: klipper
-    state: restarted
+- name: Restart Camera Service
+    service:
+      name: camera-streamer
+      state: restarted

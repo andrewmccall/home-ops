@@ -4,10 +4,15 @@
   ansible.builtin.apt:
     deb: "{{ camera_streamer_repo }}/camera-streamer-raspi_{{ camera_streamer_version }}.bookworm_arm64.deb"
 
-- name: Copy startup file
+- name: Copy systemd file
   ansible.builtin.copy:
-    src: /srv/myfiles/foo.conf
-    dest: /etc/foo.conf
-    owner: foo
-    group: foo
-    mode: '0644'
+    src: "{{ inventory_hostname }}/picamera/camera-streamer.service"
+    dest: /etc/systemd/system/camera-streamer.service
+    mode: "644"
+
+- name: Enable systemd unit
+  ansible.builtin.systemd:
+    daemon_reload: true
+    enabled: true
+    name: camera-streamer.service
+  notify: Restart Camera Service
