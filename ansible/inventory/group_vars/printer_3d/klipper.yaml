@@ -1,3 +1,0 @@
-config:
-  custom_file_path: klipper/printer.cfg
-  overwrite: false
