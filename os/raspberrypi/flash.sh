@@ -48,7 +48,7 @@ if [ ! -e $device ]; then
 fi;
 
 if [ -z $version ]; then
-    version='2023-10-10'
+    version='2023-12-11'
 fi;
 
 
