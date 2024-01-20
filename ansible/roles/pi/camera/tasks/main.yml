@@ -1,6 +1,21 @@
 ---
 
-- name: Install a .deb package from the internet
+- name: Install packages (ubuntu/debian)
+  ansible.builtin.apt:
+    pkg:
+      - libavcodec59 
+      - libavformat59
+      - libavutil57
+      - libbasicusageenvironment1
+      - libc6 (>= 2.34)
+      - libcamera0.1
+      - libgcc-s1
+      - libgroupsock8
+      - liblivemedia77
+      - libssl3
+      - libstdc++6
+
+- name: Install camera-streamer .deb
   ansible.builtin.apt:
     deb: "{{ camera_streamer_repo }}/{{ camera_streamer_version }}/camera-streamer-raspi_{{ camera_streamer_version }}.bookworm_arm64.deb"
 
