@@ -7,7 +7,7 @@
       - libavformat59
       - libavutil57
       - libbasicusageenvironment1
-      - libc6 (>= 2.34)
+      - libc6
       - libcamera0.1
       - libgcc-s1
       - libgroupsock8
