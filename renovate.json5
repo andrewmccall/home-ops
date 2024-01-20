@@ -45,7 +45,7 @@
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
-    }
+    },
     // datasource specific settings
     {
       "matchDatasources": ["helm"],
