@@ -69,10 +69,9 @@ if [ ! "$skipFlash" = true ]; then
     if [ ! -f $image ]; then
         echo "Fetching image $url"
         curl $url --output $image.xz
+        echo "Decompressing image..."
+        xz -d $image.xz
     fi;
-
-    echo "Decompressing image..."
-    xz -d $image.xz
     
     # do the flashinng.
     echo "Flashing disk $device, with $image this may take a few minutes"
