@@ -71,7 +71,10 @@
 # TODO moonraker polkit
 
 - name: Add moonraker polkit rules
-  ansible.builtin.command:
-    cmd: "{{ base_dir }}/moonraker/repo/scripts/set-policykit-rules.sh --root --disable-systemctl"
-    creates: /etc/polkit-1/localauthority/50-local.d/10-moonraker.pkla
+  ansible.builtin.template:
+    src: moonraker.rules.j2
+    dest: "/usr/share/polkit-1/rules.d/moonraker.rules"
+    owner: "{{ user_config.username }}"
+    group: "{{ user_config.group }}"
+    mode: "664"
   notify: Restart moonraker
