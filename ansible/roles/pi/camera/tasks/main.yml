@@ -15,13 +15,18 @@
       - libssl3
       - libstdc++6
 
+- name: Prints two lines of messages, but only if there is an environment value set
+  ansible.builtin.debug:
+    msg:
+    - "Getting packge '{{ camera_streamer_repo }}/v{{ camera_streamer_version }}/camera-streamer-raspi_{{ camera_streamer_version }}.bookworm_arm64.deb'"
+
 - name: Install camera-streamer .deb
   ansible.builtin.apt:
-    deb: "{{ camera_streamer_repo }}/{{ camera_streamer_version }}/camera-streamer-raspi_{{ camera_streamer_version }}.bookworm_arm64.deb"
+    deb: "{{ camera_streamer_repo }}/v{{ camera_streamer_version }}/camera-streamer-raspi_{{ camera_streamer_version }}.bookworm_arm64.deb"
 
 - name: Copy systemd file
   ansible.builtin.copy:
-    src: "{{ inventory_hostname }}/picamera/camera-streamer.service"
+    src: "{{ inventory_hostname }}/pi/camera/camera-streamer.service"
     dest: /etc/systemd/system/camera-streamer.service
     mode: "644"
 

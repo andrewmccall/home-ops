@@ -89,7 +89,7 @@
 
 # FUTURE IMPROVEMENT: permit fetching file from a URL.
 - name: Setup custom printer.cfg
-  ansible.builtin.template:
+  ansible.builtin.copy:
     src: "{{ inventory_hostname }}/{{ config.custom_file_path }}"
     dest: "{{ config_file }}"
     mode: "644"
