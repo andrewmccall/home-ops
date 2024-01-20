@@ -1,3 +1,4 @@
+# Based off the defaults from the top of the ender3 v2 printer config file.
 CONFIG_LOW_LEVEL_OPTIONS=y
 # CONFIG_MACH_AVR is not set
 # CONFIG_MACH_ATSAM is not set
