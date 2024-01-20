@@ -1,5 +1,0 @@
-
-- name: Restart Camera Service
-    service:
-      name: camera-streamer
-      state: restarted

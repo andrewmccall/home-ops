@@ -2,7 +2,7 @@
 
 - name: Install a .deb package from the internet
   ansible.builtin.apt:
-    deb: "{{ camera_streamer_repo }}/camera-streamer-raspi_{{ camera_streamer_version }}.bookworm_arm64.deb"
+    deb: "{{ camera_streamer_repo }}/{{ camera_streamer_version }}/camera-streamer-raspi_{{ camera_streamer_version }}.bookworm_arm64.deb"
 
 - name: Copy systemd file
   ansible.builtin.copy:

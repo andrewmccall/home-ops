@@ -9,4 +9,4 @@
 - import_playbook: cluster/cluster.yaml
 
 # Setup 3dprinter stuff
-- import_playbook: 3dprinter/printer_3d.yaml
+- import_playbook: 3dprinter.yaml
