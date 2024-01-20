@@ -72,6 +72,6 @@
 
 - name: Add moonraker polkit rules
   ansible.builtin.command:
-    cmd: "export USER={{ user_config.username }}; {{ base_dir }}/moonraker/repo/scripts/set-policykit-rules.sh --root --disable-systemctl"
+    cmd: "USER={{ user_config.username }} {{ base_dir }}/moonraker/repo/scripts/set-policykit-rules.sh --root --disable-systemctl"
     creates: /usr/share/polkit-1/rules.d/moonraker.rules
   notify: Restart moonraker
