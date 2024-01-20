@@ -16,15 +16,15 @@
       - libncurses-dev
       - git
       - libusb-dev
-      - avrdude 
-      - gcc-avr 
-      - binutils-avr 
+      - avrdude
+      - gcc-avr
+      - binutils-avr
       - avr-libc
-      - stm32flash 
-      - dfu-util 
+      - stm32flash
+      - dfu-util
       - libnewlib-arm-none-eabi
-      - gcc-arm-none-eabi 
-      - binutils-arm-none-eabi 
+      - gcc-arm-none-eabi
+      - binutils-arm-none-eabi
       - libusb-1.0-0
 
 - name: Create directory structure
@@ -90,7 +90,7 @@
 # FUTURE IMPROVEMENT: permit fetching file from a URL.
 - name: Setup custom printer.cfg
   ansible.builtin.copy:
-    src: "{{ inventory_hostname }}/{{ config.custom_file_path }}"
+    src: "{{ inventory_hostname }}/{{ config.custom_firmware_config_path }}"
     dest: "{{ config_file }}"
     mode: "644"
     force: "{{ config.overwrite }}"
@@ -98,6 +98,13 @@
   when: "config.custom_file_path is defined and config.custom_file_path"
   tags:
     - printer_cfg
+
+- name: Create firmware config
+  ansible.builtin.template:
+    src: klipper.service.j2
+    dest: "{{ base_dir }}/klipper/repo"
+    mode: "644"
+    force: "{{ config.overwrite }}"
 
 - name: Clone klipper_macros repo
   ansible.builtin.git: # noqa latest

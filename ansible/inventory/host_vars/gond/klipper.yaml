@@ -1,3 +1,4 @@
 config:
   custom_file_path: 3dprinter/klipper/printer.cfg
+  custom_firmware_config_path: 3dprinter/klipper/firmware_config
   overwrite: false
