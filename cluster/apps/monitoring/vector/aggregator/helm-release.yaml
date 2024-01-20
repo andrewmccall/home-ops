@@ -10,7 +10,7 @@ spec:
     spec:
       chart: vector
       # renovate: datasource=helm registryUrl=https://helm.vector.dev chart=vector
-      version: 0.24.0
+      version: 0.30.0
       sourceRef:
         kind: HelmRepository
         name: vector
