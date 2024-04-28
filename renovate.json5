@@ -41,12 +41,22 @@
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}{{#if (containsString datasource 'pypi')}}pep440{{else}}semver{{/if}}{{/if}}"
     }
   ],
+  "customDatasources": {
+    "minecraft": {
+      "defaultRegistryUrlTemplate": "https://mc-bds-helper.vercel.app/api/latest",
+      "format": "html"
+    }
+  }
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     },
     // datasource specific settings
+    {
+      "matchDatasources": ["custom.minecraft"],
+      "extractVersion": "/bedrock-server-(?<version>.+)\\.zip$"
+    },
     {
       "matchDatasources": ["helm"],
       "addLabels": ["renovate/helm"]

@@ -29,6 +29,7 @@ minecraftServer:
   # This must be overridden, since we can't accept this for the user.
   eula: "FALSE"
   # One of: LATEST, SNAPSHOT, or a specific version (ie: "1.7.9").
+  # renovate: datasource=custom.minecraft
   version: "LATEST"
   # One of: peaceful, easy, normal, and hard
   difficulty: normal
