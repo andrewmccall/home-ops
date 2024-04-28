@@ -17,7 +17,7 @@ jobs:
     steps:
     - name: Get token
       id: get-app-token
-      uses: getsentry/action-github-app-token@v2
+      uses: getsentry/action-github-app-token@d4b5da6c5e37703f8c3b3e43abb5705b46e159cc # v3
       with:
         app_id: ${{ secrets.HOME_OPS_APP_ID }}
         private_key: ${{ secrets.HOME_OPS_APP_PRIVATE_KEY }}
@@ -97,7 +97,7 @@ jobs:
     steps:
     - name: Get home-ops token
       id: get-app-token
-      uses: getsentry/action-github-app-token@v2
+      uses: getsentry/action-github-app-token@d4b5da6c5e37703f8c3b3e43abb5705b46e159cc # v3
       with:
         app_id: ${{ secrets.HOME_OPS_APP_ID }}
         private_key: ${{ secrets.HOME_OPS_APP_PRIVATE_KEY }}
