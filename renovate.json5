@@ -46,7 +46,7 @@
       "defaultRegistryUrlTemplate": "https://mc-bds-helper.vercel.app/api/latest",
       "format": "html"
     }
-  }
+  },
   "packageRules": [
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
