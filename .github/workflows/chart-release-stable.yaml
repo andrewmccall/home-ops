@@ -28,7 +28,7 @@ jobs:
         token: ${{ steps.get-app-token.outputs.token }}
         ref: ${{ github.ref }}
 
-    - uses: dorny/paths-filter@v2
+    - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
       id: filter
       with:
         base: ${{ github.ref }}
