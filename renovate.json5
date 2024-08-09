@@ -44,7 +44,7 @@
   "customDatasources": {
     "minecraft": {
       "defaultRegistryUrlTemplate": "https://mc-bds-helper.vercel.app/api/latest",
-      "format": "html"
+      "format": "plains"
     }
   },
   "packageRules": [
@@ -55,7 +55,7 @@
     // datasource specific settings
     {
       "matchDatasources": ["custom.minecraft"],
-      "extractVersion": "/bedrock-server-(?<version>.+)\\.zip$"
+      "extractVersion": "/(?<version>-+)(?<version>.+)\\.zip$"
     },
     {
       "matchDatasources": ["helm"],
