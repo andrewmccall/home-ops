@@ -91,7 +91,7 @@ service:
 | env.UNIFI_UID | string | `"999"` | Specify the user ID the application will run as |
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy |
 | image.repository | string | `"jacobalberty/unifi"` | image repository |
-| image.tag | string | `"8.3.32"` |  |
+| image.tag | string | `"v8.3.32"` |  |
 | ingress.main | object | See values.yaml | Enable and configure ingress settings for the chart under this key. |
 | ingress.portal | object | See values.yaml | Enable and configure settings for the captive portal ingress under this key. |
 | mongodb | object | See values.yaml | Enable and configure mongodb database subchart under this key.    For more options see [mongodb chart documentation](https://github.com/bitnami/charts/tree/master/bitnami/mongodb) |
