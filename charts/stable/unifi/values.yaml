@@ -9,7 +9,7 @@ image:
   # -- image repository
   repository: jacobalberty/unifi
   # @default -- chart.appVersion
-  tag: 8.3.32
+  tag: v8.3.32
   # -- image pull policy
   pullPolicy: IfNotPresent
 
