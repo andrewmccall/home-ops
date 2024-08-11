@@ -26,7 +26,7 @@ Install Flux
 flux bootstrap git \
   --url=ssh://git@github.com/andrewmccall/home-ops.git \
   --branch=main \
-  --private-key-file=/Users/andrewmccall/.ssh/id_ed25519 \
+  --private-key-file=../key \
   --path=cluster/flux-system/ \
   --cluster-domain=cluster.home.andrewmccall.com
 ```
