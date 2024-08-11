@@ -7,8 +7,8 @@ spec:
   # Secret names are always required.
   secretName: unifi-tls
   dnsNames:
-    - "unifi.${DOMAIN}"
+    - "unifi.home.andrewmccall.com"
   ipAddresses:
-    - ${UNIFI_IP}
+    - 10.44.0.3
   issuerRef:
     name: letsencrypt-production
