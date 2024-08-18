@@ -8,7 +8,6 @@ spec:
   secretName: unifi-tls
   dnsNames:
     - "unifi.home.andrewmccall.com"
-  ipAddresses:
-    - 10.44.0.3
   issuerRef:
     name: letsencrypt-production
+    kind: ClusterIssuer
