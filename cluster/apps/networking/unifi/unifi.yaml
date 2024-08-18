@@ -34,9 +34,8 @@ spec:
         size: 1Gi
       certs:
         enabled: true
-        name: certs
+        name: unifi-tls
         type: secret
-        secretName: unifi-tls
         mountPath: /unifi/cert
     env:
       CERTNAME: tls.crt
