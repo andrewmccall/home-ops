@@ -40,3 +40,4 @@ spec:
     env:
       CERTNAME: tls.crt
       CERT_PRIVATE_NAME: tls.key
+      CERT_IS_CHAIN: true
