@@ -10,7 +10,7 @@ spec:
     spec:
       chart: unifi
       # renovate: datasource=helm registryUrl=https://home-ops.andrewmccall.com/charts/stable chart=unifi
-      version: 1.0.3
+      version: 1.0.4
       sourceRef:
         kind: HelmRepository
         name: home-ops
@@ -32,3 +32,5 @@ spec:
         type: pvc
         accessMode: ReadWriteOnce
         size: 1Gi
+    
+
