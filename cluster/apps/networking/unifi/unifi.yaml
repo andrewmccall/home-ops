@@ -27,7 +27,7 @@ spec:
           - ${UNIFI_IP}
         externalTrafficPolicy: Local
     persistence:
-      config:
+      data:
         enabled: true
         type: pvc
         accessMode: ReadWriteOnce
@@ -41,3 +41,8 @@ spec:
       CERTNAME: tls.crt
       CERT_PRIVATE_NAME: tls.key
       CERT_IS_CHAIN: true
+  mongodb:
+    enabled: true
+    persistence:
+      enabled: true
+      size: 2Gi
