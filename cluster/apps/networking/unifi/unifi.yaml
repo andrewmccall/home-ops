@@ -40,10 +40,8 @@ spec:
         mountPath: /unifi/cert
       gatewayconfig:
         enabled: true
-        name: gateway-config
+        name: unifi-config-gateway
         type: configMap
-        configMap:
-          name: unifi-config-gateway
         mountPath: /unifi/data/sites/default/config.gateway.json
         subPath: config.gateway.json
     env:
