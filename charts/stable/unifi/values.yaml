@@ -144,5 +144,5 @@ mongodb:
     enabled: false
   persistence:
     enabled: true
-    # storageClass: ""
-    # size: 8Gi
+    storageClass: ""
+    size: 8Gi
