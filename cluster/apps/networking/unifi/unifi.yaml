@@ -37,7 +37,7 @@ spec:
         name: unifi-tls
         type: secret
         mountPath: /unifi/cert
-      config:
+      gateway-config:
         enabled: true
         name: config-gateway
         type: configmap
