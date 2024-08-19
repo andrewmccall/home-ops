@@ -11,7 +11,7 @@ data:
                     "64512": {
                         "neighbor": {
                             "10.0.0.250": {
-                                "remote-as": "64513"
+                                "remote-as": "64512"
                             }
                         },
                         "parameters": {
