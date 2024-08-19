@@ -32,6 +32,7 @@ spec:
         type: pvc
         accessMode: ReadWriteOnce
         size: 1Gi
+        mountPath: /unifi
       certs:
         enabled: true
         name: unifi-tls
