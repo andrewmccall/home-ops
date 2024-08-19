@@ -37,6 +37,11 @@ spec:
         name: unifi-tls
         type: secret
         mountPath: /unifi/cert
+      config:
+        enabled: true
+        name: config-gateway
+        type: configmap
+        mountPath: /unifi/data/sites/default/config.gateway.json
     env:
       CERTNAME: tls.crt
       CERT_PRIVATE_NAME: tls.key
