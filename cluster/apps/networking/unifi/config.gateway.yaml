@@ -1,10 +1,10 @@
 apiVersion: v1
- kind: ConfigMap
- metadata:
-   name: unifi-config-gateway
-   namespace: networking
- data:
-   config.gateway.json: |
+kind: ConfigMap
+metadata:
+    name: unifi-config-gateway
+    namespace: networking
+data:
+    config.gateway.json: |
         {  
             "protocols": {
                 "bgp": {
