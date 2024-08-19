@@ -131,18 +131,18 @@ ingress:
 # @default -- See values.yaml
 persistence:
   data:
-    enabled: false
+    enabled: true
     mountPath: /unifi
 
 # -- Enable and configure mongodb database subchart under this key.
 #    For more options see [mongodb chart documentation](https://github.com/bitnami/charts/tree/master/bitnami/mongodb)
 # @default -- See values.yaml
 mongodb:
-  enabled: false
+  enabled: true
   architecture: standalone
   auth:
     enabled: false
   persistence:
-    enabled: false
+    enabled: true
     # storageClass: ""
     # size: 8Gi
