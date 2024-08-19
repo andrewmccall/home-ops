@@ -131,7 +131,7 @@ ingress:
 # @default -- See values.yaml
 persistence:
   data:
-    enabled: true
+    enabled: false
     mountPath: /unifi
 
 # -- Enable and configure mongodb database subchart under this key.
