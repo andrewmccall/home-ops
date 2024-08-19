@@ -40,7 +40,7 @@ spec:
       gateway-config:
         enabled: true
         name: gateway-config
-        type: configmap
+        type: configMap
         configMap:
           name: unifi-config-gateway
         mountPath: /unifi/data/sites/default/config.gateway.json
