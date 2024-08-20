@@ -12,5 +12,4 @@ spec:
   commonName: ${DOMAIN}
   dnsNames:
     - "*.${DOMAIN}"
-    - "home-assistant.${DOMAIN}"
     - "${DOMAIN}"
