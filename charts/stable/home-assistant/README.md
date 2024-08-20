@@ -18,9 +18,9 @@ Kubernetes: `>=1.16.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | influxdb | 5.3.5 |
-| https://charts.bitnami.com/bitnami | mariadb | 11.0.14 |
-| https://charts.bitnami.com/bitnami | postgresql | 11.6.12 |
+| https://charts.bitnami.com/bitnami | influxdb | 5.3.12 |
+| https://charts.bitnami.com/bitnami | mariadb | 11.5.7 |
+| https://charts.bitnami.com/bitnami | postgresql | 11.6.26 |
 | https://library-charts.k8s-at-home.com | common | 4.5.2 |
 
 ## Installing the Chart
