@@ -1,6 +1,6 @@
 # home-assistant
 
-![Version: 13.4.2](https://img.shields.io/badge/Version-13.4.2-informational?style=flat-square) ![AppVersion: 2022.5.4](https://img.shields.io/badge/AppVersion-2022.5.4-informational?style=flat-square)
+![Version: 2024.8.1](https://img.shields.io/badge/Version-2024.8.1-informational?style=flat-square) ![AppVersion: 2024.8.1](https://img.shields.io/badge/AppVersion-2024.8.1-informational?style=flat-square)
 
 Home Assistant
 
@@ -120,7 +120,7 @@ endpoint in your Home-Assistant configuration. See the [official documentation](
 | env.TZ | string | `"UTC"` | Set the container timezone |
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy |
 | image.repository | string | `"ghcr.io/home-assistant/home-assistant"` | image repository |
-| image.tag | string | `nil` | image tag |
+| image.tag | string | chart.appVersion | image tag |
 | influxdb | object | See values.yaml | Enable and configure influxdb database subchart under this key.    For more options see [influxdb chart documentation](https://github.com/bitnami/charts/tree/master/bitnami/influxdb) |
 | ingress.main | object | See values.yaml | Enable and configure ingress settings for the chart under this key. |
 | mariadb | object | See values.yaml | Enable and configure mariadb database subchart under this key.    For more options see [mariadb chart documentation](https://github.com/bitnami/charts/tree/master/bitnami/mariadb) |
