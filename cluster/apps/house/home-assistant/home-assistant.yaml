@@ -18,13 +18,12 @@ spec:
   values:
     replicas: 1
     ingress:
-    main:
-      enabled: true
-      annotations:
-        nginx.org/websocket-services: home-assistant
-      hosts:
-        - host: home-assistant.example.org
-          paths:
-            - path: /
+      main:
+        enabled: true
+        annotations:
+          nginx.org/websocket-services: home-assistant
+        hosts:
+          - host: home-assistant.example.org
+            paths:
+              - path: /
       
-  
