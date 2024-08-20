@@ -6,3 +6,4 @@ resources:
   - networking.yaml
   - monitoring.yaml
   - games.yaml
+  - house.yaml
