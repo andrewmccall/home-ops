@@ -11,6 +11,6 @@ spec:
     kind: ClusterIssuer
   commonName: ${DOMAIN}
   dnsNames:
-    - "${DOMAIN}"
-    - "home-assistant.${DOMAIN}"
     - "*.${DOMAIN}"
+    - "home-assistant.${DOMAIN}"
+    - "${DOMAIN}"
