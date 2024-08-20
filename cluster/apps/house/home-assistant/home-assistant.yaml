@@ -23,7 +23,7 @@ spec:
         annotations:
           nginx.org/websocket-services: home-assistant
         hosts:
-          - host: home-assistant.example.org
+          - host: home-assistant.home.andrewmccall.com
             paths:
               - path: /
       
