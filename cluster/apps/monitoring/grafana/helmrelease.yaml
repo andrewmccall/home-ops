@@ -16,6 +16,7 @@ spec:
         name: grafana
         namespace: flux-system
   values:
+    replicas: 1
     env:
       VAR_BLOCKY_URL: "http://blocky.networking.svc.${CLUSTER_DOMAIN}:4000"
     adminPassword: ${GRAFANA_ADMIN_PASSWORD}
