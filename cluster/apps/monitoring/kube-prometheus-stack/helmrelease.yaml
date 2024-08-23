@@ -72,19 +72,12 @@ spec:
     prometheus:
       ingress:
         enabled: true
-        annotations:
-          external-dns.home.arpa/enabled: "true"
-          cert-manager.home.arpa/enabled: "true"
-          auth.home.arpa/enabled: "true"
         hosts:
-          - &host-prometheus prometheus.${DOMAIN}
+          - prometheus.${DOMAIN}
         paths:
           - /
         pathType: Prefix
-        tls:
-          - hosts:
-              - *host-prometheus
-            secretName: prometheus-tls
+        ingressClassName: "nginx"
       thanosService:
         enabled: true
       thanosServiceMonitor:
