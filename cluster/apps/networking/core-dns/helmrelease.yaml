@@ -65,7 +65,7 @@ spec:
           - name: prometheus
             parameters: 0.0.0.0:9153
           - name: forward
-            parameters: . tls://1.1.1.2:53
+            parameters: . 1.1.1.2:53
           - name: cache
           - name: loop
           - name: reload
