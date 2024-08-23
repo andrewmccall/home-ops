@@ -40,14 +40,10 @@ spec:
       enabled: true
     ingress:
       enabled: true
-      annotations:
-        external-dns.home.arpa/enabled: "true"
-        cert-manager.home.arpa/enabled: "true"
-        auth.home.arpa/enabled: "true"
-      tls:
-        - hosts:
-            - grafana.${DOMAIN}
-          secretName: grafana-tls
+      hosts:
+        - host: home-assistant.${DOMAIN}
+          paths:
+            - path: /
     persistence:
       enabled: true
       existingClaim: grafana-config

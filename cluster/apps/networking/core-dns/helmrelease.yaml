@@ -64,8 +64,9 @@ spec:
               endpoint http://${ETCD_EXTDNS_IP}:2379
           - name: prometheus
             parameters: 0.0.0.0:9153
+          - name: tls
           - name: forward
-            parameters: . 10.0.0.1:53
+            parameters: . tls://1.1.1.2:53
           - name: cache
           - name: loop
           - name: reload
