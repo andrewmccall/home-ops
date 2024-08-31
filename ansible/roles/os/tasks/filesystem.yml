@@ -38,3 +38,11 @@
       loop:
         - swap
         - none
+- name: filesystem | extend lv
+  lvol:
+    vg: ubuntu-vg
+    lv: ubuntu-lv
+    size: +100%FREE
+    resizefs: yes
+  when: "'kubernetes' in group_names"
+
