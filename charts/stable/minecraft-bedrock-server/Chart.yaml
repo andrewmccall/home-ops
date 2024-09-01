@@ -3,7 +3,7 @@ apiVersion: v2
 appVersion: v1.19.51
 description: Minecraft Bedrock Server
 name: minecraft-bedrock-server
-version: 0.11.9
+version: 0.11.10
 keywords:
   - minecraft
   - game
@@ -16,4 +16,4 @@ maintainers:
 dependencies:
   - name: common
     repository: https://home-ops.andrewmccall.com/charts/library/
-    version: 1.0.2
+    version: 1.0.3

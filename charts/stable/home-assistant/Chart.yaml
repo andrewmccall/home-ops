@@ -3,7 +3,7 @@ apiVersion: v2
 appVersion: 2024.8.3
 description: Home Assistant
 name: home-assistant
-version: 2024.8.3.1
+version: 2024.8.3.2
 kubeVersion: ">=1.16.0-0"
 keywords:
   - home-assistant
@@ -20,8 +20,8 @@ maintainers:
     email: jeff@billimek.com
 dependencies:
   - name: common
-    repository: https://library-charts.k8s-at-home.com
-    version: 4.5.2
+    repository: https://home-ops.andrewmccall.com/charts/library/
+    version: 1.0.3
   - name: postgresql
     version: 11.9.13
     repository: https://charts.bitnami.com/bitnami
