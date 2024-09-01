@@ -16,6 +16,7 @@ spec:
         name: kyverno
         namespace: flux-system
   values:
+    upgrade.fromV2: true
     crds:
       install: false
     admissionController:
