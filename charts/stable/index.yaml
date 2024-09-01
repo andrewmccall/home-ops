@@ -485,6 +485,28 @@ entries:
     urls:
     - https://github.com/andrewmccall/home-ops/releases/download/minecraft-bedrock-server-0.11.2/minecraft-bedrock-server-0.11.2.tgz
     version: 0.11.2
+  mosquitto:
+  - apiVersion: v2
+    appVersion: 2.0.18
+    created: "2024-09-01T15:31:26.663722184Z"
+    dependencies:
+    - name: common
+      repository: https://home-ops.andrewmccall.com/charts/library/
+      version: 1.0.2
+    description: Eclipse Mosquitto - An open source MQTT broker
+    digest: 6551d73a1c5e9d2109ec14e1863810e6b7f661f43b59d258728543602b5177e6
+    icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+    keywords:
+    - mosquitto
+    - MQTT
+    - eclipse-iot
+    kubeVersion: '>=1.16.0-0'
+    name: mosquitto
+    sources:
+    - https://github.com/eclipse/mosquitto
+    urls:
+    - https://github.com/andrewmccall/home-ops/releases/download/mosquitto-1.0.0/mosquitto-1.0.0.tgz
+    version: 1.0.0
   unifi:
   - apiVersion: v2
     appVersion: v8.3.32
@@ -648,4 +670,4 @@ entries:
     urls:
     - https://github.com/andrewmccall/home-ops/releases/download/unifi-0.0.10/unifi-0.0.10.tgz
     version: 0.0.10
-generated: "2024-09-01T14:21:48.469642221Z"
+generated: "2024-09-01T15:31:26.663782888Z"
