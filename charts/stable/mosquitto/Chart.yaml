@@ -1,0 +1,18 @@
+---
+apiVersion: v2
+appVersion: 2.0.18
+description: Eclipse Mosquitto - An open source MQTT broker
+name: mosquitto
+version: 1.0.0
+kubeVersion: ">=1.16.0-0"
+keywords:
+  - mosquitto
+  - MQTT
+  - eclipse-iot
+icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+sources:
+  - https://github.com/eclipse/mosquitto
+dependencies:
+  - name: common
+    repository: https://home-ops.andrewmccall.com/charts/library/
+    version: 1.0.2
