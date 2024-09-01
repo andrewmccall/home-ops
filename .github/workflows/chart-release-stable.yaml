@@ -123,7 +123,6 @@ jobs:
       uses: helm/chart-releaser-action@v1.6.0
       with:
         charts_dir: charts/stable
-        charts_repo_url: https://home-ops.andrewmccall.com
       env:
         CR_TOKEN: "${{ steps.get-app-token.outputs.token }}"
         CR_SKIP_EXISTING: "true"
