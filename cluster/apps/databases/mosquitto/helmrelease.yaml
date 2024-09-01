@@ -2,14 +2,14 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: mosquito
+  name: mosquitto
   namespace: databases
 spec:
   interval: 10m
   chart:
     spec:
-      chart: mosquito
-      # renovate: datasource=helm registryUrl=https://home-ops.andrewmccall.com/charts/stable chart=mosquito
+      chart: mosquitto
+      # renovate: datasource=helm registryUrl=https://home-ops.andrewmccall.com/charts/stable chart=mosquitto
       version: 1.0.0
       sourceRef:
         kind: HelmRepository
