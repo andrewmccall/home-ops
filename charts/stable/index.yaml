@@ -786,6 +786,28 @@ entries:
   zigbee2mqtt:
   - apiVersion: v2
     appVersion: 1.19.1
+    created: "2024-09-01T21:27:18.76970711Z"
+    dependencies:
+    - name: common
+      repository: https://home-ops.andrewmccall.com/charts/library/
+      version: 1.0.3
+    description: Bridges events and allows you to control your Zigbee devices via
+      MQTT
+    digest: 647563b2679d35da52349b1e9a3c1f02089028f8d9a204d0bc8bddd75cfb07c4
+    icon: https://www.zigbee2mqtt.io/images/logo.png
+    keywords:
+    - zigbee
+    - mqtt
+    - home-assistant
+    kubeVersion: '>=1.16.0-0'
+    name: zigbee2mqtt
+    sources:
+    - https://github.com/Koenkk/zigbee2mqtt
+    urls:
+    - https://github.com/andrewmccall/home-ops/releases/download/zigbee2mqtt-9.4.4/zigbee2mqtt-9.4.4.tgz
+    version: 9.4.4
+  - apiVersion: v2
+    appVersion: 1.19.1
     created: "2024-09-01T21:00:52.786232289Z"
     dependencies:
     - name: common
@@ -828,4 +850,4 @@ entries:
     urls:
     - https://github.com/andrewmccall/home-ops/releases/download/zigbee2mqtt-9.4.2/zigbee2mqtt-9.4.2.tgz
     version: 9.4.2
-generated: "2024-09-01T21:00:52.78629196Z"
+generated: "2024-09-01T21:27:18.769778143Z"
