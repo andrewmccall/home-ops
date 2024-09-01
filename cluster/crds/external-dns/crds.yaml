@@ -8,8 +8,7 @@ spec:
   interval: 30m
   url: https://github.com/kubernetes-sigs/external-dns.git
   ref:
-    # renovate: datasource=github-releases repos=kubernetes-sigs/external-dns
-    tag: v0.14.2
+    branch: master
   ignore: |
     # exclude all
     /*
