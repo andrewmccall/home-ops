@@ -30,6 +30,49 @@ entries:
           description: Upgraded `common` chart dependency to version 4.5.2
     apiVersion: v2
     appVersion: 2024.8.3
+    created: "2024-09-01T19:24:55.030287733Z"
+    dependencies:
+    - name: common
+      repository: https://home-ops.andrewmccall.com/charts/library/
+      version: 1.0.3
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.9.13
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 19.0.5
+    - condition: influxdb.enabled
+      name: influxdb
+      repository: https://charts.bitnami.com/bitnami
+      version: 6.3.18
+    description: Home Assistant
+    digest: 96ae9b1dd2667399b6e86a1a9f8a460f329587ae5fe11b29f843eebd6f857cd9
+    home: https://github.com/k8s-at-home/charts/tree/master/charts/stable/home-assistant
+    icon: https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Home_Assistant_Logo.svg/519px-Home_Assistant_Logo.svg.png
+    keywords:
+    - home-assistant
+    - hass
+    - homeassistant
+    kubeVersion: '>=1.16.0-0'
+    maintainers:
+    - email: jeff@billimek.com
+      name: billimek
+    name: home-assistant
+    sources:
+    - https://github.com/home-assistant/home-assistant
+    - https://github.com/cdr/code-server
+    - https://github.com/k8s-at-home/charts/tree/master/charts/stable/home-assistant
+    urls:
+    - https://github.com/andrewmccall/home-ops/releases/download/home-assistant-2024.8.302/home-assistant-2024.8.302.tgz
+    version: 2024.8.302
+  - annotations:
+      artifacthub.io/changes: |-
+        - kind: changed
+          description: Upgraded `common` chart dependency to version 4.5.2
+    apiVersion: v2
+    appVersion: 2024.8.3
     created: "2024-09-01T14:21:48.378049489Z"
     dependencies:
     - name: common
@@ -311,6 +354,28 @@ entries:
   minecraft-bedrock-server:
   - apiVersion: v2
     appVersion: v1.19.51
+    created: "2024-09-01T19:24:55.181976397Z"
+    dependencies:
+    - name: common
+      repository: https://home-ops.andrewmccall.com/charts/library/
+      version: 1.0.3
+    description: Minecraft Bedrock Server
+    digest: 4c378c5f22f922182b1f59f78141bb77b7bb79f43e5431a89643e5d62c4d6e4e
+    home: https://github.com/andrewmccall/home-ops/tree/master/charts/stable/minecraft-bedrock-server
+    keywords:
+    - minecraft
+    - game
+    maintainers:
+    - email: andrew@andrewmccall.com
+      name: Andrew McCall
+    name: minecraft-bedrock-server
+    sources:
+    - https://github.com/itzg/
+    urls:
+    - https://github.com/andrewmccall/home-ops/releases/download/minecraft-bedrock-server-0.11.10/minecraft-bedrock-server-0.11.10.tgz
+    version: 0.11.10
+  - apiVersion: v2
+    appVersion: v1.19.51
     created: "2024-04-28T13:13:08.088944383Z"
     dependencies:
     - name: common
@@ -486,6 +551,27 @@ entries:
     - https://github.com/andrewmccall/home-ops/releases/download/minecraft-bedrock-server-0.11.2/minecraft-bedrock-server-0.11.2.tgz
     version: 0.11.2
   mosquitto:
+  - apiVersion: v2
+    appVersion: 2.0.18
+    created: "2024-09-01T19:24:55.28690105Z"
+    dependencies:
+    - name: common
+      repository: https://home-ops.andrewmccall.com/charts/library/
+      version: 1.0.3
+    description: Eclipse Mosquitto - An open source MQTT broker
+    digest: ce87611387f316fa399388398d1cc10220cf757752d506425f61c29462cd1958
+    icon: https://raw.githubusercontent.com/eclipse/mosquitto/master/logo/mosquitto-logo-min.svg
+    keywords:
+    - mosquitto
+    - MQTT
+    - eclipse-iot
+    kubeVersion: '>=1.16.0-0'
+    name: mosquitto
+    sources:
+    - https://github.com/eclipse/mosquitto
+    urls:
+    - https://github.com/andrewmccall/home-ops/releases/download/mosquitto-1.0.2/mosquitto-1.0.2.tgz
+    version: 1.0.2
   - apiVersion: v2
     appVersion: 2.0.18
     created: "2024-09-01T15:31:26.663722184Z"
@@ -670,4 +756,4 @@ entries:
     urls:
     - https://github.com/andrewmccall/home-ops/releases/download/unifi-0.0.10/unifi-0.0.10.tgz
     version: 0.0.10
-generated: "2024-09-01T15:31:26.663782888Z"
+generated: "2024-09-01T19:24:55.286993444Z"
