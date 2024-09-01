@@ -43,6 +43,8 @@ persistence:
   data:
     enabled: false
     mountPath: /data
+    accessMode: ReadWriteOnce
+    size: 5Gi
   # -- Configure a hostPathMount to mount a USB device in the container.
   # @default -- See values.yaml
   usb:
