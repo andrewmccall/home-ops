@@ -10,7 +10,7 @@ spec:
     spec:
       chart: home-assistant
       # renovate: datasource=helm registryUrl=https://home-ops.andrewmccall.com/charts/stable chart=home-assistant
-      version: 2024.8.3
+      version: 2024.8.302
       sourceRef:
         kind: HelmRepository
         name: home-ops
