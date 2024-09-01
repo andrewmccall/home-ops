@@ -4,7 +4,7 @@ apiVersion: v2
 appVersion: v8.4.59
 description: Ubiquiti Network's Unifi Controller
 name: unifi
-version: 1.0.4
+version: 1.0.5
 keywords:
   - ubiquiti
   - unifi
@@ -18,7 +18,7 @@ maintainers:
 dependencies:
   - name: common
     repository: https://home-ops.andrewmccall.com/charts/library/
-    version: 1.0.2
+    version: 1.0.3
   - name: mongodb
     version: 15.6.22
     repository: https://charts.bitnami.com/bitnami
