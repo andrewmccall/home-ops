@@ -4,8 +4,6 @@
 
 Bridges events and allows you to control your Zigbee devices via MQTT
 
-**This chart is not maintained by the upstream project and any issues with the chart should be raised [here](https://github.com/k8s-at-home/charts/issues/new/choose)**
-
 ## Source Code
 
 * <https://github.com/Koenkk/zigbee2mqtt>
@@ -18,52 +16,17 @@ Kubernetes: `>=1.16.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://library-charts.k8s-at-home.com | common | 4.5.2 |
-
-## TL;DR
-
-```console
-helm repo add k8s-at-home https://k8s-at-home.com/charts/
-helm repo update
-helm install zigbee2mqtt k8s-at-home/zigbee2mqtt
-```
+| https://home-ops.andrewmccall.com/charts/library/ | common | 1.0.3 |
 
 ## Installing the Chart
 
-To install the chart with the release name `zigbee2mqtt`
+This is a [Helm Library Chart](https://helm.sh/docs/topics/library_charts/#helm).
 
-```console
-helm install zigbee2mqtt k8s-at-home/zigbee2mqtt
-```
-
-## Uninstalling the Chart
-
-To uninstall the `zigbee2mqtt` deployment
-
-```console
-helm uninstall zigbee2mqtt
-```
-
-The command removes all the Kubernetes components associated with the chart **including persistent volumes** and deletes the release.
+**WARNING: THIS CHART IS NOT MEANT TO BE INSTALLED DIRECTLY**
 
 ## Configuration
 
 Read through the [values.yaml](./values.yaml) file. It has several commented out suggested values.
-Other values may be used from the [values.yaml](https://github.com/k8s-at-home/library-charts/tree/main/charts/stable/common/values.yaml) from the [common library](https://github.com/k8s-at-home/library-charts/tree/main/charts/stable/common).
-
-Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
-
-```console
-helm install zigbee2mqtt \
-  --set env.TZ="America/New York" \
-    k8s-at-home/zigbee2mqtt
-```
-
-Alternatively, a YAML file that specifies the values for the above parameters can be provided while installing the chart.
-
-```console
-helm install zigbee2mqtt k8s-at-home/zigbee2mqtt -f values.yaml
-```
 
 ## Custom configuration
 
@@ -113,15 +76,11 @@ securityContext:
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity constraint rules to place the Pod on a specific node. [[ref]](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity) |
 | config | object | See values.yaml | zigbee2mqtt configuration settings. This will be copied into the container's persistent storage at first run only. Further configuration should be done in the application itself! See [project documentation](https://www.zigbee2mqtt.io/information/configuration.html) for more information. |
-| config.advanced | object | `{"homeassistant_discovery_topic":"homeassistant","homeassistant_status_topic":"homeassistant/status","last_seen":"ISO_8601","log_level":"info","log_output":["console"],"network_key":"GENERATE"}` |  port: /dev/serial/by-id/usb-dresden_elektronik_ingenieurtechnik_GmbH_ConBee_II_DE2400981-if00 Optional: adapter type, not needed unless you are experiencing problems (options: zstack, deconz) adapter: deconz |
-| config.advanced.last_seen | string | `"ISO_8601"` |  default: 11 channel: 11 Optional: Baudrate for serial port (default: 115200 for Z-Stack, 38400 for Deconz) baudrate: 38400 Optional: RTS / CTS Hardware Flow Control for serial port (default: false) rtscts: true Optional: Add a last_seen attribute to MQTT messages, contains date/time of last Zigbee message possible values are: disable (default), ISO_8601, ISO_8601_local, epoch (default: disable) |
-| config.homeassistant | bool | `false` |  Home Assistant integration (MQTT discovery) |
-| config.permit_join | bool | `true` |  WARNING: Disable this after all devices have been paired! (default: false) Note: this will be controllable in the UI |
 | env | object | See below | environment variables. See [image docs](https://www.zigbee2mqtt.io/information/configuration.html#override-via-environment-variables) for more details. |
 | env.ZIGBEE2MQTT_DATA | string | `"/data"` | Set the data folder for Zigbee2MQTT. |
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy |
 | image.repository | string | `"koenkk/zigbee2mqtt"` | image repository |
-| image.tag | string | `"1.19.1"` | image tag |
+| image.tag | string | `"1.40.0"` | image tag |
 | ingress.main | object | See values.yaml | Enable and configure ingress settings for the chart under this key. |
 | persistence | object | See values.yaml | Configure persistence settings for the chart under this key. |
 | persistence.usb | object | See values.yaml | Configure a hostPathMount to mount a USB device in the container. |
@@ -130,23 +89,25 @@ securityContext:
 
 ## Changelog
 
-### Version 9.4.2
+All notable changes to this application Helm chart will be documented in this file but does not include changes from our common library. To read those click [here](https://github.com/k8s-at-home/library-charts/tree/main/charts/stable/commonREADME.md#Changelog).
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+### [1.0.0]
 
 #### Added
 
-N/A
+- N/A
 
 #### Changed
 
-* Upgraded `common` chart dependency to version 4.5.2
+- N/A
 
-#### Fixed
+#### Removed
 
-N/A
+- N/A
 
-### Older versions
-
-A historical overview of changes can be found on [ArtifactHUB](https://artifacthub.io/packages/helm/k8s-at-home/zigbee2mqtt?modal=changelog)
+[1.0.0]: #1.0.0
 
 ## Support
 
@@ -156,4 +117,4 @@ A historical overview of changes can be found on [ArtifactHUB](https://artifacth
 - Join our [Discord](https://discord.gg/sTMX7Vh) community
 
 ----------------------------------------------
-Autogenerated from chart metadata using [helm-docs v0.1.1](https://github.com/k8s-at-home/helm-docs/releases/v0.1.1)
+Autogenerated from chart metadata using [helm-docs v1.5.0](https://github.com/norwoodj/helm-docs/releases/v1.5.0)

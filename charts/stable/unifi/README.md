@@ -1,6 +1,6 @@
 # unifi
 
-![Version: 1.0.4](https://img.shields.io/badge/Version-1.0.4-informational?style=flat-square) ![AppVersion: v8.4.59](https://img.shields.io/badge/AppVersion-v8.4.59-informational?style=flat-square)
+![Version: 1.0.5](https://img.shields.io/badge/Version-1.0.5-informational?style=flat-square) ![AppVersion: v8.4.59](https://img.shields.io/badge/AppVersion-v8.4.59-informational?style=flat-square)
 
 Ubiquiti Network's Unifi Controller
 
@@ -15,7 +15,7 @@ Ubiquiti Network's Unifi Controller
 | Repository | Name | Version |
 |------------|------|---------|
 | https://charts.bitnami.com/bitnami | mongodb | 15.6.22 |
-| https://home-ops.andrewmccall.com/charts/library/ | common | 1.0.2 |
+| https://home-ops.andrewmccall.com/charts/library/ | common | 1.0.3 |
 
 ## Installing the Chart
 
