@@ -1,6 +1,6 @@
 # mosquitto
 
-![Version: 1.0.1](https://img.shields.io/badge/Version-1.0.1-informational?style=flat-square) ![AppVersion: 2.0.18](https://img.shields.io/badge/AppVersion-2.0.18-informational?style=flat-square)
+![Version: 1.0.2](https://img.shields.io/badge/Version-1.0.2-informational?style=flat-square) ![AppVersion: 2.0.18](https://img.shields.io/badge/AppVersion-2.0.18-informational?style=flat-square)
 
 Eclipse Mosquitto - An open source MQTT broker
 
@@ -16,7 +16,7 @@ Kubernetes: `>=1.16.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://home-ops.andrewmccall.com/charts/library/ | common | 1.0.2 |
+| https://home-ops.andrewmccall.com/charts/library/ | common | 1.0.3 |
 
 ## Installing the Chart
 

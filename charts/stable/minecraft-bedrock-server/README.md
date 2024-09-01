@@ -1,6 +1,6 @@
 # minecraft-bedrock-server
 
-![Version: 0.11.9](https://img.shields.io/badge/Version-0.11.9-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
+![Version: 0.11.10](https://img.shields.io/badge/Version-0.11.10-informational?style=flat-square) ![AppVersion: v1.19.51](https://img.shields.io/badge/AppVersion-v1.19.51-informational?style=flat-square)
 
 Minecraft Bedrock Server
 
@@ -14,7 +14,7 @@ Minecraft Bedrock Server
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://home-ops.andrewmccall.com/charts/library/ | common | 1.0.2 |
+| https://home-ops.andrewmccall.com/charts/library/ | common | 1.0.3 |
 
 ## Installing the Chart
 
