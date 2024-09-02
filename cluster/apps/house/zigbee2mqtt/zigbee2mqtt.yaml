@@ -99,4 +99,6 @@ spec:
                   port: http
     persistence:
       data:
-        existingClaim: zigbee2mqtt
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 5Gi
