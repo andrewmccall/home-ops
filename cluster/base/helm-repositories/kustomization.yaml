@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - longhorn.yaml
   - bitnami.yaml
+  - bjw-s.yaml
   - core-dns.yaml
   - external-dns.yaml
   - grafana.yaml
