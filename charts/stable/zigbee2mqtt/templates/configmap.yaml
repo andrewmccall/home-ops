@@ -7,7 +7,7 @@ metadata:
   labels:
     {{- include "common.labels" . | nindent 4 }}
 data:
-  configuration.yaml: |
+  configuration.example.yaml: |
 {{- with .Values.config }}
     {{- toYaml . | nindent 4 }}
 {{- end }}

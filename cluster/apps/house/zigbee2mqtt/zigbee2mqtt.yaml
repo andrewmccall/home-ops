@@ -24,7 +24,8 @@ spec:
       usb:
         enabled: true
         hostPath: /dev/ttyUSB0   
-    
+    securityContext:
+      privileged: true
     config:
       homeassistant: true
 
