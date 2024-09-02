@@ -49,7 +49,7 @@ spec:
               ZIGBEE2MQTT_DATA: /data
               ZIGBEE2MQTT_CONFIG_MQTT_SERVER: mqtt://mosquitto.databases.svc.cluster.local:1883
               ZIGBEE2MQTT_CONFIG_MQTT_VERSION: 5
-              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: tcp://zigbee.milkyway:6638
+              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/zigbee
               ZIGBEE2MQTT_CONFIG_FRONTEND_URL: "https://zigbee2mqtt.${DOMAIN}"
               ZIGBEE2MQTT_CONFIG_ADVANCED_LEGACY_API: "false"
               ZIGBEE2MQTT_CONFIG_ADVANCED_LEGACY_AVAILABILITY_PAYLOAD: "false"
@@ -82,6 +82,7 @@ spec:
                 memory: 300Mi
               limits:
                 memory: 500Mi
+                home-ops/zigbee: 1
     service:
       app:
         controller: zigbee2mqtt
