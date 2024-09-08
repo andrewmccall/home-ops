@@ -9,7 +9,7 @@ image:
   # -- image repository
   repository: koenkk/zigbee2mqtt
   # -- image tag
-  tag: 1.40.0
+  tag: 1.40.1@sha256:8127ec2b6e5370eb83033e9cd7250a72bc418b4ead722eadb17c664bebd8b829
   # -- image pull policy
   pullPolicy: IfNotPresent
 
