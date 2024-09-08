@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - helm-repositories
   - config.yaml
-  #- secrets.enc.yaml
+  - secrets.enc.yaml
   - crds.yaml
   - core.yaml
   - apps.yaml
