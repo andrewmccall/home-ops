@@ -4,6 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: &app external-dns-unifi
+  namespace: networking
 spec:
   interval: 30m
   chart:
@@ -69,4 +70,3 @@ spec:
       enabled: true
     #podAnnotations:
     #  secret.reloader.stakater.com/reload: *secret
-    
