@@ -21,7 +21,7 @@ spec:
   values:
     image:
       repository: timberio/vector
-      tag: 0.40.2-debian@sha256:129e96a2cc2448705f9fa9dcb59a30e1809ae52bd8266e91eb2816522772b1cf
+      tag: 0.41.1-debian@sha256:87ef5d0a3f47ed6e415c9c6b84f7bfa53dbced55c00b75a974426a8a63cebc15
     role: Agent
     customConfig:
       data_dir: /vector-data-dir
