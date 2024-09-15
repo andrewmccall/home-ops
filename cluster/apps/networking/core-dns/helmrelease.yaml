@@ -45,8 +45,6 @@ spec:
             configBlock: |-
               lameduck 5s
           - name: ready
-          - name: file
-            parameters: /etc/coredns/ingress.db ingress.${DOMAIN}
           - name: etcd
             configBlock: |-
               fallthrough
