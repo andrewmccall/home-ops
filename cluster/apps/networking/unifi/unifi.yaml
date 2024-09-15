@@ -31,7 +31,7 @@ spec:
         enabled: true
         type: pvc
         accessMode: ReadWriteOnce
-        size: 1Gi
+        size: 5Gi
         mountPath: /unifi
       certs:
         enabled: true
