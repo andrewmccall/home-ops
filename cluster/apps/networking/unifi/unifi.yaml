@@ -42,7 +42,7 @@ spec:
         enabled: true
         name: unifi-config-gateway
         type: configMap
-        mountPath: /unifi/data/sites/Default/config.gateway.json
+        mountPath: /unifi/data/sites/default/config.gateway.json
         subPath: config.gateway.json
     env:
       CERTNAME: tls.crt
