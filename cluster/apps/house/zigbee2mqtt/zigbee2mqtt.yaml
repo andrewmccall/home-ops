@@ -58,7 +58,7 @@ spec:
                   failureThreshold: 30
                   periodSeconds: 10
             securityContext:
-              capabilities: { add: ["CAP_SYS_RAWIO"] }
+              privileged: true
             resources:
               requests:
                 cpu: 20m
