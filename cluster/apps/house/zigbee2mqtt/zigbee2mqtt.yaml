@@ -45,7 +45,7 @@ spec:
               ZIGBEE2MQTT_DATA: /data
               ZIGBEE2MQTT_CONFIG_MQTT_SERVER: "mqtt://mosquitto.databases.svc.cluster.${DOMAIN}:1883"
               ZIGBEE2MQTT_CONFIG_MQTT_VERSION: 5
-              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/zigbee
+              ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyUSB0
               ZIGBEE2MQTT_CONFIG_HOMEASSISTANT: "true"
             probes:
               liveness:
@@ -58,9 +58,7 @@ spec:
                   failureThreshold: 30
                   periodSeconds: 10
             securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+              capabilities: { add: ["CAP_SYS_RAWIO"] }
             resources:
               requests:
                 cpu: 20m
