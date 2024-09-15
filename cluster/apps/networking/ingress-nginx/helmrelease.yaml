@@ -20,7 +20,7 @@ spec:
       replicaCount: 1
       service:
         externalIPs:
-          - ${INGRESS_NGINX_IP}
+          - ${INTERNAL_NGINX_IP}
         enableHttp: false
         externalTrafficPolicy: Local
         annotations:
