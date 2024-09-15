@@ -34,7 +34,7 @@ spec:
           tag: v0.2.3@sha256:fe9720cbf0af98694b7ece216472a577677c97a3f79471f8359d79f4da607a0b
         env:
           - name: UNIFI_HOST
-            value: https://unifi.${DOMAIN}:8443
+            value: https://${ROUTER_IP}
           - name: UNIFI_USER
             valueFrom:
               secretKeyRef:
