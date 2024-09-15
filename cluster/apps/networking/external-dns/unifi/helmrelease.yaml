@@ -51,13 +51,13 @@ spec:
           httpGet:
             path: /healthz
             port: http-webhook
-          initialDelaySeconds: 10
+          initialDelaySeconds: 30
           timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /readyz
             port: http-webhook
-          initialDelaySeconds: 10
+          initialDelaySeconds: 30
           timeoutSeconds: 5
     extraArgs:
       - --ignore-ingress-tls-spec
