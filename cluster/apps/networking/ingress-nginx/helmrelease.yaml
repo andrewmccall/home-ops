@@ -16,6 +16,7 @@ spec:
         name: ingress-nginx
         namespace: flux-system
   values:
+    fullnameOverride: nginx-internal
     controller:
       replicaCount: 1
       service:
