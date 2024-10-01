@@ -23,7 +23,7 @@ dependencies:
     repository: https://home-ops.andrewmccall.com/charts/library/
     version: 1.0.3
   - name: postgresql
-    version: 11.9.13
+    version: 15.5.38
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
   - name: mariadb
