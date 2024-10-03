@@ -10,7 +10,7 @@ image:
   repository: eclipse-mosquitto
   # -- image tag
   # @default -- chart.appVersion
-  tag: 2.0.18
+  tag: 2.0.19@sha256:eb37f58646a901dc7727cf448cae36daaefaba79de33b5058dab79aa4c04aefb
   # -- image pull policy
   pullPolicy: IfNotPresent
 
