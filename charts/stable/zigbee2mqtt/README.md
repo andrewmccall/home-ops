@@ -80,7 +80,7 @@ securityContext:
 | env.ZIGBEE2MQTT_DATA | string | `"/data"` | Set the data folder for Zigbee2MQTT. |
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy |
 | image.repository | string | `"koenkk/zigbee2mqtt"` | image repository |
-| image.tag | string | `"1.40.1@sha256:8127ec2b6e5370eb83033e9cd7250a72bc418b4ead722eadb17c664bebd8b829"` | image tag |
+| image.tag | string | `"1.40.2@sha256:40dca7e6ee816c84d6220daeb92cf20a52cf35446ec1d3ef0c2965a87cd397cc"` | image tag |
 | ingress.main | object | See values.yaml | Enable and configure ingress settings for the chart under this key. |
 | persistence | object | See values.yaml | Configure persistence settings for the chart under this key. |
 | persistence.usb | object | See values.yaml | Configure a hostPathMount to mount a USB device in the container. |
