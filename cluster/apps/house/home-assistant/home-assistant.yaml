@@ -20,7 +20,7 @@ spec:
     persistence:
       config:
         enabled: true
-        size: 5Gi
+        existingClaim: home-assistant-config 
     ingress:
       main:
         enabled: true
