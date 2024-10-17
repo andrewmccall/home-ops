@@ -22,6 +22,8 @@ spec:
       - name: ETCD_URLS
         value: http://${ETCD_EXTDNS_IP}:2379
     policy: sync
+    sources: ["ingress", "service"]
+    domainFilters: ["${DOMAIN}"]
     resources:
       requests:
         cpu: 50m
