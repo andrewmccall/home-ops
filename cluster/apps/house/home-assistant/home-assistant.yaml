@@ -80,8 +80,6 @@ spec:
             port: 12321
     ingress:
       app:
-        annotations:
-          external-dns.alpha.kubernetes.io/hostname: external.${DOMAIN}
         className: external
         hosts:
           - host: home-assistant.${DOMAIN}
@@ -91,8 +89,6 @@ spec:
                   identifier: app
                   port: http
       code-server:
-        annotations:
-          external-dns.alpha.kubernetes.io/hostname: internal.${DOMAIN}
         className: internal
         hosts:
           - host: home-assistant-code.${DOMAIN}
