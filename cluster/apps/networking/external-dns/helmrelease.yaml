@@ -24,8 +24,6 @@ spec:
     policy: sync
     sources: ["ingress", "service"]
     domainFilters: ["${DOMAIN}"]
-    txtOwnerId: main
-    txtPrefix: k8s.main.
     resources:
       requests:
         cpu: 50m
