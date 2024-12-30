@@ -354,6 +354,28 @@ entries:
   minecraft-bedrock-server:
   - apiVersion: v2
     appVersion: v1.19.51
+    created: "2024-12-30T14:37:20.073648819Z"
+    dependencies:
+    - name: common
+      repository: https://home-ops.andrewmccall.com/charts/library/
+      version: 1.0.3
+    description: Minecraft Bedrock Server
+    digest: 6c6a75afd11445a33af2c084b6137df000178ca811a6aa4b54761486e8982fae
+    home: https://github.com/andrewmccall/home-ops/tree/master/charts/stable/minecraft-bedrock-server
+    keywords:
+    - minecraft
+    - game
+    maintainers:
+    - email: andrew@andrewmccall.com
+      name: Andrew McCall
+    name: minecraft-bedrock-server
+    sources:
+    - https://github.com/itzg/
+    urls:
+    - https://github.com/andrewmccall/home-ops/releases/download/minecraft-bedrock-server-0.11.11/minecraft-bedrock-server-0.11.11.tgz
+    version: 0.11.11
+  - apiVersion: v2
+    appVersion: v1.19.51
     created: "2024-09-01T19:24:55.181976397Z"
     dependencies:
     - name: common
@@ -894,4 +916,4 @@ entries:
     urls:
     - https://github.com/andrewmccall/home-ops/releases/download/zigbee2mqtt-9.4.2/zigbee2mqtt-9.4.2.tgz
     version: 9.4.2
-generated: "2024-09-02T11:40:00.10284913Z"
+generated: "2024-12-30T14:37:20.600776276Z"
