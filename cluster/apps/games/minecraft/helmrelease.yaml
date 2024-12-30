@@ -37,11 +37,9 @@ spec:
             env:
               TZ: Europe/London
               EULA: "TRUE"
-          minecraftServer:
-            eula: "TRUE"
-            serverName: "home server"
-            ops: ${MINECRAFT_OPS}
-            difficulty: normal
+              SERVER_NAME: "home server"
+              OPS: ${MINECRAFT_OPS}
+              DIFFICULTY: normal
     service:
       app:
         controller: minecraft
