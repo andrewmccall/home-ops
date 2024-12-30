@@ -38,7 +38,7 @@ Read through the [values.yaml](./values.yaml) file. It has several commented out
 |-----|------|---------|-------------|
 | image.pullPolicy | string | `"IfNotPresent"` | image pull policy |
 | image.repository | string | `"itzg/minecraft-bedrock-server"` | image repository |
-| image.tag | string | `"latest"` |  |
+| image.tag | string | `"2024.11.0"` |  |
 | minecraftServer.cheats | bool | `false` |  |
 | minecraftServer.defaultPermission | string | `"member"` |  |
 | minecraftServer.difficulty | string | `"normal"` |  |
