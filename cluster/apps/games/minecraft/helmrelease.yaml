@@ -43,8 +43,10 @@ spec:
     service:
       app:
         controller: minecraft
-        port: 19132
-        protocol: UDP
+        ports: 
+          server:
+            port: 19132
+            protocol: UDP
         annotations:
           external-dns.alpha.kubernetes.io/hostname: "minecraft.${DOMAIN}"
         type: LoadBalancer
