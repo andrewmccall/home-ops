@@ -61,7 +61,7 @@ N/A
 | addons.codeserver.git.deployKeySecret | string | `""` | Existing secret containing SSH private key The chart expects it to be present under the `id_rsa` key. |
 | addons.codeserver.image.pullPolicy | string | `"IfNotPresent"` | Specify the code-server image pull policy |
 | addons.codeserver.image.repository | string | `"ghcr.io/coder/code-server"` | Specify the code-server image |
-| addons.codeserver.image.tag | string | `"4.98.0@sha256:49190032f1ab73cdcd0c930b1e961c20110aa1b6004d296c14681eb11c9f49d8"` | Specify the code-server image tag |
+| addons.codeserver.image.tag | string | `"4.98.2@sha256:9ed588a05d4e81aa464e753a409bc3b2b93267323d1c3975fbddf6f9aef84c26"` | Specify the code-server image tag |
 | addons.codeserver.ingress.enabled | bool | `false` | Enable an ingress for the code-server add-on. |
 | addons.codeserver.ingress.ingressClassName | string | `nil` | Set the ingressClass that is used for this ingress. Requires Kubernetes >=1.19 |
 | addons.codeserver.service.enabled | bool | `true` | Enable a service for the code-server add-on. |
