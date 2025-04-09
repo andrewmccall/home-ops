@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: itzg/minecraft-bedrock-server
-              tag: 2024.11.0
+              tag: 2025.4.0@sha256:0672bfd88a42c4dea1640f0e7daded8283e1a6829f63916b05c1db7b7f5625ba
             env:
               TZ: Europe/London
               EULA: "TRUE"
