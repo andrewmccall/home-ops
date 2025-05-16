@@ -3,7 +3,7 @@ collections:
   - name: community.general
     version: 9.5.7
   - name: community.docker
-    version: 3.13.6
+    version: 4.6.0
   - name: community.kubernetes
     version: 2.0.1
   - name: community.sops
