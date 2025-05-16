@@ -18,7 +18,7 @@ Kubernetes: `>=1.16.0-0`
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | influxdb | 6.6.12 |
+| https://charts.bitnami.com/bitnami | influxdb | 6.6.13 |
 | https://charts.bitnami.com/bitnami | mariadb | 19.1.2 |
 | https://charts.bitnami.com/bitnami | postgresql | 11.9.13 |
 | https://home-ops.andrewmccall.com/charts/library/ | common | 1.0.3 |
