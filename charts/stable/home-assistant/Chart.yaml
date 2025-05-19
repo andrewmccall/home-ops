@@ -31,7 +31,7 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     condition: mariadb.enabled
   - name: influxdb
-    version: 6.6.13
+    version: 6.6.14
     repository: https://charts.bitnami.com/bitnami
     condition: influxdb.enabled
 annotations:
