@@ -1,0 +1,27 @@
+# Loads tiles from git repository
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: tiles
+  namespace: tiles
+spec:
+  interval: 1m0s
+  ref:
+    branch: main
+  secretRef:
+    name: flux-system
+  url: ssh://git@github.com/andrewmccall/survival.git
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: tiles
+  namespace: tiles
+spec:
+  interval: 10m0s
+  path: ./kubernetes
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: tiles
