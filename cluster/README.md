@@ -35,3 +35,11 @@ Enable k3s upgrades (if not already done by ansible)
 `
 kubectl label node --all k3s-upgrade=true
 ```
+
+Make sure we've got the cloudnative postgres installed.
+
+````bash
+
+kubectl apply --server-side -f \
+  https://raw.githubusercontent.com/cloudnative-pg/cloudnative-pg/release-1.26/releases/cnpg-1.26.0.yaml
+  ````
