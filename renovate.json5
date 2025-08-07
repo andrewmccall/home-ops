@@ -1,113 +1,168 @@
 {
-  "extends": [
-    "config:best-practices",
-    ":disableRateLimiting",
-    "docker:enableMajor",
-    ":enablePreCommit",
+  extends: [
+    'config:best-practices',
+    ':disableRateLimiting',
+    'docker:enableMajor',
+    ':enablePreCommit',
   ],
-  "timezone": "Europe/London",
-  "semanticCommits": "enabled",
-  "separateMinorPatch": true,
-  "dependencyDashboard": true,
-  "dependencyDashboardTitle": "Renovate Dashboard",
-  "suppressNotifications": ["prIgnoreNotification"],
-  "kubernetes": {
-    "fileMatch": ["cluster/.+\\.ya?ml$"],
-    "ignorePaths": ["cluster/flux/"]
-  },
-  "flux": {
-    "fileMatch": ["cluster/.+\\.ya?ml$"]
-  },
-  "helm-values": {
-    "fileMatch": ["cluster/.+\\.ya?ml$"]
-  },
-  "regexManagers": [
-    // generic matcher
-    // see https://regex101.com/r/fzaLfV/1
-    {
-      "fileMatch": [
-        "ansible/.+\\.ya?ml$",
-        "cluster/.+\\.ya?ml$",
-        "charts/.+\\.ya?ml$",
-      ],
-      "matchStrings": [
-        "datasource=(?<datasource>helm) registryUrl=(?<registryUrl>\\S+) chart=(?<depName>\\S+)\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
-        "datasource=(?<datasource>docker) image=(?<depName>\\S+)\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
-        "datasource=(?<datasource>github-releases) repos=(?<depName>\\S+)\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
-        "datasource=(?<datasource>pypi) package=(?<depName>\\S+)\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
-        "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
-      ],
-      "datasourceTemplate": "{{datasource}}",
-      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}{{#if (containsString datasource 'pypi')}}pep440{{else}}semver{{/if}}{{/if}}"
-    }
+  timezone: 'Europe/London',
+  semanticCommits: 'enabled',
+  separateMinorPatch: true,
+  dependencyDashboard: true,
+  dependencyDashboardTitle: 'Renovate Dashboard',
+  suppressNotifications: [
+    'prIgnoreNotification',
   ],
-  "customDatasources": {
-    "minecraft": {
-      "defaultRegistryUrlTemplate": "https://mc-bds-helper.vercel.app/api/latest",
-      "format": "plain"
-    }
+  kubernetes: {
+    managerFilePatterns: [
+      '/cluster/.+\\.ya?ml$/',
+    ],
+    ignorePaths: [
+      'cluster/flux/',
+    ],
   },
-  "packageRules": [
+  flux: {
+    managerFilePatterns: [
+      '/cluster/.+\\.ya?ml$/',
+    ],
+  },
+  'helm-values': {
+    managerFilePatterns: [
+      '/cluster/.+\\.ya?ml$/',
+    ],
+  },
+  customManagers: [
     {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": true
-    },
-    // datasource specific settings
-    {
-      "matchDatasources": ["custom.minecraft"],
-      "extractVersion": "/(?<version>-+)(?<version>.+)\\.zip$"
-    },
-    {
-      "matchDatasources": ["helm"],
-      "addLabels": ["renovate/helm"]
-    },
-    {
-      "matchDatasources": ["docker"],
-      "addLabels": ["renovate/docker"]
-    },
-    // manager specific settings
-    {
-      "matchManagers": ["github-actions"],
-      "addLabels": ["renovate/github-actions"]
-    },
-    {
-      "matchManagers": ["pip_requirements"],
-      "addLabels": ["renovate/python"]
-    },
-    {
-      "matchManagers": ["ansible"],
-      "addLabels": ["renovate/ansible"]
-    },
-    {
-      "matchManagers": ["ansible-galaxy"],
-      "addLabels": ["renovate/ansible-galaxy"]
-    },
-    {
-      "matchManagers": ["pre-commit"],
-      "addLabels": ["renovate/pre-commit"]
-    },
-    // update types specific settings
-    {
-      "matchUpdateTypes": ["major"],
-      "addLabels": ["dependency/major"]
-    },
-    {
-      "matchUpdateTypes": ["minor"],
-      "addLabels": ["dependency/minor"]
-    },
-    {
-      "matchUpdateTypes": ["patch"],
-      "addLabels": ["dependency/patch"]
-    },
-    // group snapshot-controller
-    {
-      "matchDatasources": ["github-releases", "docker"],
-      "matchPackagePatterns": [
-        "external-snapshotter",
-        "snapshot-controller"
+      customType: 'regex',
+      managerFilePatterns: [
+        '/ansible/.+\\.ya?ml$/',
+        '/cluster/.+\\.ya?ml$/',
+        '/charts/.+\\.ya?ml$/',
       ],
-      "groupName": "external-snapshotter",
-      "additionalBranchPrefix": "",
+      matchStrings: [
+        'datasource=(?<datasource>helm) registryUrl=(?<registryUrl>\\S+) chart=(?<depName>\\S+)\n.*?"?(?<currentValue>[^-\\s]*?)"?\n',
+        'datasource=(?<datasource>docker) image=(?<depName>\\S+)\n.*?"?(?<currentValue>[^-\\s]*?)"?\n',
+        'datasource=(?<datasource>github-releases) repos=(?<depName>\\S+)\n.*?"?(?<currentValue>[^-\\s]*?)"?\n',
+        'datasource=(?<datasource>pypi) package=(?<depName>\\S+)\n.*?"?(?<currentValue>[^-\\s]*?)"?\n',
+        'datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\n.*?"?(?<currentValue>[^-\\s]*?)"?\n',
+      ],
+      datasourceTemplate: '{{datasource}}',
+      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}{{#if (containsString datasource 'pypi')}}pep440{{else}}semver{{/if}}{{/if}}",
     },
-  ]
+  ],
+  customDatasources: {
+    minecraft: {
+      defaultRegistryUrlTemplate: 'https://mc-bds-helper.vercel.app/api/latest',
+      format: 'plain',
+    },
+  },
+  packageRules: [
+    {
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+        'pin',
+        'digest',
+      ],
+      automerge: true,
+    },
+    {
+      matchDatasources: [
+        'custom.minecraft',
+      ],
+      extractVersion: '/(?<version>-+)(?<version>.+)\\.zip$',
+    },
+    {
+      matchDatasources: [
+        'helm',
+      ],
+      addLabels: [
+        'renovate/helm',
+      ],
+    },
+    {
+      matchDatasources: [
+        'docker',
+      ],
+      addLabels: [
+        'renovate/docker',
+      ],
+    },
+    {
+      matchManagers: [
+        'github-actions',
+      ],
+      addLabels: [
+        'renovate/github-actions',
+      ],
+    },
+    {
+      matchManagers: [
+        'pip_requirements',
+      ],
+      addLabels: [
+        'renovate/python',
+      ],
+    },
+    {
+      matchManagers: [
+        'ansible',
+      ],
+      addLabels: [
+        'renovate/ansible',
+      ],
+    },
+    {
+      matchManagers: [
+        'ansible-galaxy',
+      ],
+      addLabels: [
+        'renovate/ansible-galaxy',
+      ],
+    },
+    {
+      matchManagers: [
+        'pre-commit',
+      ],
+      addLabels: [
+        'renovate/pre-commit',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'major',
+      ],
+      addLabels: [
+        'dependency/major',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'minor',
+      ],
+      addLabels: [
+        'dependency/minor',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'patch',
+      ],
+      addLabels: [
+        'dependency/patch',
+      ],
+    },
+    {
+      matchDatasources: [
+        'github-releases',
+        'docker',
+      ],
+      groupName: 'external-snapshotter',
+      additionalBranchPrefix: '',
+      matchPackageNames: [
+        '/external-snapshotter/',
+        '/snapshot-controller/',
+      ],
+    },
+  ],
 }
