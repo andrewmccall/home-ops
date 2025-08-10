@@ -46,7 +46,7 @@ jobs:
     - uses: actions/setup-python@v5
       if: steps.filter.outputs.addedOrModified == 'true'
       with:
-        python-version: 3.7
+        python-version: 3.13
 
     - name: Install helm-docs
       if: steps.filter.outputs.addedOrModified == 'true'
