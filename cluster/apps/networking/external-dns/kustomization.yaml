@@ -4,5 +4,3 @@ kind: Kustomization
 resources:
   - external-dns-coredns.yaml
   - external-dns-unifi.yaml
-  - external-dns-cloudflare.yaml
-  
