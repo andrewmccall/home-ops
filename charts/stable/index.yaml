@@ -617,6 +617,33 @@ entries:
     version: 1.0.0
   unifi:
   - apiVersion: v2
+    appVersion: v9.3.45
+    created: "2025-08-22T19:31:50.456215867Z"
+    dependencies:
+    - name: common
+      repository: https://home-ops.andrewmccall.com/charts/library/
+      version: 1.0.3
+    - condition: mongodb.enabled
+      name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.6.26
+    description: Ubiquiti Network's Unifi Controller
+    digest: 2047b9a525815dbfab8076eaaa5cfbf4af35dabb919ec9ec44f4565a2c9f2c2c
+    home: https://github.com/andrewmccall/home-ops/tree/master/charts/stable/unifi
+    icon: https://prd-www-cdn.ubnt.com/static/favicon-152.png
+    keywords:
+    - ubiquiti
+    - unifi
+    maintainers:
+    - email: andrew@andrewmccall.com
+      name: Andrew McCall
+    name: unifi
+    sources:
+    - https://github.com/jacobalberty/unifi-docker
+    urls:
+    - https://github.com/andrewmccall/home-ops/releases/download/unifi-1.1.0/unifi-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
     appVersion: v8.4.59
     created: "2024-09-01T20:41:40.369310528Z"
     dependencies:
@@ -916,4 +943,4 @@ entries:
     urls:
     - https://github.com/andrewmccall/home-ops/releases/download/zigbee2mqtt-9.4.2/zigbee2mqtt-9.4.2.tgz
     version: 9.4.2
-generated: "2024-12-30T14:37:20.600776276Z"
+generated: "2025-08-22T19:31:50.456298532Z"
