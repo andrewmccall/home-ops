@@ -10,7 +10,7 @@ image:
   repository: jacobalberty/unifi
   # @default -- chart.appVersion
   # renovate: datasource=docker depName=jacobalberty/unifi
-  tag: v9.3.45
+  tag: v9.4.19
   # -- image pull policy
   pullPolicy: IfNotPresent
 
