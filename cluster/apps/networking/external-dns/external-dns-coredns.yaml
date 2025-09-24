@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: external-dns
-      version: 1.18.0
+      version: 1.19.0
       sourceRef:
         kind: HelmRepository
         # renovate: datasource=helm registryUrl=https://kubernetes-sigs.github.io/external-dns chart=external-dns
