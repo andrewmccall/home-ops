@@ -20,6 +20,6 @@ dependencies:
     repository: https://home-ops.andrewmccall.com/charts/library/
     version: 1.0.3
   - name: mongodb
-    version: 15.6.26
+    version: 16.5.45
     repository: https://charts.bitnami.com/bitnami
     condition: mongodb.enabled
