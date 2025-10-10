@@ -81,7 +81,7 @@ jobs:
 
     - name: Create commit
       if: steps.filter.outputs.addedOrModified == 'true'
-      uses: stefanzweifel/git-auto-commit-action@v5
+      uses: stefanzweifel/git-auto-commit-action@778341af668090896ca464160c2def5d1d1a3eb0 # v6
       with:
         push_options: --force
         commit_message: Auto-generate chart README [no ci]
