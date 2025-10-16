@@ -2,12 +2,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - github.com/rancher/system-upgrade-controller?ref=v0.16.3
+  - github.com/rancher/system-upgrade-controller?ref=v0.17.0
   - server-plan.yaml
   - agent-plan.yaml
 images:
   - name: rancher/system-upgrade-controller
-    newTag: v0.16.3@sha256:b9c6b90c10868ffa89d379812c1868edc1789b81e86a6e829e0e086529c0847b
+    newTag: v0.17.0@sha256:7b334b59a48c1653c9f4f18016032255fd874916c78557bc671b7c7877642f1c
 patchesStrategicMerge:
   # delete namespace resource
   - ./system-upgrade-patches.yaml
