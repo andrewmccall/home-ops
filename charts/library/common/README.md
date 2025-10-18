@@ -61,7 +61,7 @@ N/A
 | addons.codeserver.git.deployKeySecret | string | `""` | Existing secret containing SSH private key The chart expects it to be present under the `id_rsa` key. |
 | addons.codeserver.image.pullPolicy | string | `"IfNotPresent"` | Specify the code-server image pull policy |
 | addons.codeserver.image.repository | string | `"ghcr.io/coder/code-server"` | Specify the code-server image |
-| addons.codeserver.image.tag | string | `"4.104.3@sha256:8a4f9ec985bcb022de1ae70fab74e3a2c3199b2bc44665df6da203c3ada1643a"` | Specify the code-server image tag |
+| addons.codeserver.image.tag | string | `"4.105.0@sha256:b54261ccfb29a6680a0fbce13f83d37487157f1b9b30390bb8ddca1929f49b4e"` | Specify the code-server image tag |
 | addons.codeserver.ingress.enabled | bool | `false` | Enable an ingress for the code-server add-on. |
 | addons.codeserver.ingress.ingressClassName | string | `nil` | Set the ingressClass that is used for this ingress. Requires Kubernetes >=1.19 |
 | addons.codeserver.service.enabled | bool | `true` | Enable a service for the code-server add-on. |
@@ -79,7 +79,7 @@ N/A
 | addons.promtail.env | object | `{}` | Set any environment variables for promtail here |
 | addons.promtail.image.pullPolicy | string | `"IfNotPresent"` | Specify the promtail image pull policy |
 | addons.promtail.image.repository | string | `"docker.io/grafana/promtail"` | Specify the promtail image |
-| addons.promtail.image.tag | string | `"3.5.6@sha256:5305289886b84c55fc63de4a29b758e7c605d2fec616373c9c9323954726d3c7"` | Specify the promtail image tag |
+| addons.promtail.image.tag | string | `"3.5.7@sha256:086e4e85d2eb383fb04ea83c0f5074da81df56e415062ca888dba426abd8dfa5"` | Specify the promtail image tag |
 | addons.promtail.logs | list | `[]` | The paths to logs on the volume |
 | addons.promtail.loki | string | `""` | The URL to Loki |
 | addons.promtail.volumeMounts | list | `[]` | Specify a list of volumes that get mounted in the promtail container. At least 1 volumeMount is required! |
