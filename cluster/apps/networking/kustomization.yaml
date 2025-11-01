@@ -7,5 +7,4 @@ resources:
   - cert-manager
   - core-dns
   - external-dns
-  - unifi
   - ingress-nginx
