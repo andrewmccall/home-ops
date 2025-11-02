@@ -1,7 +1,7 @@
 ---
 collections:
   - name: community.general
-    version: 9.5.12
+    version: 11.4.1
   - name: community.docker
     version: 3.13.10
   - name: community.kubernetes
