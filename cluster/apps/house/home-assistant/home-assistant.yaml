@@ -32,6 +32,7 @@ spec:
           app:
             image:
               repository: ghcr.io/home-assistant/home-assistant
+              # renovate: datasource=docker tag=home-assistant/home-assistant
               tag: 2024.12.5@sha256:132ef461504be5c5ebd6e34e5d3fb3d7958bb6758a5136107eea9f84c299254a
             env:
               TZ: Europe/London
