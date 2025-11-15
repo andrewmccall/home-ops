@@ -33,7 +33,7 @@ spec:
             image:
               repository: ghcr.io/home-assistant/home-assistant
               # renovate: datasource=docker tag=home-assistant/home-assistant
-              tag: 2025.10.4
+              tag: 2025.11.2@sha256:02f582ea7d25f41761282ac0965baf89f0009efed3ad92f8d7eaba5eb6ffd9a8
             env:
               TZ: Europe/London
               HASS_HTTP_TRUSTED_PROXY_1: ${K8S_CLUSTER_CIDR}
