@@ -23,7 +23,7 @@ jobs:
           private_key: ${{ secrets.HOME_OPS_APP_PRIVATE_KEY }}
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
         with:
           token: ${{ steps.get-app-token.outputs.token }}
           ref: ${{ github.ref }}
@@ -103,7 +103,7 @@ jobs:
           private_key: ${{ secrets.HOME_OPS_APP_PRIVATE_KEY }}
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6
         with:
           token: ${{ steps.get-app-token.outputs.token }}
           ref: main
