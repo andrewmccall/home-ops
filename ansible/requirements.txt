@@ -1,5 +1,5 @@
 ansible==10.7.0
-ansible-lint==24.12.2
+ansible-lint==25.12.2
 openshift==0.13.2
 pyunifi==2.21
 github3.py
