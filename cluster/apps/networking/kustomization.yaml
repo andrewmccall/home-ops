@@ -3,8 +3,6 @@ kind: Kustomization
 resources:
   - namespace.yaml
   #- cloudflare-api-token-secret.enc.yaml
-  - etcd-extdns
   - cert-manager
-  - core-dns
   - external-dns
   - ingress-nginx
