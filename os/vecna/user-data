@@ -50,4 +50,4 @@ autoinstall:
 
     locale: en_GB
 
-    fqdn: vecna.home.andrewmccall.com
+    fqdn: vecna.andrewmccall.com

@@ -10,7 +10,7 @@ k3s_server:
   disable-cloud-controller: yes
   cluster-cidr: 10.42.0.0/16
   service-cidr: 10.43.0.0/16
-  cluster-domain: cluster.home.andrewmccall.com
+  cluster-domain: cluster.andrewmccall.com
   etcd-expose-metrics: true
   tls-san:
     - "k8s-master"

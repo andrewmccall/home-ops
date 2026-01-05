@@ -28,7 +28,7 @@ flux bootstrap git \
   --branch=main \
   --private-key-file=../key \
   --path=cluster/flux-system/ \
-  --cluster-domain=cluster.home.andrewmccall.com
+  --cluster-domain=cluster.andrewmccall.com
 ```
 
 Enable k3s upgrades (if not already done by ansible)

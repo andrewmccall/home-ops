@@ -23,7 +23,7 @@ _...with Ansible, Kubernetes and flex :sailboat:
 ## :open_book: Overview
 This repo contains everything I use to setup and manage my home network. 
 
-* An internal DNS server for *.home.andrewmccall.com
+* An internal DNS server
 * k8s cluster that runs on all my machines. 
 * Everything is deployed as a docker container usually using labels to get it in the right place
 * All machines are ubuntu servers

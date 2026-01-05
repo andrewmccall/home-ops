@@ -10,8 +10,6 @@ resources:
   - grafana.yaml
   - home-ops.yaml
   - ingress-nginx.yaml
-  - jetstack.yaml
-  - kyverno.yaml
   - node-feature-discovery.yaml
   - prometheus-community.yaml
   - vector.yaml
