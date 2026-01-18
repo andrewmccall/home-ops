@@ -71,6 +71,7 @@ spec:
               repository: rhasspy/wyoming-piper
               # renovate: datasource=docker rhasspy/wyoming-piper
               tag: 2.1.2
+              args: ["--voice", "en_GB-alan-medium"]
     service:
       app:
         controller: home-assistant
