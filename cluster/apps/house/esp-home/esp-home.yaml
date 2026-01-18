@@ -10,7 +10,8 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 4.5.0
+      # renovate: datasource=helm registryUrl=https://ghcr.io/bjw-s/helm chart=app-template
+      version: 4.6.2
       sourceRef:
         kind: HelmRepository
         name: bjw-s
