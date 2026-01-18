@@ -61,16 +61,16 @@ spec:
                 memory: 512Mi
       voice:
         containers:
-        whisper-wyoming:
-          image:
-            repository: rhasspy/wyoming-whisper
-            # renovate: datasource=docker rhasspy/wyoming-whisper
-            tag: 3.0.2
-        piper-wyoming:
-          image:
-            repository: rhasspy/wyoming-whisper
-            # renovate: datasource=docker rhasspy/wyoming-piper
-            tag: 2.1.2
+          whisper:
+            image:
+              repository: rhasspy/wyoming-whisper
+              # renovate: datasource=docker rhasspy/wyoming-whisper
+              tag: 3.0.2
+          piper:
+            image:
+              repository: rhasspy/wyoming-whisper
+              # renovate: datasource=docker rhasspy/wyoming-piper
+              tag: 2.1.2
     service:
       app:
         controller: home-assistant
@@ -123,13 +123,17 @@ spec:
         globalMounts:
           - path: /tmp
       whisper-data:
-        type: emptyDir
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 50Gi
         advancedMounts:
           voice:
             whisper-wyoming:
               - path: /data
       piper-data:
-        type: emptyDir
+        type: persistentVolumeClaim
+        accessMode: ReadWriteOnce
+        size: 50Gi
         advancedMounts:
           voice:
             piper-wyoming:
