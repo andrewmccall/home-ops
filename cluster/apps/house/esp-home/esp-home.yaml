@@ -1,0 +1,116 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: esp-home
+  namespace: house
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 4.5.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      esphome:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/esphome/esphome
+              tag: 2025.12.5@sha256:02fb00e3b79badaa54c7017e12d2afa9f1158887541f148459b7f653d3f05314
+              pullPolicy: IfNotPresent
+            env:
+              TZ: America/Chicago
+              # From https://github.com/ptr727/ESPHome-NonRoot
+              PLATFORMIO_CORE_DIR: /cache/pio
+              # ESPHome "build_path" option, default is "/config/.esphome/build/[project]"
+              ESPHOME_BUILD_PATH: /cache/build
+              # ESPHome "data_dir" option, default is "/config/.esphome"
+              ESPHOME_DATA_DIR: /cache/data
+              # Set pip cache directory, default is "~/.cache/pip"
+              PIP_CACHE_DIR: /cache/pip
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 2Gi
+          code:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/coder/code-server
+              tag: 4.107.0@sha256:4b622c4cd1b0f559fec0df67fcf09042d63e9ce84c575102066afd9511695627
+              pullPolicy: IfNotPresent
+            args:
+              - --disable-telemetry
+              - --disable-update-check
+              - --auth=none
+              - --user-data-dir=/cache
+              - --extensions-dir=/cache
+              - /config
+            resources:
+              requests:
+                cpu: 0m
+                memory: 50Mi
+              limits:
+                cpu: 500m
+                memory: 500Mi
+    service:
+      esphome:
+        controller: esphome
+        ports:
+          http:
+            port: 6052
+      code:
+        controller: code
+        ports:
+          http:
+            port: 8080
+    ingress:
+      esphome:
+        className: internal
+        hosts:
+          - host: esphome.${DOMAIN}
+            paths:
+              - path: /
+                service:
+                  identifier: esp
+                  port: http
+      code-server:
+        className: internal
+        hosts:
+          - host: esphome-code.${DOMAIN}
+            paths:
+              - path: /
+                service:
+                  identifier: code
+                  port: http
+    persistence:
+      config:
+        existingClaim: esp-home-config
+        globalMounts:
+          - path: /config
+      cache:
+        existingClaim: esp-home-cache
+        globalMounts:
+          - path: /cache
+      
+      tmp:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
