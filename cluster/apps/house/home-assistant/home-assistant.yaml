@@ -43,16 +43,6 @@ spec:
                 cpu: 10m
               limits:
                 memory: 2Gi
-          whisper-wyoming:
-            image:
-              repository: rhasspy/wyoming-whisper
-              # renovate: datasource=docker rhasspy/wyoming-whisper
-              tag: 3.0.2
-          piper-wyoming:
-            image:
-              repository: rhasspy/wyoming-whisper
-              # renovate: datasource=docker rhasspy/wyoming-piper
-              tag: 2.1.2
           code-server:
             image:
               repository: ghcr.io/coder/code-server
@@ -69,6 +59,18 @@ spec:
                 cpu: 10m
               limits:
                 memory: 512Mi
+      voice:
+        containers:
+        whisper-wyoming:
+          image:
+            repository: rhasspy/wyoming-whisper
+            # renovate: datasource=docker rhasspy/wyoming-whisper
+            tag: 3.0.2
+        piper-wyoming:
+          image:
+            repository: rhasspy/wyoming-whisper
+            # renovate: datasource=docker rhasspy/wyoming-piper
+            tag: 2.1.2
     service:
       app:
         controller: home-assistant
@@ -77,6 +79,13 @@ spec:
             port: 8123
           code-server:
             port: 12321
+      voice: 
+        controller: voice
+        ports: 
+          whisper-wyoming:
+            port: 10300
+          piper-wyoming:
+            port: 10200
     ingress:
       app:
         className: external
@@ -116,12 +125,12 @@ spec:
       whisper-data:
         type: emptyDir
         advancedMounts:
-          app:
+          voice:
             whisper-wyoming:
               - path: /data
       piper-data:
         type: emptyDir
         advancedMounts:
-          app:
+          voice:
             piper-wyoming:
               - path: /data
