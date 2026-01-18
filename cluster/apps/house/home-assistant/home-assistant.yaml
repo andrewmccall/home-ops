@@ -68,7 +68,7 @@ spec:
               tag: 3.0.2
           piper:
             image:
-              repository: rhasspy/wyoming-whisper
+              repository: rhasspy/wyoming-piper
               # renovate: datasource=docker rhasspy/wyoming-piper
               tag: 2.1.2
     service:
