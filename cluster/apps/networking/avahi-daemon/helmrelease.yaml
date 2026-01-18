@@ -42,6 +42,7 @@ spec:
                 memory: 128Mi       
     persistence:
       dbus:
+        enabled: true
         type: hostPath
         hostPath: /run/dbus/system_bus_socket
         hostPathType: Socket
