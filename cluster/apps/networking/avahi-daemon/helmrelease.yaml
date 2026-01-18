@@ -1,0 +1,48 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: avahi-daemon
+  namespace: networking
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      # renovate: datasource=helm registryUrl=https://bjw-s-labs.github.io/helm-charts chart=app-template
+      version: 4.6.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      avahi-daemon:
+        containers:
+          app:
+            image:
+              repository: flungo/avahi
+              tag: latest
+              pullPolicy: IfNotPresent
+            env:
+              REFLECTOR_ENABLE_REFLECTOR: "yes"  
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 128Mi       
+    persistence:
+      dbus:
+        hostPath:
+          - path: /run/dbus/system_bus_socket
+            type: Socket
+        path: /run/dbus/system_bus_socket

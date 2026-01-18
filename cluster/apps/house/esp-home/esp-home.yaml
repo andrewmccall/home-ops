@@ -36,7 +36,7 @@ spec:
               tag: 2025.12.5@sha256:02fb00e3b79badaa54c7017e12d2afa9f1158887541f148459b7f653d3f05314
               pullPolicy: IfNotPresent
             env:
-              TZ: America/Chicago
+              TZ: Europe/London
               # From https://github.com/ptr727/ESPHome-NonRoot
               PLATFORMIO_CORE_DIR: /cache/pio
               # ESPHome "build_path" option, default is "/config/.esphome/build/[project]"
