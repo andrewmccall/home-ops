@@ -77,4 +77,4 @@ spec:
     persistence:
       data:
         type: persistentVolumeClaim
-        existingClaim: zigbee2mqtt
+        existingClaim: zigbee2mqtt-data
