@@ -1,0 +1,63 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: music-assistant
+  namespace: house
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      # renovate: datasource=helm registryUrl=https://bjw-s-labs.github.io/helm-charts chart=app-template
+      version: 4.6.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      music-assistant:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/music-assistant/server
+              tag: 2.7.5
+              pullPolicy: IfNotPresent
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 2Gi
+    service:
+      music-assistant:
+        controller: music-assistant
+        ports:
+          http:
+            port: 8095
+    ingress:
+      esphome:
+        className: internal
+        hosts:
+          - host: music-assistant.${DOMAIN}
+            paths:
+              - path: /
+                service:
+                  identifier: music-assistant
+                  port: http
+    persistence:
+      config:
+        existingClaim: music-assistant-data
+        globalMounts:
+          - path: /data

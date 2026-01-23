@@ -5,3 +5,4 @@ resources:
   - home-assistant
   - zigbee2mqtt
   - esp-home
+  - music-assistant
