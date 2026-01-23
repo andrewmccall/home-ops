@@ -77,5 +77,4 @@ spec:
     persistence:
       data:
         type: persistentVolumeClaim
-        accessMode: ReadWriteOnce
-        size: 5Gi
+        existingClaim: zigbee2mqtt-data
