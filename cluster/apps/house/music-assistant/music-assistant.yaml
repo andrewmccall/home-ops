@@ -46,6 +46,8 @@ spec:
         ports:
           http:
             port: 8095
+          streaming:
+            port: 8097
     ingress:
       esphome:
         className: internal
