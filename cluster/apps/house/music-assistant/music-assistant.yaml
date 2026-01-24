@@ -48,6 +48,8 @@ spec:
             port: 8095
           streaming:
             port: 8097
+          streaming-other:
+            port: 8098
     ingress:
       esphome:
         className: internal
