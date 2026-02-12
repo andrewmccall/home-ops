@@ -70,7 +70,7 @@ spec:
             image:
               repository: rhasspy/wyoming-piper
               # renovate: datasource=docker rhasspy/wyoming-piper
-              tag: 2.1.2
+              tag: 2.2.2@sha256:c874e4a04657ae3381332ee5d0c8c70a310dae6722892840f530ac0890b44eb3
             args: ["--voice", "en_GB-alan-medium"]
     service:
       app:
