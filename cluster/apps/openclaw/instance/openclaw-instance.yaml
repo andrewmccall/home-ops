@@ -12,7 +12,8 @@ spec:
         defaults:
           model:
             primary: "openrouter/hunter-alpha"
-          sandbox: true
+          sandbox:
+            enabled: true
       session:
         scope: per-sender
   envFrom:
