@@ -6,7 +6,7 @@ metadata:
   namespace: openclaw
 spec:
   config:
-    mergeMode: overwrite
+    mergeMode: merge
     raw:
       agents:
         defaults:
