@@ -5,5 +5,5 @@ resources:
   - openclaw-helmrepo.yaml
   - operator-namespace.yaml
   - namespace.yaml
-  - operator
-  - instance
+  - operator-kustomization.yaml
+  - instance-kustomization.yaml
