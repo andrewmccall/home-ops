@@ -41,7 +41,17 @@ spec:
     ingress:
       enabled: true
       ingressClassName: internal
-      hosts: ["grafana.${DOMAIN}"]
+      annotations:
+        external-dns.home.arpa/enabled: "true"
+        cert-manager.home.arpa/enabled: "true"
+      hosts:
+        - &host-grafana grafana.${DOMAIN}
+      path: /
+      pathType: Prefix
+      tls:
+        - hosts:
+            - *host-grafana
+          secretName: grafana-tls
     persistence:
       enabled: true
       existingClaim: grafana-config
