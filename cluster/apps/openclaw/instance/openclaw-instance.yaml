@@ -5,6 +5,9 @@ metadata:
   name: home-ops-openclaw
   namespace: openclaw
 spec:
+  gateway:
+    controlUiOrigins:
+      - "https://internal.andrewmccall.com"
   config:
     mergeMode: merge
     raw:
@@ -15,6 +18,8 @@ spec:
       session:
         scope: per-sender
       gateway:
+        allowedOrigins:
+          - "*"
         http:
           endpoints:
             chatCompletions:
