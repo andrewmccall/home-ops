@@ -4,3 +4,6 @@ kind: Kustomization
 namespace: openclaw
 resources:
   - litellm.yaml
+  - litellm-secrets.sops.yaml
+  - openai-proxy.yaml
+  - openai-proxy-tls-secret.sops.yaml

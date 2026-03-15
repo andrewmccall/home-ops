@@ -38,6 +38,12 @@ spec:
             env:
               TZ: Europe/London
               HASS_HTTP_TRUSTED_PROXY_1: ${K8S_CLUSTER_CIDR}
+              # Trust the self-signed CA for internal api.openai.com proxy
+              REQUESTS_CA_BUNDLE: /config/certs/openai-internal-ca.pem
+            hostAliases:
+              - ip: "10.43.100.100"
+                hostnames:
+                  - "api.openai.com"
             resources:
               requests:
                 cpu: 10m
@@ -113,6 +119,14 @@ spec:
         existingClaim: home-assistant-config
         globalMounts:
           - path: /config
+      openai-ca:
+        type: configMap
+        name: openai-internal-ca
+        advancedMounts:
+          home-assistant:
+            app:
+              - path: /config/certs/openai-internal-ca.pem
+                subPath: ca.pem
       logs:
         type: emptyDir
         globalMounts:

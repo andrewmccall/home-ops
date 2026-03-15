@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - config-pvc.yaml
   - home-assistant.yaml
+  - openai-ca-configmap.yaml
