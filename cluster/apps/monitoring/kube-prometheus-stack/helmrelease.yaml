@@ -19,7 +19,7 @@ spec:
     alertmanager:
       ingress:
         enabled: true
-        ingressClassName: "external"
+        ingressClassName: internal
         annotations:
           external-dns.home.arpa/enabled: "true"
           cert-manager.home.arpa/enabled: "true"
@@ -77,7 +77,7 @@ spec:
         paths:
           - /
         pathType: Prefix
-        ingressClassName: "external"
+        ingressClassName: "internal"
       thanosService:
         enabled: true
       thanosServiceMonitor:
@@ -85,7 +85,7 @@ spec:
       thanosIngress:
         enabled: true
         pathType: Prefix
-        ingressClassName: "external"
+        ingressClassName: "internal"
         annotations:
           nginx.ingress.kubernetes.io/ssl-redirect: "true"
           nginx.ingress.kubernetes.io/backend-protocol: "GRPC"

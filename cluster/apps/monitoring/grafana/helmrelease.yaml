@@ -40,7 +40,7 @@ spec:
       enabled: true
     ingress:
       enabled: true
-      ingressClassName: external
+      ingressClassName: internal
       hosts: ["grafana.${DOMAIN}"]
     persistence:
       enabled: true
