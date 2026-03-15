@@ -18,8 +18,6 @@ spec:
       session:
         scope: per-sender
       gateway:
-        allowedOrigins:
-          - "*"
         http:
           endpoints:
             chatCompletions:

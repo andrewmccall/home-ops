@@ -13,13 +13,12 @@ From `openclaw-rocks/k8s-operator` README:
 - Do not set `gateway.mode: local` in Kubernetes.
 - For Control UI via ingress, include the token in the URL fragment:
   - `https://openclaw-gateway.andrewmccall.com/#token=<token>`
-- Since `v2026.2.24`, set `gateway.allowedOrigins: ["*"]` if using non-default hostnames.
+- Use `spec.gateway.controlUiOrigins` to add non-default reverse-proxy origins.
 - The operator auto-injects `gateway.controlUi.allowedOrigins` from localhost + ingress hosts + `spec.gateway.controlUiOrigins`.
 
 This repo sets:
 
 - `spec.gateway.controlUiOrigins: ["https://internal.andrewmccall.com"]`
-- `spec.config.raw.gateway.allowedOrigins: ["*"]`
 
 ## 504 timeout troubleshooting
 
