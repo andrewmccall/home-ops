@@ -8,6 +8,7 @@ spec:
   gateway:
     controlUiOrigins:
       - "https://internal.andrewmccall.com"
+      - "https://openclaw-gateway.andrewmccall.com"
   config:
     mergeMode: merge
     raw:

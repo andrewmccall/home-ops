@@ -18,10 +18,8 @@ From `openclaw-rocks/k8s-operator` README:
 
 This repo sets:
 
-- `spec.gateway.controlUiOrigins: ["https://internal.andrewmccall.com"]`
-- `spec.config.mergeMode: overwrite` (temporary safety setting to clear stale `gateway.allowedOrigins` left in PVC from earlier config)
-
-After one clean startup, you can switch `mergeMode` back to `merge` if you want runtime config changes persisted.
+- `spec.gateway.controlUiOrigins: ["https://internal.andrewmccall.com", "https://openclaw-gateway.andrewmccall.com"]`
+- `spec.config.mergeMode: merge`
 
 ## 504 timeout troubleshooting
 
