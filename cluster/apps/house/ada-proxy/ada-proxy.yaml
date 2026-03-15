@@ -1,0 +1,64 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ada-proxy
+  namespace: house
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 4.6.2
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    controllers:
+      ada-proxy:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/andrewmccall/ada-proxy
+              tag: latest
+              pullPolicy: Always
+            env:
+              OPENROUTER_BASE_URL: https://openrouter.ai/api/v1
+              OPENROUTER_MODEL: openrouter/hunter-alpha
+            envFrom:
+              - secretRef:
+                  name: ada-proxy-secrets
+            resources:
+              requests:
+                cpu: 10m
+                memory: 128Mi
+              limits:
+                memory: 256Mi
+    service:
+      app:
+        controller: ada-proxy
+        ports:
+          http:
+            port: 8000
+    ingress:
+      app:
+        className: internal
+        hosts:
+          - host: ada-proxy.${DOMAIN}
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http

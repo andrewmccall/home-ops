@@ -6,3 +6,4 @@ resources:
   - zigbee2mqtt
   - esp-home
   - music-assistant
+  - ada-proxy
