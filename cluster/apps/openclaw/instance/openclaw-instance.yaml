@@ -14,6 +14,11 @@ spec:
             primary: "openrouter/hunter-alpha"
       session:
         scope: per-sender
+      gateway:
+        http:
+          endpoints:
+            chatCompletions:
+              enabled: true
   envFrom:
     - secretRef:
         name: openclaw-api-keys
