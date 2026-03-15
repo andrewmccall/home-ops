@@ -9,7 +9,7 @@ spec:
     controlUiOrigins:
       - "https://internal.andrewmccall.com"
   config:
-    mergeMode: merge
+    mergeMode: overwrite
     raw:
       agents:
         defaults:
