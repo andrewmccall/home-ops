@@ -8,7 +8,7 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/proxy-body-size: "10m"
 spec:
-  className: internal
+  ingressClassName: internal
   rules:
     - host: openclaw-gateway.${DOMAIN}
       http:
