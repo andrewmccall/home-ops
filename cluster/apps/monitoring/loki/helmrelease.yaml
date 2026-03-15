@@ -27,7 +27,7 @@ spec:
     gateway:
       ingress:
         enabled: true
-        ingressClassName: nginx
+        ingressClassName: external
         annotations:
           cert-manager.home.arpa/enabled: "true"
         hosts:

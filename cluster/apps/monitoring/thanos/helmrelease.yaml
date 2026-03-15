@@ -28,6 +28,7 @@ spec:
         sidecarsNamespace: monitoring
       ingress:
         enabled: true
+        ingressClassName: external
         hostname: thanos-query.${DOMAIN}
         annotations:
           cert-manager.home.arpa/enabled: "true"
