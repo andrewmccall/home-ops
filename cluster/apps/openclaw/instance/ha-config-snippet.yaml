@@ -1,0 +1,25 @@
+# Home Assistant configuration.yaml additions
+# Direct integration with OpenClaw gateway (full Ada with memory, tools, context)
+
+# OpenAI conversation integration pointing at OpenClaw gateway
+openai_conversation:
+  - api_base: http://openclaw-gateway.${DOMAIN}/v1
+    api_key: "YOUR_GATEWAY_TOKEN"  # Use gateway.auth.token from OpenClaw config
+    model: "openclaw:main"
+    name: Ada
+
+# Then in Settings > Voice Assistants:
+# 1. Create a new assistant called "Ada"
+# 2. Set Conversation agent to "Ada" (the OpenAI integration above)
+# 3. Set STT to "Whisper" (already configured - wyoming at whisper-wyoming.house:10300)
+# 4. Set TTS to "Piper" (already configured - wyoming at piper-wyoming.house:10200)
+# 5. Assign to your Satellite 1 device
+#
+# When you speak to the Satellite 1:
+#   Your voice → Whisper (STT) → OpenClaw gateway (full Ada session) → Piper (TTS) → speaker
+#
+# This gives you FULL Ada:
+# - Memory (MEMORY.md, daily notes)
+# - Tools (web search, GitHub, file access)
+# - Context from Telegram conversations
+# - Same session as your Telegram chat
