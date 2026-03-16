@@ -164,7 +164,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
 spec:
-  className: internal
+  ingressClassName: internal
   rules:
     - host: otel.${DOMAIN}
       http:
