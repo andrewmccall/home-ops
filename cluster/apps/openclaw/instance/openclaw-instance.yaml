@@ -9,15 +9,15 @@ spec:
     controlUiOrigins:
       - "https://internal.andrewmccall.com"
       - "https://openclaw-gateway.andrewmccall.com"
-  plugins:
-    allow:
-      - diagnostics-otel
-    entries:
-      diagnostics-otel:
-        enabled: true
   config:
     mergeMode: overwrite
     raw:
+      plugins:
+        allow:
+          - diagnostics-otel
+        entries:
+          diagnostics-otel:
+            enabled: true
       agents:
         defaults:
           model:
