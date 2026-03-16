@@ -101,8 +101,8 @@ spec:
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
         probeSelectorNilUsesHelmValues: false
-        retention: 2d
-        retentionSize: "5GB"
+        retention: 30d
+        retentionSize: "10GB"
         walCompression: true
         storageSpec:
           volumeClaimTemplate:
