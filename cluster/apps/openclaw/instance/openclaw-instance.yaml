@@ -26,7 +26,7 @@ spec:
       diagnostics:
         enabled: true
         otel:
-          enabled: true
+          enabled: false
           endpoint: "http://otel-collector.monitoring.svc:4318"
           protocol: "http/protobuf"
           traces: true
