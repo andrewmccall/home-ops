@@ -93,11 +93,11 @@ spec:
       port: prometheus-sink
   postRenderers:
     - kustomize:
-        patchesJson6902:
+        patches:
           - target:
               kind: Service
               name: vector-aggregator
-            patch:
+            patch: |-
               - op: add
                 path: /spec/externalIPs
                 value:
