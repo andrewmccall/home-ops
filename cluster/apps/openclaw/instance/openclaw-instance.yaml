@@ -23,18 +23,6 @@ spec:
           endpoints:
             chatCompletions:
               enabled: true
-<<<<<<< HEAD
-      messages:
-        stt:
-          enabled: true
-          maxBytes: 20971520
-          models:
-            - provider: "openai"
-              model: "whisper-1"
-              baseUrl: "http://whisper-stt.openclaw.svc.cluster.local:9000/v1"
-              apiKey: "unused"
-          timeoutSeconds: 120
-=======
       diagnostics:
         otel:
           enabled: true
@@ -53,7 +41,6 @@ spec:
               - provider: openai
                 model: whisper-1
                 baseUrl: "http://whisper-stt.openclaw.svc.cluster.local:9000/v1"
->>>>>>> cee1391 (udpate)
   envFrom:
     - secretRef:
         name: openclaw-api-keys
