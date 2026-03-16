@@ -1,0 +1,83 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: whisper-stt-cache
+  namespace: openclaw
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: longhorn
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: whisper-stt
+  namespace: openclaw
+  labels:
+    app: whisper-stt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: whisper-stt
+  template:
+    metadata:
+      labels:
+        app: whisper-stt
+    spec:
+      containers:
+        - name: whisper
+          image: onerahmet/openai-whisper-asr-webservice:latest
+          env:
+            - name: ASR_MODEL
+              value: "base"
+            - name: ASR_ENGINE
+              value: "openai_whisper"
+          ports:
+            - containerPort: 9000
+              name: http
+          volumeMounts:
+            - name: cache
+              mountPath: /root/.cache/whisper
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: 2000m
+              memory: 4Gi
+          readinessProbe:
+            httpGet:
+              path: /docs
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          startupProbe:
+            httpGet:
+              path: /docs
+              port: 9000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 30
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: whisper-stt-cache
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: whisper-stt
+  namespace: openclaw
+spec:
+  selector:
+    app: whisper-stt
+  ports:
+    - name: http
+      port: 9000
+      targetPort: 9000
+  type: ClusterIP
