@@ -1,0 +1,69 @@
+---
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: telegram-alerts
+  namespace: monitoring
+spec:
+  route:
+    groupBy: ['alertname', 'namespace']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 4h
+    receiver: telegram
+    routes:
+      - matchers:
+          - name: severity
+            value: critical
+        receiver: telegram-critical
+        repeatInterval: 1h
+  receivers:
+    - name: telegram
+      telegramConfigs:
+        - apiURL: https://api.telegram.org
+          botToken:
+            name: alertmanager-telegram-secret
+            key: bot-token
+          chatID: 7621782912
+          sendResolved: true
+          parseMode: "HTML"
+          message: |-
+            {{ if eq .Status "firing" }}🔥{{ else }}✅{{ end }} <b>{{ .CommonLabels.alertname }}</b>
+            {{ range .Alerts }}
+            <b>Status:</b> {{ .Status }}
+            <b>Severity:</b> {{ .Labels.severity }}
+            <b>Namespace:</b> {{ .Labels.namespace }}
+            <b>Summary:</b> {{ .Annotations.summary }}
+            {{ if .Annotations.description }}<b>Details:</b> {{ .Annotations.description }}{{ end }}
+            {{ end }}
+    - name: telegram-critical
+      telegramConfigs:
+        - apiURL: https://api.telegram.org
+          botToken:
+            name: alertmanager-telegram-secret
+            key: bot-token
+          chatID: 7621782912
+          sendResolved: true
+          parseMode: "HTML"
+          message: |-
+            🚨 <b>CRITICAL: {{ .CommonLabels.alertname }}</b>
+            {{ range .Alerts }}
+            <b>Namespace:</b> {{ .Labels.namespace }}
+            <b>Pod:</b> {{ .Labels.pod }}
+            <b>Summary:</b> {{ .Annotations.summary }}
+            {{ if .Annotations.description }}<b>Details:</b> {{ .Annotations.description }}{{ end }}
+            {{ end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alertmanager-telegram-secret
+  namespace: monitoring
+stringData:
+  bot-token: "REPLACE_WITH_TELEGRAM_BOT_TOKEN"
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: monitoring
+resources:
+  - alertmanager-config.yaml

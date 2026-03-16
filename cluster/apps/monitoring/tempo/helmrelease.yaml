@@ -1,0 +1,58 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tempo
+  namespace: monitoring
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: tempo
+      # renovate: datasource=helm registryUrl=https://grafana.github.io/helm-charts chart=tempo
+      version: 1.23.2
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  values:
+    tempo:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+            http:
+              endpoint: 0.0.0.0:4318
+        zipkin:
+          endpoint: 0.0.0.0:9411
+      storage:
+        trace:
+          backend: local
+          local:
+            path: /var/tempo/block
+      retention: 336h  # 14 days
+    persistence:
+      enabled: true
+      size: 50Gi
+    service:
+      type: ClusterIP
+    ingress:
+      enabled: true
+      ingressClassName: internal
+      hosts:
+        - host: tempo.${DOMAIN}
+          paths:
+            - path: /
+              pathType: Prefix
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 1Gi
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - helmrelease.yaml

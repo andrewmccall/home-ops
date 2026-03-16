@@ -24,6 +24,16 @@ spec:
         type: "filesystem"
       commonConfig:
         replication_factor: 1
+      limits_config:
+        retention_period: 720h  # 30 days
+        max_query_series: 500
+      compactor:
+        working_directory: /data/compactor
+        compaction_interval: 10m
+        retention_enabled: true
+        retention_delete_delay: 2h
+        retention_delete_worker_count: 150
+        delete_request_store: filesystem
     gateway:
       ingress:
         enabled: true

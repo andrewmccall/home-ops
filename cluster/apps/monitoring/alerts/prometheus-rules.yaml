@@ -1,0 +1,124 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cluster-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: cluster-health
+      rules:
+        - alert: NodeHighCPU
+          expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU on {{ $labels.instance }}"
+            description: "CPU usage above 85% for 10 minutes"
+
+        - alert: NodeHighMemory
+          expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High memory on {{ $labels.instance }}"
+            description: "Memory usage above 90%"
+
+        - alert: NodeDiskPressure
+          expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100 > 85
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Disk pressure on {{ $labels.instance }}"
+            description: "Root filesystem above 85%"
+
+        - alert: PVCHighUsage
+          expr: kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes * 100 > 85
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "PVC {{ $labels.persistentvolumeclaim }} above 85%"
+            description: "Volume in namespace {{ $labels.namespace }}"
+
+    - name: pod-health
+      rules:
+        - alert: PodCrashLooping
+          expr: rate(kube_pod_container_status_restarts_total[15m]) * 60 * 5 > 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} crash looping"
+
+        - alert: PodOOMKilled
+          expr: kube_pod_container_status_last_terminated_reason{reason="OOMKilled"} > 0
+          for: 0m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} OOM killed"
+
+        - alert: PodNotReady
+          expr: kube_pod_status_phase{phase=~"Pending|Unknown"} > 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} not ready for 15m"
+
+        - alert: ContainerHighCPU
+          expr: rate(container_cpu_usage_seconds_total{container!=""}[5m]) * 100 > 80
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Container {{ $labels.container }} in {{ $labels.pod }} high CPU"
+
+    - name: services
+      rules:
+        - alert: PrometheusTargetDown
+          expr: up == 0
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Target {{ $labels.instance }} down"
+            description: "{{ $labels.job }} has been down for 5 minutes"
+
+        - alert: AlertmanagerConfigInconsistent
+          expr: count_values("config_hash", alertmanager_config_hash) BY (namespace) > 1
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Alertmanager config inconsistent across instances"
+
+    - name: flux
+      rules:
+        - alert: FluxReconciliationFailure
+          expr: gotk_reconcile_condition{status="False",type="Ready"} == 1
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Flux reconciliation failed for {{ $labels.kind }}/{{ $labels.name }}"
+
+        - alert: FluxSuspendedTooLong
+          expr: gotk_suspend_status == 1
+          for: 24h
+          labels:
+            severity: info
+          annotations:
+            summary: "{{ $labels.kind }}/{{ $labels.name }} suspended for 24h+"
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: monitoring
+resources:
+  - prometheus-rules.yaml
