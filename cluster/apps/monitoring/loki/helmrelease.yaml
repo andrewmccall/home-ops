@@ -29,6 +29,7 @@ spec:
       replicas: 0
     loki:
       auth_enabled: false
+      useTestSchema: true
       storage:
         type: "filesystem"
       commonConfig:
