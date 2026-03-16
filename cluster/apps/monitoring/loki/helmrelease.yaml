@@ -17,7 +17,7 @@ spec:
         namespace: flux-system
   values:
     global:
-      clusterDomain: ${CLUSTER_DOMAIN}
+      clusterDomain: cluster.local
     deploymentMode: SingleBinary
     singleBinary:
       replicas: 1
@@ -38,7 +38,7 @@ spec:
         retention_period: 720h  # 30 days
         max_query_series: 500
       compactor:
-        working_directory: /data/compactor
+        working_directory: /var/loki/compactor
         compaction_interval: 10m
         retention_enabled: true
         retention_delete_delay: 2h
