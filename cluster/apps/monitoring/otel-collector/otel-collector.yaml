@@ -40,11 +40,11 @@ data:
 
     exporters:
       otlp/tempo:
-        endpoint: tempo.monitoring.svc.cluster.local:4317
+        endpoint: tempo.monitoring.svc.${CLUSTER_DOMAIN}:4317
         tls:
           insecure: true
       otlphttp/loki:
-        endpoint: http://loki-gateway.monitoring.svc.cluster.local/otlp
+        endpoint: http://loki-gateway.monitoring.svc.${CLUSTER_DOMAIN}/otlp
       prometheus:
         endpoint: 0.0.0.0:8889
         namespace: otel

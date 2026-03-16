@@ -15,4 +15,4 @@ data:
   VECTOR_IP: 10.44.0.10
   MINECRAFT_IP: 10.44.10.44
   ETCD_EXTDNS_IP: 10.43.0.101
-  CLUSTER_DOMAIN: cluster
+  CLUSTER_DOMAIN: cluster.andrewmccall.com

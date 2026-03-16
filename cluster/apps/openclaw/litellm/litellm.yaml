@@ -10,7 +10,7 @@ data:
       - model_name: gpt-4o
         litellm_params:
           model: openai/openclaw:main
-          api_base: http://home-ops-openclaw.openclaw.svc.cluster.local:18789/v1
+          api_base: http://home-ops-openclaw.openclaw.svc.${CLUSTER_DOMAIN}:18789/v1
           api_key: ${GATEWAY_TOKEN}
 
     general_settings:
