@@ -28,9 +28,10 @@ spec:
           enabled: true
           maxBytes: 20971520
           models:
-            - type: "cli"
-              command: "whisper"
-              args: ["--model", "base", "--language", "en", "--output_format", "txt", "{{MediaPath}}"]
+            - provider: "openai"
+              model: "whisper-1"
+              baseUrl: "http://whisper-stt.openclaw.svc.cluster.local:9000/v1"
+              apiKey: "unused"
           timeoutSeconds: 120
   envFrom:
     - secretRef:
