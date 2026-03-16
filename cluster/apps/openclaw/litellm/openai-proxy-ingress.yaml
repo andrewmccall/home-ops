@@ -22,6 +22,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: litellm
+                name: home-ops-openclaw
                 port:
-                  number: 4000
+                  number: 18789
