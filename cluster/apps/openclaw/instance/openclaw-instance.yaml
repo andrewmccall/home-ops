@@ -12,12 +12,6 @@ spec:
   config:
     mergeMode: overwrite
     raw:
-      plugins:
-        allow:
-          - diagnostics-otel
-        entries:
-          diagnostics-otel:
-            enabled: true
       agents:
         defaults:
           model:
@@ -51,6 +45,13 @@ spec:
   envFrom:
     - secretRef:
         name: openclaw-api-keys
+  env:
+    - name: OTEL_EXPORTER_OTLP_ENDPOINT
+      value: "http://otel-collector.monitoring.svc:4318"
+    - name: OTEL_EXPORTER_OTLP_PROTOCOL
+      value: "http/protobuf"
+    - name: OTEL_SERVICE_NAME
+      value: "openclaw-gateway"
   chromium:
     enabled: true
     persistence:
