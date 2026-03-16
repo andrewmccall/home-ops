@@ -18,6 +18,15 @@ spec:
   values:
     global:
       clusterDomain: ${CLUSTER_DOMAIN}
+    deploymentMode: SingleBinary
+    singleBinary:
+      replicas: 1
+    backend:
+      replicas: 0
+    read:
+      replicas: 0
+    write:
+      replicas: 0
     loki:
       auth_enabled: false
       storage:

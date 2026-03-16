@@ -23,17 +23,6 @@ spec:
           endpoints:
             chatCompletions:
               enabled: true
-      observability:
-        otel:
-          enabled: true
-          endpoint: "http://otel-collector.monitoring.svc.cluster.local:4318"
-          protocol: "http/protobuf"
-          tracesEnabled: true
-          metricsEnabled: true
-          logsEnabled: true
-          serviceName: "openclaw-gateway"
-          traceSampleRate: 0.5
-          flushIntervalMs: 5000
   envFrom:
     - secretRef:
         name: openclaw-api-keys

@@ -43,11 +43,8 @@ data:
         endpoint: tempo.monitoring.svc.cluster.local:4317
         tls:
           insecure: true
-      loki:
-        endpoint: http://loki-gateway.monitoring.svc.cluster.local:80/loki/api/v1/push
-        default_labels_enabled:
-          job: true
-          instance: true
+      otlphttp/loki:
+        endpoint: http://loki-gateway.monitoring.svc.cluster.local/otlp
       prometheus:
         endpoint: 0.0.0.0:8889
         namespace: otel
@@ -72,7 +69,7 @@ data:
         logs:
           receivers: [otlp]
           processors: [memory_limiter, batch, resource]
-          exporters: [loki]
+          exporters: [otlphttp/loki]
 ---
 apiVersion: v1
 kind: Service
