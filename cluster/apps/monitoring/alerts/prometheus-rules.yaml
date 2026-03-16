@@ -116,9 +116,3 @@ spec:
             severity: info
           annotations:
             summary: "{{ $labels.kind }}/{{ $labels.name }} suspended for 24h+"
----
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-namespace: monitoring
-resources:
-  - prometheus-rules.yaml
