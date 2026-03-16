@@ -4,5 +4,6 @@ kind: Kustomization
 resources:
   - openclaw-api-keys-secret.sops.yaml
   - openclaw-instance.yaml
+  - allow-otel-egress.yaml
   - gateway-allow-internal-nginx.yaml
   - gateway-ingress.yaml
