@@ -39,7 +39,7 @@ spec:
           metrics: true
           logs: true
           serviceName: "openclaw-gateway"
-          sampleRate: 0.5
+          sampleRate: 1.0
           flushIntervalMs: 5000
       tools:
         media:
