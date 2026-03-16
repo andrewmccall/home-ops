@@ -10,7 +10,7 @@ spec:
       - "https://internal.andrewmccall.com"
       - "https://openclaw-gateway.andrewmccall.com"
   config:
-    mergeMode: merge
+    mergeMode: overwrite
     raw:
       agents:
         defaults:
@@ -23,6 +23,7 @@ spec:
           endpoints:
             chatCompletions:
               enabled: true
+<<<<<<< HEAD
       messages:
         stt:
           enabled: true
@@ -33,6 +34,26 @@ spec:
               baseUrl: "http://whisper-stt.openclaw.svc.cluster.local:9000/v1"
               apiKey: "unused"
           timeoutSeconds: 120
+=======
+      diagnostics:
+        otel:
+          enabled: true
+          endpoint: "http://otel-collector.monitoring.svc.cluster.local:4318"
+          protocol: "http/protobuf"
+          traces: true
+          metrics: true
+          logs: true
+          serviceName: "openclaw-gateway"
+          sampleRate: 0.5
+          flushIntervalMs: 5000
+      tools:
+        media:
+          audio:
+            models:
+              - provider: openai
+                model: whisper-1
+                baseUrl: "http://whisper-stt.openclaw.svc.cluster.local:9000/v1"
+>>>>>>> cee1391 (udpate)
   envFrom:
     - secretRef:
         name: openclaw-api-keys
@@ -48,6 +69,9 @@ spec:
       limits:
         cpu: 1000m
         memory: 2Gi
+  observability:
+    metrics:
+      enabled: false
   storage:
     persistence:
       enabled: true
