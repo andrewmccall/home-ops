@@ -67,7 +67,7 @@ spec:
         - sh
         - -lc
         - |
-          set -euo pipefail
+          set -eu
           mkdir -p /home/openclaw/.openclaw/runtime
           cd /home/openclaw/.openclaw/runtime
           if [ ! -f package.json ]; then
