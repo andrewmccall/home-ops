@@ -12,6 +12,12 @@ spec:
   config:
     mergeMode: overwrite
     raw:
+      plugins:
+        allow:
+          - diagnostics-otel
+        entries:
+          diagnostics-otel:
+            enabled: true
       agents:
         defaults:
           model:
@@ -26,7 +32,7 @@ spec:
       diagnostics:
         enabled: true
         otel:
-          enabled: false
+          enabled: true
           endpoint: "http://otel-collector.monitoring.svc:4318"
           protocol: "http/protobuf"
           traces: true
@@ -46,12 +52,47 @@ spec:
     - secretRef:
         name: openclaw-api-keys
   env:
+    - name: NODE_PATH
+      value: "/home/openclaw/.openclaw/runtime/node_modules"
     - name: OTEL_EXPORTER_OTLP_ENDPOINT
       value: "http://otel-collector.monitoring.svc:4318"
     - name: OTEL_EXPORTER_OTLP_PROTOCOL
       value: "http/protobuf"
     - name: OTEL_SERVICE_NAME
       value: "openclaw-gateway"
+  initContainers:
+    - name: init-otel-modules
+      image: ghcr.io/openclaw/openclaw:latest
+      command:
+        - sh
+        - -lc
+        - |
+          set -euo pipefail
+          mkdir -p /home/openclaw/.openclaw/runtime
+          cd /home/openclaw/.openclaw/runtime
+          if [ ! -f package.json ]; then
+            npm init -y >/dev/null 2>&1
+          fi
+          npm install --no-audit --no-fund --omit=dev \
+            @opentelemetry/api \
+            @opentelemetry/api-logs \
+            @opentelemetry/exporter-logs-otlp-proto \
+            @opentelemetry/exporter-metrics-otlp-proto \
+            @opentelemetry/exporter-trace-otlp-proto \
+            @opentelemetry/resources \
+            @opentelemetry/sdk-logs \
+            @opentelemetry/sdk-metrics \
+            @opentelemetry/sdk-node \
+            @opentelemetry/sdk-trace-base \
+            @opentelemetry/semantic-conventions
+      env:
+        - name: HOME
+          value: /tmp
+        - name: NPM_CONFIG_CACHE
+          value: /tmp/.npm
+      volumeMounts:
+        - name: data
+          mountPath: /home/openclaw/.openclaw
   chromium:
     enabled: true
     persistence:
