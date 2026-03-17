@@ -3,6 +3,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - openclaw-api-keys-secret.sops.yaml
+  - social-api-keys.sops.yaml
   - openclaw-instance.yaml
   - allow-otel-egress.yaml
   - gateway-allow-internal-nginx.yaml
