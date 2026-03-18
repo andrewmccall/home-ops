@@ -22,6 +22,8 @@ spec:
         defaults:
           model:
             primary: "openrouter/hunter-alpha"
+            fallbacks:
+              - "openrouter/openai/gpt-4.1-mini"
       session:
         scope: per-sender
       gateway:
