@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: ghcr.io/esphome/esphome
-              tag: 2026.2.4@sha256:344427c7d9ed64670172def4868daf89537ac121a1a83f080cc74a6ececfb9c7
+              tag: 2026.3.0@sha256:4293c584f96cb8ea2672bca0cd98b0289c329fd2f673980fed33cadd4a59110f
               pullPolicy: IfNotPresent
             env:
               TZ: Europe/London
@@ -53,7 +53,7 @@ spec:
           code:
             image:
               repository: ghcr.io/coder/code-server
-              tag: 4.111.0@sha256:d7a7c0188e942c53e7725dc7b7990086e1701557330f7db179fa270813544dcc
+              tag: 4.112.0@sha256:ddd9b0b854fec5a3c65ec0095b5c59fb8505ad44d8a18d00d6fcf6a3179692dd
               pullPolicy: IfNotPresent
             args:
               - --disable-telemetry
