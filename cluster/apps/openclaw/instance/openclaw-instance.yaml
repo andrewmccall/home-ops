@@ -21,7 +21,7 @@ spec:
       agents:
         defaults:
           model:
-            primary: "openrouter/hunter-alpha"
+            primary: "minimax/minimax-m2.5:free"
       session:
         scope: per-sender
       gateway:
@@ -51,6 +51,8 @@ spec:
   envFrom:
     - secretRef:
         name: openclaw-api-keys
+    - secretRef:
+        name: social-api-keys
   env:
     - name: NODE_PATH
       value: "/home/openclaw/.openclaw/runtime/node_modules"
