@@ -1,15 +1,34 @@
----
 apiVersion: v1
 kind: Secret
 metadata:
-  name: social-api-keys
-  namespace: openclaw
+    name: social-api-keys
+    namespace: openclaw
 stringData:
-  XURL_CONSUMER_KEY: "REPLACE_WITH_X_CONSUMER_KEY"
-  XURL_CONSUMER_SECRET: "REPLACE_WITH_X_CONSUMER_SECRET"
-  XURL_ACCESS_TOKEN: "REPLACE_WITH_X_ACCESS_TOKEN"
-  XURL_TOKEN_SECRET: "REPLACE_WITH_X_TOKEN_SECRET"
-  REDDIT_CLIENT_ID: "REPLACE_WITH_REDDIT_CLIENT_ID"
-  REDDIT_CLIENT_SECRET: "REPLACE_WITH_REDDIT_CLIENT_SECRET"
-  REDDIT_USERNAME: "REPLACE_WITH_REDDIT_USERNAME"
-  REDDIT_PASSWORD: "REPLACE_WITH_REDDIT_PASSWORD"
+    XURL_CONSUMER_KEY: ENC[AES256_GCM,data:7QL3lc8RXmVkqw2NeXtiQSKep6GZRLcteA==,iv:3WcjNVLpLhnBTWEkvDIFLnzMWr7W//Ncm/q3yae9ByE=,tag:nGpdjy7ZrZNEI1KdIOMM8Q==,type:str]
+    XURL_CONSUMER_SECRET: ENC[AES256_GCM,data:b9eLY3i4SHx78OEEVN7/5od3IrYybknJEMLpC52msB7qfluXYVBBuqv3TLG7oPU7lrg=,iv:5wQbs1tJV3c0+cNwNuDGO4KLJWsmBuPo65KG4sCP3eQ=,tag:wSl0eL4aALx8dp/t3jD/YQ==,type:str]
+    XURL_ACCESS_TOKEN: ENC[AES256_GCM,data:oT+3bxSscefNK8cDV1ayev7KmHHig6zhGBd3UneBXdDB5tcQGsqEVD9kMPteziQb7Hc=,iv:rFlYGGNAzhs/cbEE4696purvyNbTQz+4raAnR+Evs/Q=,tag:Obzpu0FiWFU2B6VcnFwgrg==,type:str]
+    XURL_TOKEN_SECRET: ENC[AES256_GCM,data:OMUjVButdA6MYTFmUcnCDdF1iTsFB/9C7fE/7Nkgzb+dzxHSGPIZ+ZqCkQkE,iv:BOnkOgvBHOS+w+d+t2H6YQtGtajYmkixANmHNw4LatE=,tag:QieYQMoY7LvhHLTLthS17w==,type:str]
+    REDDIT_CLIENT_ID: ENC[AES256_GCM,data:YGJmzi7u8t68GHTy/gxlXfk8cezFUri17ea+dB8=,iv:vBkUuc85K7LfQ96PaPv/H7yQVW9oNRl8Ai6GPBhWi8E=,tag:0SIRdmflBFbvBVEx0ELKbA==,type:str]
+    REDDIT_CLIENT_SECRET: ENC[AES256_GCM,data:eHc2DP8stQr2C7IA2nt+HUsMemWw0K6N4jFA4XmLqoww,iv:DXqB8UAf09AFMjmnfdKZufSm4SFLssPhgTHDaavVKXY=,tag:3k1VLZMUk+BtV+VUGY4Cbg==,type:str]
+    REDDIT_USERNAME: ENC[AES256_GCM,data:5NJ8p9a6xgGD5F3HQT9BB3tac5/Hz0zX0afuZA==,iv:e12yw/WeBRg2GsPtdlELloQ7ElHjJzPHRqTp42YHbQ4=,tag:7YbqcV7JJmpLPvJ0UhHkaA==,type:str]
+    REDDIT_PASSWORD: ENC[AES256_GCM,data:cUSryuueVgJk5ffwpVcdADTDy3ABUrQwfMJ2fA==,iv:Cso1LCCgsUU3XTgOSS5NzeGYG6B6KCarf8XI5kVFAHI=,tag:xRij7IQpEULYr2JsxmaRmQ==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBHdE55WWFvTU1kc1FxK2s3
+            YVppZXpOYjRVaitoOG9tdk5vMWFmNzdqSlVZCmdhVEdlciswVm9XN3RIeS9RMExp
+            a0xFbUIvalJZUEkwNDRKN1NiM2JJZncKLS0tIEtTVCsyOXk4cXUwQk9PaG8wNWdi
+            VGhHc0dyQy9xUFR0UnlBcSthSFU2cG8KpJvGQdAJUipZBnpYKH/KA3RJ6gnDaWSp
+            2+bEPYI+i2/xti2vrWC8ov/GKNSNU8lEq7H+y/xVDbgKguK0xGA5iQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-03-22T16:13:42Z"
+    mac: ENC[AES256_GCM,data:jIQJt92UfrnOqUv+FOL/9SJM696zHzfvC8sxs9r5Ug7Q8A2tZ/A8YRtgb4fSXQG0jfckZXbIsJBdXQRrrAoDOYzGf+3nQcF0pVQ+fP2bhRBPBj2TwXDzpq0McKCRPWKNnPgQtbzdOwOdeA8WBkJhpc4V5LKfv5WQdtRvEnweXNc=,iv:iYbebm7df9IVScgvm2qXXcFqHqEvLldmNogpx6dN5ZQ=,tag:IhwUHRsweMOxvNoFrx7ZwA==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0
