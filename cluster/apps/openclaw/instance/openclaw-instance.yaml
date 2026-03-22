@@ -21,7 +21,7 @@ spec:
       agents:
         defaults:
           model:
-            primary: "minimax/minimax-m2.5:free"
+            primary: "stepfun/step-3.5-flash:free"
       session:
         scope: per-sender
       gateway:
@@ -97,6 +97,9 @@ spec:
           mountPath: /home/openclaw/.openclaw
   chromium:
     enabled: true
+    image:
+      repository: chromedp/headless-shell
+      tag: stable
     persistence:
       enabled: true
       size: 5Gi
