@@ -21,7 +21,7 @@ spec:
       agents:
         defaults:
           model:
-            primary: "openrouter/minimax/minimax-m2.5:free"
+            primary: "openrouter/google/gemini-3-flash-preview"
       session:
         scope: per-sender
       gateway:
