@@ -10,10 +10,9 @@ spec:
       - "https://internal.andrewmccall.com"
       - "https://openclaw-gateway.andrewmccall.com"
   config:
-    mergeMode: overwrite
+    mergeMode: merge
     raw:
       gateway:
-        mode: local
         http:
           endpoints:
             chatCompletions:
@@ -35,8 +34,6 @@ spec:
         defaults:
           model:
             primary: "openrouter/google/gemini-3-flash-preview"
-          memorySearch:
-            enabled: false
       session:
         scope: per-sender
       diagnostics:
