@@ -12,23 +12,25 @@ spec:
   config:
     mergeMode: overwrite
     raw:
-      plugins:
-        allow:
-          - diagnostics-otel
-        entries:
-          diagnostics-otel:
-            enabled: true
-      agents:
-        defaults:
-          model:
-            primary: "openrouter/google/gemini-3-flash-preview"
-      session:
-        scope: per-sender
       gateway:
+        mode: local
         http:
           endpoints:
             chatCompletions:
               enabled: true
+      channels:
+        telegram:
+          botToken: "env:TELEGRAM_BOT_TOKEN"
+          groupPolicy: open
+      plugins:
+        allow:
+          - diagnostics-otel
+          - telegram
+        entries:
+          diagnostics-otel:
+            enabled: true
+          telegram:
+            enabled: true
       diagnostics:
         enabled: true
         otel:
