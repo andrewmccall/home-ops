@@ -31,6 +31,14 @@ spec:
             enabled: true
           telegram:
             enabled: true
+      agents:
+        defaults:
+          model:
+            primary: "openrouter/google/gemini-3-flash-preview"
+          memorySearch:
+            enabled: false
+      session:
+        scope: per-sender
       diagnostics:
         enabled: true
         otel:
