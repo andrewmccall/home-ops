@@ -10,13 +10,15 @@ spec:
       - "https://internal.andrewmccall.com"
       - "https://openclaw-gateway.andrewmccall.com"
   config:
-    mergeMode: overwrite
+    mergeMode: merge
     raw:
       plugins:
         allow:
           - diagnostics-otel
         entries:
           diagnostics-otel:
+            enabled: true
+          telegram:
             enabled: true
       agents:
         defaults:
