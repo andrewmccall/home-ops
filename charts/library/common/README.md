@@ -79,7 +79,7 @@ N/A
 | addons.promtail.env | object | `{}` | Set any environment variables for promtail here |
 | addons.promtail.image.pullPolicy | string | `"IfNotPresent"` | Specify the promtail image pull policy |
 | addons.promtail.image.repository | string | `"docker.io/grafana/promtail"` | Specify the promtail image |
-| addons.promtail.image.tag | string | `"3.6.7@sha256:51346af8682f7a664affaca4f34a62f5a4f0f83ace9931df94590375a94ff8f1"` | Specify the promtail image tag |
+| addons.promtail.image.tag | string | `"3.6.10@sha256:2a0f5e3e160ee5d549c585f6cc4f4e1c566ff783324a424bd75bc16503fc660e"` | Specify the promtail image tag |
 | addons.promtail.logs | list | `[]` | The paths to logs on the volume |
 | addons.promtail.loki | string | `""` | The URL to Loki |
 | addons.promtail.volumeMounts | list | `[]` | Specify a list of volumes that get mounted in the promtail container. At least 1 volumeMount is required! |
