@@ -7,4 +7,5 @@ resources:
   - openclaw-instance.yaml
   - allow-otel-egress.yaml
   - gateway-allow-internal-nginx.yaml
+  - gateway-allow-house-voice.yaml
   - gateway-ingress.yaml
