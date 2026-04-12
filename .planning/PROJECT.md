@@ -2,7 +2,7 @@
 
 ## What This Is
 
-This repo manages the self-hosted home infrastructure stack across Kubernetes, Home Assistant, Music Assistant, and OpenClaw. The current milestone extends that stack so Home Assistant can serve as the voice shell while OpenClaw answers as Ada through a narrow, security-conscious home automation integration.
+This repo manages the self-hosted home infrastructure stack across Kubernetes, Home Assistant, Music Assistant, and OpenClaw. The current milestone extends that stack so Home Assistant can serve as the voice shell while OpenClaw answers as Ada through the full shared Ada surface, with Home Assistant still acting as the executor for approved home actions.
 
 ## Core Value
 
@@ -10,10 +10,11 @@ Home Assistant and adjacent services should work together as a reliable self-hos
 
 ## Current Milestone: v1.0 Ada Home Assistant Voice
 
-**Goal:** Deliver a deployable Home Assistant + OpenClaw voice assistant flow where Ada handles conversation, wake word support is part of the design, Home Assistant can forward filtered events to OpenClaw, and OpenClaw can use a narrow approved action surface back into Home Assistant.
+**Goal:** Deliver a deployable Home Assistant + OpenClaw voice assistant flow where Ada handles conversation through the full shared OpenClaw surface, wake word support is part of the design, Home Assistant can forward filtered events to OpenClaw, and OpenClaw can use a narrow approved action surface back into Home Assistant.
 
 **Target features:**
 - End-to-end Assist -> OpenClaw -> Ada -> Piper voice path
+- Full shared Ada/OpenClaw voice surface reused for Home Assistant voice conversations
 - Ada identity enforced in Home Assistant and OpenClaw config
 - Wake word support for Ada, including deployment/update approach and fallback
 - Narrow Home Assistant -> OpenClaw event bridge with structured payloads
@@ -30,6 +31,7 @@ Home Assistant and adjacent services should work together as a reliable self-hos
 ### Active
 
 - [ ] User can speak to an Assist-compatible endpoint and receive a spoken reply from Ada via OpenClaw
+- [ ] User can access Ada's full shared OpenClaw surface and conversation context from Home Assistant voice
 - [ ] Wake word support for Ada is deployed or clearly installable, updatable, and has fallback behavior
 - [ ] Home Assistant can forward filtered, structured events to OpenClaw without exposing the full home graph
 - [ ] OpenClaw can trigger a narrow, approved action surface back into Home Assistant
@@ -46,10 +48,11 @@ Home Assistant and adjacent services should work together as a reliable self-hos
 - The existing OpenClaw deployment exposes the chat completions endpoint and includes an HA config snippet that names the assistant Ada.
 - Music Assistant is already present and can be used where speaker routing benefits from it.
 - This repo did not previously have `.planning/` state, so this milestone initializes the first tracked GSD planning artifacts.
+- The milestone scope intentionally reuses the full shared Ada/OpenClaw voice surface instead of a dedicated restricted HA-only profile.
 
 ## Constraints
 
-- **Security**: Do not expose the full Home Assistant graph or administrative capabilities to OpenClaw — the spec requires a narrow integration surface.
+- **Action Safety**: Even with the full shared Ada/OpenClaw surface, destructive or broad Home Assistant admin actions remain explicitly gated — keep execution narrow and reviewable.
 - **Architecture**: Home Assistant remains the source of truth for event detection and service execution — keep automation ownership there.
 - **Compatibility**: Reuse the existing Home Assistant Whisper/Piper and OpenClaw gateway setup where possible — avoid unnecessary new infrastructure.
 - **Persona**: The assistant identity must be Ada across Home Assistant, OpenClaw, and spoken responses — the voice UX depends on it.
@@ -59,7 +62,8 @@ Home Assistant and adjacent services should work together as a reliable self-hos
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Use Home Assistant Assist as the voice shell and OpenClaw as the conversation backend | Existing manifests already point this direction and it preserves Home Assistant orchestration | — Pending |
-| Keep the first integration intentionally narrow instead of exposing full-home MCP/admin control | Matches the approved spec and reduces security/scope risk | — Pending |
+| Reuse the full shared Ada/OpenClaw surface for Home Assistant voice | User explicitly chose full shared Ada session/context instead of a dedicated restricted HA voice profile | — Pending |
+| Keep Home Assistant action execution on a narrow approved surface even though voice uses full Ada context | Preserves a reviewable home-control boundary while allowing richer conversational context | — Pending |
 | Initialize milestone tracking at v1.0 Ada Home Assistant Voice | This repo had no existing GSD milestone state and the user approved the milestone label | — Pending |
 
 ## Evolution

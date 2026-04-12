@@ -10,7 +10,7 @@
 - [ ] **VOICE-01**: User can speak to Satellite 1 and receive a spoken reply from Ada through the Home Assistant -> OpenClaw -> Piper voice path.
 - [ ] **VOICE-02**: User hears Ada replies on the initiating or explicitly assigned speaker target instead of an unrelated room.
 - [ ] **VOICE-03**: User experiences a consistent Ada identity across Home Assistant assistant naming, OpenClaw behavior, and spoken replies.
-- [ ] **VOICE-04**: User receives a clear spoken refusal when asking Ada for out-of-scope admin or unrestricted home-control tasks.
+- [ ] **VOICE-04**: User can continue the same Ada conversation context across Home Assistant voice and Telegram or other general OpenClaw channels.
 
 ### Wake Word + Endpoint Behavior
 
@@ -35,8 +35,8 @@
 ### Failure Handling + Guardrails
 
 - [ ] **SAFE-01**: User receives a clear failure response when the voice pipeline or action bridge cannot complete a request.
-- [ ] **SAFE-02**: User's home voice interactions do not inherit unrelated Telegram or general OpenClaw session context.
-- [ ] **SAFE-03**: User cannot use Ada to access broad Home Assistant admin capabilities, unrestricted entity discovery, or destructive out-of-scope actions.
+- [ ] **SAFE-02**: User can access Ada's broader OpenClaw memory and tool-backed conversational context from Home Assistant voice interactions.
+- [ ] **SAFE-03**: User receives a clear denial when requesting destructive or explicitly blocked Home Assistant admin actions, even though Ada uses the full shared OpenClaw surface.
 
 ## v2 Requirements
 
@@ -72,30 +72,30 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| VOICE-01 | TBA | Pending |
-| VOICE-02 | TBA | Pending |
-| VOICE-03 | TBA | Pending |
-| VOICE-04 | TBA | Pending |
-| WAKE-01 | TBA | Pending |
-| WAKE-02 | TBA | Pending |
-| WAKE-03 | TBA | Pending |
-| EVENT-01 | TBA | Pending |
-| EVENT-02 | TBA | Pending |
-| EVENT-03 | TBA | Pending |
-| EVENT-04 | TBA | Pending |
-| ACTN-01 | TBA | Pending |
-| ACTN-02 | TBA | Pending |
-| ACTN-03 | TBA | Pending |
-| ACTN-04 | TBA | Pending |
-| SAFE-01 | TBA | Pending |
-| SAFE-02 | TBA | Pending |
-| SAFE-03 | TBA | Pending |
+| VOICE-01 | Phase 2 | Pending |
+| VOICE-02 | Phase 2 | Pending |
+| VOICE-03 | Phase 1 | Pending |
+| VOICE-04 | Phase 1 | Pending |
+| WAKE-01 | Phase 2 | Pending |
+| WAKE-02 | Phase 2 | Pending |
+| WAKE-03 | Phase 2 | Pending |
+| EVENT-01 | Phase 3 | Pending |
+| EVENT-02 | Phase 3 | Pending |
+| EVENT-03 | Phase 3 | Pending |
+| EVENT-04 | Phase 3 | Pending |
+| ACTN-01 | Phase 4 | Pending |
+| ACTN-02 | Phase 4 | Pending |
+| ACTN-03 | Phase 4 | Pending |
+| ACTN-04 | Phase 4 | Pending |
+| SAFE-01 | Phase 2 | Pending |
+| SAFE-02 | Phase 1 | Pending |
+| SAFE-03 | Phase 1 | Pending |
 
 **Coverage:**
 - v1 requirements: 18 total
-- Mapped to phases: 0
-- Unmapped: 18
+- Mapped to phases: 18
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-12*
-*Last updated: 2026-04-12 after initial definition*
+*Last updated: 2026-04-12 after roadmap revision*
