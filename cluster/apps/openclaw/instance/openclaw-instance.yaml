@@ -24,6 +24,14 @@ spec:
         defaults:
           model:
             primary: "openrouter/google/gemini-3-flash-preview"
+      channels:
+        telegram:
+          enabled: true
+          botToken: "${TELEGRAM_BOT_TOKEN}"
+          dmPolicy: "pairing"
+          groupPolicy: "allowlist"
+          streaming:
+            mode: "partial"
       session:
         scope: per-sender
       gateway:
