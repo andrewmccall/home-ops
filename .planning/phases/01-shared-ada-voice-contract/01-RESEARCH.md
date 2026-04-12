@@ -442,7 +442,7 @@ gateway:
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED via Plan 01 Task 2 blocking checkpoint)
 
 ### 1. OpenClaw sender-mapping config key path ⚠️ CRITICAL
 **What we know:** OpenClaw uses `session.scope: per-sender`. The `ha-config-snippet.yaml` comment
@@ -458,6 +458,7 @@ kubectl describe crd openclawinstances.openclaw.rocks 2>/dev/null | grep -A 5 "s
 ```
 or check OpenClaw operator docs / changelog to find the correct field. The planner should make
 this a **first-task verification step** in the token-identity plan.
+**RESOLVED:** Plan `01-01` Task 2 is a blocking checkpoint that confirms the exact sender-mapping key path before Plan `01-02` writes the OpenClaw config. Planning accepts assumptions `A1`, `A3`, and `A4` only as execution-time verification targets, not as silent defaults.
 
 ### 2. OpenClaw voice-channel system prompt config key path [ASSUMED]
 **What we know:** The `spec.config.raw.agents.defaults.model.primary` key sets the LLM model.
@@ -465,6 +466,7 @@ OpenClaw likely has a per-channel or per-model-alias prompt/persona config.
 **What's unclear:** Whether voice-specific prompt overrides go under `agents.voice`, `agents.defaults.systemPrompt`, `channels.chatCompletions.systemPrompt`, or another key.
 **Recommendation:** Check OpenClaw operator schema or existing documentation before writing
 the config. This is also a first-task verification step in the voice-prompt plan.
+**RESOLVED:** Plan `01-01` Task 2 is a blocking checkpoint that confirms the exact prompt/systemPrompt key path before Plan `01-02` writes the voice-first denial prompt. Planning accepts assumption `A2` only as an execution-time verification target.
 
 ### 3. HA Voice Assistant UI vs YAML for assistant-level config (VOICE-03)
 **What we know:** The `openai_conversation` integration and its `name: Ada` entry are YAML-configured.
@@ -475,6 +477,7 @@ VOICE-03.
 **Recommendation:** Phase 1 should include the HA Voice Assistant UI step ("Ada" assistant using
 the Ada conversation agent, Whisper STT, Piper TTS) as a deliverable even though Phase 2 will
 add wake-word wiring. This ensures VOICE-03 can be verified with a manual Assist text test.
+**RESOLVED:** Plan `01-03` includes the Home Assistant UI wiring and manual verification path so VOICE-03 is not treated as YAML-only. The planner treats assistant-level UI configuration as part of the end-to-end verification deliverable for this phase.
 
 ---
 
