@@ -1,3 +1,19 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: planning
+stopped_at: Phase 1 context gathered
+last_updated: "2026-04-12T20:38:11.992Z"
+last_activity: 2026-04-12 — Roadmap revised for approved shared-Ada Home Assistant voice scope
+progress:
+  total_phases: 4
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
+---
+
 # Project State
 
 ## Project Reference
@@ -19,6 +35,7 @@ Progress: [░░░░░░░░░░] 0%
 ## Performance Metrics
 
 **Velocity:**
+
 - Total plans completed: 0
 - Average duration: -
 - Total execution time: 0.0 hours
@@ -30,6 +47,7 @@ Progress: [░░░░░░░░░░] 0%
 | 1-4 | 0 | 0.0h | - |
 
 **Recent Trend:**
+
 - Last 5 plans: none
 - Trend: Stable
 
@@ -56,6 +74,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-12 21:08
-Stopped at: Revised roadmap written and Phase 1 is ready for `/gsd-plan-phase 1`
-Resume file: None
+Last session: 2026-04-12T20:38:11.990Z
+Stopped at: Phase 1 context gathered
+Resume file: .planning/phases/01-shared-ada-voice-contract/01-CONTEXT.md
