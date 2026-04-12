@@ -26,7 +26,11 @@ This milestone delivers an Ada voice experience on top of the existing Home Assi
   2. User can continue the same Ada conversation context between Home Assistant voice and Telegram or other general OpenClaw channels.
   3. User can access Ada's broader shared memory and tool-backed conversational context from a Home Assistant voice interaction.
   4. User receives a clear denial when asking for destructive, admin, or otherwise blocked Home Assistant actions even though Ada uses the full shared surface.
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 01-01-PLAN.md — Network path + OpenClaw CRD schema verification
+- [ ] 01-02-PLAN.md — Token, OpenClaw config (sender mapping + voice prompt), test harness
+- [ ] 01-03-PLAN.md — HA wiring (SOPS encrypt, PVC config) + end-to-end verification
 
 ### Phase 2: Satellite 1 Voice Launch
 **Goal**: Users can reach Ada from Satellite 1 through the Home Assistant voice pipeline with launch wake-word, fallback, routing, and failure behavior in place.
@@ -69,7 +73,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Shared Ada Voice Contract | 0/TBD | Not started | - |
+| 1. Shared Ada Voice Contract | 0/3 | Planning complete | - |
 | 2. Satellite 1 Voice Launch | 0/TBD | Not started | - |
 | 3. Event-Driven Ada Skills | 0/TBD | Not started | - |
 | 4. Approved Home Action Bridge | 0/TBD | Not started | - |
