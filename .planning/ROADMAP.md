@@ -73,7 +73,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Shared Ada Voice Contract | 2/3 | In Progress | - |
+| 1. Shared Ada Voice Contract | 2/3 | Blocked | - |
 | 2. Satellite 1 Voice Launch | 0/TBD | Not started | - |
 | 3. Event-Driven Ada Skills | 0/TBD | Not started | - |
 | 4. Approved Home Action Bridge | 0/TBD | Not started | - |

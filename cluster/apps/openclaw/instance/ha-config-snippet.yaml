@@ -1,17 +1,20 @@
-# Home Assistant configuration.yaml additions
+# Home Assistant voice assistant setup notes
 # Direct integration with OpenClaw gateway (full Ada with memory, tools, context)
 # Phase 1: Shared Ada Voice Contract
 
-# OpenAI conversation integration pointing at OpenClaw gateway via direct in-cluster URL
-openai_conversation:
-  - api_base: http://home-ops-openclaw.openclaw.svc:18789/v1
-    api_key: !secret ha_voice_gateway_token
-    model: "openclaw:main"
-    name: Ada
+# Current Home Assistant limitation:
+# - The built-in openai_conversation integration does not support YAML setup on this host.
+# - Configure it through the UI/config-entry flow instead of configuration.yaml.
+#
+# Values to enter in the OpenAI Conversation config entry:
+# - Base URL: http://home-ops-openclaw.openclaw.svc:18789/v1
+# - API key: the shared OpenClaw gateway token stored in /config/secrets.yaml as ha_voice_gateway_token
+# - Model: openclaw:main
+# - Assistant name: Ada
 
 # Then in Settings > Voice Assistants:
 # 1. Create a new assistant called "Ada"
-# 2. Set Conversation agent to "Ada" (the openai_conversation integration above)
+# 2. Set Conversation agent to the OpenAI Conversation config entry you created for Ada
 # 3. Set STT to "Whisper" (wyoming at whisper-wyoming.house:10300)
 # 4. Set TTS to "Piper" with voice en_GB-cori-high (wyoming at piper-wyoming.house:10200)
 # 5. Assign to Satellite 1 device (Phase 2)
@@ -25,6 +28,8 @@ openai_conversation:
 # - Context from Telegram conversations (same Andrew/Ada session)
 # - Voice-first responses: brief, friendly, conversational
 #
-# Transport: direct in-cluster service URL (not ingress), dedicated HA voice token
+# Transport: direct in-cluster service URL (not ingress), shared OpenClaw gateway token
 # Token: stored in /config/secrets.yaml as ha_voice_gateway_token
-# Secrets: SOPS-encrypted in openclaw-ha-voice-secret.sops.yaml (same value)
+# Current limitations:
+# - OpenClaw's OpenAI-compatible endpoint accepts the shared gateway token only.
+# - HA conversation integration wiring must be completed through the UI/config-entry flow.

@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-04-12T21:31:09Z"
-last_activity: 2026-04-12 -- Completed 01-02 plan
+status: blocked
+stopped_at: Blocked in 01-03 on HA UI config-entry setup
+last_updated: "2026-04-12T21:55:00Z"
+last_activity: 2026-04-12 -- Recovered OpenClaw and validated shared-token fallback
 progress:
   total_phases: 4
   completed_phases: 0
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 
 ## Current Position
 
-Phase: 01 (shared-ada-voice-contract) — EXECUTING
+Phase: 01 (shared-ada-voice-contract) — BLOCKED
 Plan: 3 of 3
-Status: Ready to execute
-Last activity: 2026-04-12 -- Completed 01-02 plan, ready for 01-03
+Status: Blocked on manual HA config-entry setup
+Last activity: 2026-04-12 -- OpenClaw fallback validated; HA still needs UI-only conversation setup
 
 Progress: [██████░░░░] 66%
 
@@ -64,21 +64,24 @@ Recent decisions affecting current work:
 - [Phase 1]: Keep Home Assistant as the voice shell, event source of truth, and service executor.
 - [Phase 1]: Reuse the full shared Ada/OpenClaw surface and shared session context for Home Assistant voice.
 - [Phase 1]: Carry Plan 02 forward on accepted defaults for OpenClaw sender mapping, systemPrompt path, and Andrew identity after checkpoint inspection found no stronger schema source.
-- [Phase 1]: Map the dedicated HA voice token to sender ID `andrew` and enforce voice denial behavior through `agents.defaults.systemPrompt`.
+- [Phase 1]: Use `agents.defaults.systemPromptOverride` for the voice prompt; `agents.defaults.systemPrompt` is invalid on OpenClaw 2026.4.11.
+- [Phase 1]: OpenClaw's OpenAI-compatible endpoint only accepts the shared gateway token, so the dedicated HA token plan was reduced to a shared-token fallback.
 - [Phase 2]: Ship Satellite 1 with a custom Ada/Hey Ada wake-word path plus manual Assist fallback.
 
 ### Pending Todos
 
-None yet.
+- Complete the Home Assistant OpenAI Conversation config entry through the UI and bind it to the Ada voice assistant.
+- Run the HA-side manual verification steps from `.planning/phases/01-shared-ada-voice-contract/MANUAL-TEST.md`.
 
 ### Blockers/Concerns
 
 - [Phase 1]: Preserve narrow approved home-action execution and denials even though voice uses the full shared Ada surface.
+- [Phase 1]: Built-in Home Assistant `openai_conversation` rejects YAML setup on this deployment; Plan 01-03 is blocked until the UI/config-entry flow is completed manually.
 - [Phase 2]: Validate custom Ada/Hey Ada wake-word quality and Kubernetes packaging on the chosen Satellite 1 runtime.
 - [Phase 4]: Finalize the exact approved action allowlist and ingress hardening before implementation.
 
 ## Session Continuity
 
-Last session: 2026-04-12T21:31:09Z
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-04-12T21:55:00Z
+Stopped at: Blocked in 01-03 on HA UI config-entry setup
 Resume file: .planning/phases/01-shared-ada-voice-contract/01-03-PLAN.md

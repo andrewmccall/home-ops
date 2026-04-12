@@ -4,7 +4,6 @@ kind: Kustomization
 resources:
   - openclaw-api-keys-secret.sops.yaml
   - social-api-keys.sops.yaml
-  - openclaw-ha-voice-secret.sops.yaml
   - openclaw-instance.yaml
   - allow-otel-egress.yaml
   - gateway-allow-internal-nginx.yaml

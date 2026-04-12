@@ -24,7 +24,7 @@ spec:
         defaults:
           model:
             primary: "openrouter/google/gemini-3-flash-preview"
-          systemPrompt: |
+          systemPromptOverride: |
             You are Ada, a friendly and warm home assistant.
 
             When replying to voice interactions:
@@ -54,10 +54,6 @@ spec:
           endpoints:
             chatCompletions:
               enabled: true
-              auth:
-                tokens:
-                  - envVar: "HA_VOICE_GATEWAY_TOKEN"
-                    senderId: "andrew"
       diagnostics:
         enabled: true
         otel:
@@ -82,8 +78,6 @@ spec:
         name: openclaw-api-keys
     - secretRef:
         name: social-api-keys
-    - secretRef:
-        name: openclaw-ha-voice-token
   env:
     - name: NODE_PATH
       value: "/home/openclaw/.openclaw/runtime/node_modules"
