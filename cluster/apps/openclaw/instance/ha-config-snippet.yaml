@@ -1,25 +1,30 @@
 # Home Assistant configuration.yaml additions
 # Direct integration with OpenClaw gateway (full Ada with memory, tools, context)
+# Phase 1: Shared Ada Voice Contract
 
-# OpenAI conversation integration pointing at OpenClaw gateway
+# OpenAI conversation integration pointing at OpenClaw gateway via direct in-cluster URL
 openai_conversation:
-  - api_base: http://openclaw-gateway.${DOMAIN}/v1
-    api_key: "YOUR_GATEWAY_TOKEN"  # Use gateway.auth.token from OpenClaw config
+  - api_base: http://home-ops-openclaw.openclaw.svc:18789/v1
+    api_key: !secret ha_voice_gateway_token
     model: "openclaw:main"
     name: Ada
 
 # Then in Settings > Voice Assistants:
 # 1. Create a new assistant called "Ada"
-# 2. Set Conversation agent to "Ada" (the OpenAI integration above)
-# 3. Set STT to "Whisper" (already configured - wyoming at whisper-wyoming.house:10300)
-# 4. Set TTS to "Piper" (already configured - wyoming at piper-wyoming.house:10200)
-# 5. Assign to your Satellite 1 device
+# 2. Set Conversation agent to "Ada" (the openai_conversation integration above)
+# 3. Set STT to "Whisper" (wyoming at whisper-wyoming.house:10300)
+# 4. Set TTS to "Piper" with voice en_GB-cori-high (wyoming at piper-wyoming.house:10200)
+# 5. Assign to Satellite 1 device (Phase 2)
 #
-# When you speak to the Satellite 1:
-#   Your voice → Whisper (STT) → OpenClaw gateway (full Ada session) → Piper (TTS) → speaker
+# When you speak to a voice assistant:
+#   Your voice -> Whisper (STT) -> OpenClaw gateway (full Ada session) -> Piper (TTS) -> speaker
 #
 # This gives you FULL Ada:
 # - Memory (MEMORY.md, daily notes)
 # - Tools (web search, GitHub, file access)
-# - Context from Telegram conversations
-# - Same session as your Telegram chat
+# - Context from Telegram conversations (same Andrew/Ada session)
+# - Voice-first responses: brief, friendly, conversational
+#
+# Transport: direct in-cluster service URL (not ingress), dedicated HA voice token
+# Token: stored in /config/secrets.yaml as ha_voice_gateway_token
+# Secrets: SOPS-encrypted in openclaw-ha-voice-secret.sops.yaml (same value)
