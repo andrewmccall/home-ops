@@ -101,10 +101,31 @@ data:
       });
 
       const text = await upstream.text();
+      let responseText = text;
+
+      try {
+        const payload = JSON.parse(text);
+        if (Array.isArray(payload.data)) {
+          const aliases = [];
+          for (const model of payload.data) {
+            if (typeof model?.id === 'string' && model.id.includes('/')) {
+              aliases.push({
+                ...model,
+                id: model.id.replace('/', ':'),
+              });
+            }
+          }
+          payload.data = [...payload.data, ...aliases];
+          responseText = JSON.stringify(payload);
+        }
+      } catch {
+        responseText = text;
+      }
+
       res.writeHead(upstream.status, {
         'Content-Type': upstream.headers.get('content-type') ?? 'application/json',
       });
-      res.end(text);
+      res.end(responseText);
     }
 
     async function proxyResponses(req, res) {
