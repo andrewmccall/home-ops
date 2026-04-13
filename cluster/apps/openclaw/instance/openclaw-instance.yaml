@@ -54,6 +54,8 @@ spec:
           endpoints:
             chatCompletions:
               enabled: true
+            responses:
+              enabled: true
       diagnostics:
         enabled: true
         otel:
