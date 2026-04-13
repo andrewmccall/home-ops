@@ -10,10 +10,11 @@
 
 ## Home Assistant update
 
-- [ ] Update the OpenAI Conversation config entry to `Base URL: https://api.openai.com/v1`.
-- [ ] Enter the dedicated bridge API key, not the shared OpenClaw gateway token.
+- [ ] Add or update the **OpenAI** integration with the dedicated bridge API key, not the shared OpenClaw gateway token.
+- [ ] Open the integration's Conversation subentry or options screen.
+- [ ] Disable **Recommended settings** if needed so the **Model** selector appears.
 - [ ] Keep `Model: openclaw:main`.
-- [ ] Bind the config entry to the Ada assistant under Voice Assistants.
+- [ ] Bind the resulting conversation entry to the Ada assistant under Voice Assistants.
 
 ## Approval gate before LiteLLM removal
 

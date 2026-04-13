@@ -13,14 +13,13 @@ Confirm the supported Home Assistant OpenAI Conversation UI flow works against t
 ## Home Assistant OpenAI Conversation Cutover
 
 1. Open **Settings -> Devices & Services** in Home Assistant.
-2. Update or recreate the **OpenAI Conversation** config entry with:
-   - **Base URL:** `https://api.openai.com/v1`
-   - **API key:** the dedicated bridge API key
-   - **Model:** `openclaw:main`
-   - **Assistant name:** `Ada`
-3. Open **Settings -> Voice Assistants**.
-4. Edit the Ada assistant so its Conversation agent is the updated **OpenAI Conversation** entry.
-5. Keep Whisper and Piper selected for STT/TTS.
+2. Add or update the **OpenAI** integration with the dedicated bridge API key.
+3. Open the integration's **Conversation** subentry or options.
+4. If **Model** is hidden, disable **Recommended settings**.
+5. Set **Model** to `openclaw:main`.
+6. Open **Settings -> Voice Assistants**.
+7. Edit the Ada assistant so its Conversation agent is the updated **OpenAI** conversation subentry.
+8. Keep Whisper and Piper selected for STT/TTS.
 
 ## Manual Verification
 

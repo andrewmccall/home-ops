@@ -6,20 +6,23 @@
 # - The built-in openai_conversation integration does not support YAML setup on this host.
 # - Configure it through the UI/config-entry flow instead of configuration.yaml.
 #
-# Supported Home Assistant setup (Settings -> Devices & Services -> OpenAI Conversation):
-# - Base URL: https://api.openai.com/v1
-# - API key: the dedicated bridge-facing key from Kubernetes Secret `openclaw-bridge-secrets`, key `bridge-api-key`
-# - Model: openclaw:main
-# - Assistant name: Ada
+# Supported Home Assistant setup (Settings -> Devices & Services):
+# 1. Add the **OpenAI** integration
+# 2. Enter only the dedicated bridge-facing API key from Kubernetes Secret `openclaw-bridge-secrets`, key `bridge-api-key`
+# 3. Open the integration's **Conversation** subentry or options
+# 4. If the Model selector is hidden, disable **Recommended settings**
+# 5. Set Model to `openclaw:main`
+# 6. Keep the assistant name as Ada in the Conversation subentry / Voice Assistant binding
 #
-# Why the Base URL still looks like OpenAI:
+# Why there is no Base URL field in this Home Assistant version:
+# - The integration always calls the official `https://api.openai.com` endpoint
 # - Home Assistant resolves api.openai.com through the internal hostAlias in `home-assistant.yaml`
 # - The mounted `openai-internal-ca` trust bundle accepts the spoof TLS cert
-# - The bridge ingress now owns that spoof path and forwards to the bridge Service
+# - The bridge ingress owns that spoof path and forwards to the bridge Service
 #
 # Then in Settings -> Voice Assistants:
 # 1. Create or edit the assistant named "Ada"
-# 2. Set Conversation agent to the OpenAI Conversation config entry created above
+# 2. Set Conversation agent to the OpenAI Conversation / OpenAI subentry configured above
 # 3. Set STT to "Whisper" (wyoming at whisper-wyoming.house:10300)
 # 4. Set TTS to "Piper" with voice en_GB-cori-high (wyoming at piper-wyoming.house:10200)
 # 5. Save and bind to the desired Assist-compatible device
