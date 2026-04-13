@@ -61,7 +61,12 @@ Plans:
   3. An operator can deploy and update the custom Ada wake word model in the Kubernetes-based voice stack without replacing the rest of the voice pipeline.
   4. User can still activate Ada through a manual Assist fallback if the wake word runtime is unavailable.
   5. User receives a clear failure response when the voice pipeline cannot complete a request.
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — Prepare the dedicated Wyoming wake-word release and rollout tooling
+- [ ] 02-02-PLAN.md — Install the external Ada wake-word artifacts and activate model-only deployment/update flow
+- [ ] 02-03-PLAN.md — Bind the live Satellite 1 path with manual Assist fallback and spoken failure handling
 
 ### Phase 3: Event-Driven Ada Skills
 **Goal**: Users can receive Ada behaviors from the initial approved Home Assistant event catalog without exposing raw whole-home events.
