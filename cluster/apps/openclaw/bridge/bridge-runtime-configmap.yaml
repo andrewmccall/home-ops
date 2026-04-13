@@ -1,0 +1,181 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bridge-runtime-configmap
+  namespace: openclaw
+data:
+  bridge.mjs: |
+    import http from 'node:http';
+    import { Readable } from 'node:stream';
+
+    const port = Number.parseInt(process.env.PORT ?? '4000', 10);
+    const upstreamBaseUrl = process.env.OPENCLAW_BASE_URL ?? 'http://home-ops-openclaw.openclaw.svc:18789/v1';
+    const bridgeApiKey = process.env.BRIDGE_API_KEY ?? '';
+    const upstreamGatewayToken = process.env.OPENCLAW_GATEWAY_TOKEN ?? '';
+    const sharedSessionKey = process.env.SHARED_SESSION_KEY ?? '';
+    const messageChannel = process.env.OPENCLAW_MESSAGE_CHANNEL ?? 'home_assistant_voice';
+    const forceDegradedMode = (process.env.BRIDGE_FORCE_DEGRADED_MODE ?? 'false').toLowerCase() === 'true';
+
+    function json(res, statusCode, body) {
+      res.writeHead(statusCode, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(body));
+    }
+
+    function extractBearer(req) {
+      const header = req.headers.authorization ?? '';
+      if (!header.startsWith('Bearer ')) {
+        return '';
+      }
+      return header.slice('Bearer '.length);
+    }
+
+    function requireAuth(req, res) {
+      if (!bridgeApiKey) {
+        json(res, 500, { error: 'bridge API key is not configured' });
+        return false;
+      }
+
+      if (extractBearer(req) !== bridgeApiKey) {
+        json(res, 401, { error: 'unauthorized' });
+        return false;
+      }
+
+      return true;
+    }
+
+    function readBody(req) {
+      return new Promise((resolve, reject) => {
+        const chunks = [];
+        req.on('data', (chunk) => chunks.push(chunk));
+        req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+        req.on('error', reject);
+      });
+    }
+
+    function continuityAvailable() {
+      return !forceDegradedMode && sharedSessionKey.length > 0;
+    }
+
+    function withDegradedInstructions(payload) {
+      const degradedNotice = 'Shared continuity is temporarily degraded. Tell the user briefly that this reply may not remember the shared HA and Telegram Ada session.';
+      const nextPayload = { ...payload };
+      const currentInstructions = typeof nextPayload.instructions === 'string' ? nextPayload.instructions.trim() : '';
+      nextPayload.instructions = currentInstructions ? `${degradedNotice}\n\n${currentInstructions}` : degradedNotice;
+      return nextPayload;
+    }
+
+    async function sendJsonResponse(res, upstream, degraded) {
+      const text = await upstream.text();
+      const responseHeaders = {
+        'Content-Type': upstream.headers.get('content-type') ?? 'application/json',
+        'x-home-ops-degraded': degraded ? 'true' : 'false',
+      };
+
+      if (!degraded) {
+        res.writeHead(upstream.status, responseHeaders);
+        res.end(text);
+        return;
+      }
+
+      try {
+        const payload = JSON.parse(text);
+        payload.home_ops = {
+          ...(payload.home_ops ?? {}),
+          degraded: true,
+          continuity: 'shared-session-unavailable',
+        };
+        res.writeHead(upstream.status, responseHeaders);
+        res.end(JSON.stringify(payload));
+      } catch {
+        res.writeHead(upstream.status, responseHeaders);
+        res.end(text);
+      }
+    }
+
+    async function proxyModels(req, res) {
+      const upstream = await fetch(`${upstreamBaseUrl}/models`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${upstreamGatewayToken}`,
+        },
+      });
+
+      const text = await upstream.text();
+      res.writeHead(upstream.status, {
+        'Content-Type': upstream.headers.get('content-type') ?? 'application/json',
+      });
+      res.end(text);
+    }
+
+    async function proxyResponses(req, res) {
+      const body = await readBody(req);
+      const payload = body ? JSON.parse(body) : {};
+      const degraded = !continuityAvailable();
+      const upstreamPayload = degraded ? withDegradedInstructions(payload) : payload;
+      const upstreamHeaders = {
+        Authorization: `Bearer ${upstreamGatewayToken}`,
+        'Content-Type': 'application/json',
+        'x-openclaw-message-channel': messageChannel,
+      };
+
+      if (!degraded) {
+        upstreamHeaders['x-openclaw-session-key'] = sharedSessionKey;
+      } else {
+        console.warn('openclaw-bridge: shared continuity unavailable, serving degraded fallback');
+      }
+
+      const upstream = await fetch(`${upstreamBaseUrl}/responses`, {
+        method: 'POST',
+        headers: upstreamHeaders,
+        body: JSON.stringify(upstreamPayload),
+      });
+
+      const responseHeaders = {
+        'Content-Type': upstream.headers.get('content-type') ?? 'application/json',
+        'x-home-ops-degraded': degraded ? 'true' : 'false',
+      };
+
+      if (payload.stream === true) {
+        res.writeHead(upstream.status, responseHeaders);
+        if (!upstream.body) {
+          res.end();
+          return;
+        }
+        Readable.fromWeb(upstream.body).pipe(res);
+        return;
+      }
+
+      await sendJsonResponse(res, upstream, degraded);
+    }
+
+    const server = http.createServer(async (req, res) => {
+      try {
+        if (req.url === '/healthz') {
+          json(res, 200, { status: 'ok', degraded: !continuityAvailable() });
+          return;
+        }
+
+        if (!requireAuth(req, res)) {
+          return;
+        }
+
+        if (req.method === 'GET' && req.url === '/v1/models') {
+          await proxyModels(req, res);
+          return;
+        }
+
+        if (req.method === 'POST' && req.url === '/v1/responses') {
+          await proxyResponses(req, res);
+          return;
+        }
+
+        json(res, 404, { error: 'not found' });
+      } catch (error) {
+        console.error('bridge error', error);
+        json(res, 500, { error: 'bridge failure' });
+      }
+    });
+
+    server.listen(port, '0.0.0.0', () => {
+      console.log(`openclaw-bridge listening on ${port}`);
+    });

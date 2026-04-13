@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: openai-proxy
+  namespace: openclaw
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "120"
+spec:
+  className: internal
+  tls:
+    - hosts:
+        - api.openai.com
+      secretName: openai-proxy-tls
+  rules:
+    - host: api.openai.com
+      http:
+        paths:
+          - path: /v1
+            pathType: Prefix
+            backend:
+              service:
+                name: openclaw-bridge
+                port:
+                  number: 4000
