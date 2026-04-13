@@ -56,6 +56,70 @@ data:
       return !forceDegradedMode && sharedSessionKey.length > 0;
     }
 
+    function normalizeMessageContent(content) {
+      if (typeof content === 'string') {
+        return content;
+      }
+
+      if (!Array.isArray(content)) {
+        return '';
+      }
+
+      return content.map((item) => {
+        if (!item || typeof item !== 'object') {
+          return '';
+        }
+
+        if (typeof item.text === 'string') {
+          return item.text;
+        }
+
+        if (item.type === 'input_image') {
+          return '[image attachment]';
+        }
+
+        if (item.type === 'input_file') {
+          return '[file attachment]';
+        }
+
+        return '';
+      }).filter(Boolean).join('\n');
+    }
+
+    function normalizeInput(input) {
+      if (!Array.isArray(input)) {
+        return input;
+      }
+
+      const normalized = input.map((item) => {
+        if (typeof item === 'string') {
+          return item;
+        }
+
+        if (!item || typeof item !== 'object' || Array.isArray(item)) {
+          return '';
+        }
+
+        const role = typeof item.role === 'string' ? item.role : 'user';
+        const content = normalizeMessageContent(item.content);
+        if (!content) {
+          return '';
+        }
+
+        return `${role}: ${content}`;
+      }).filter(Boolean);
+
+      return normalized.join('\n\n');
+    }
+
+    function sanitizePayload(payload) {
+      const nextPayload = { ...payload };
+      delete nextPayload.include;
+      delete nextPayload.prompt_cache_retention;
+      nextPayload.input = normalizeInput(nextPayload.input);
+      return nextPayload;
+    }
+
     function withDegradedInstructions(payload) {
       const degradedNotice = 'Shared continuity is temporarily degraded. Tell the user briefly that this reply may not remember the shared HA and Telegram Ada session.';
       const nextPayload = { ...payload };
@@ -131,8 +195,9 @@ data:
     async function proxyResponses(req, res) {
       const body = await readBody(req);
       const payload = body ? JSON.parse(body) : {};
+      const sanitizedPayload = sanitizePayload(payload);
       const degraded = !continuityAvailable();
-      const upstreamPayload = degraded ? withDegradedInstructions(payload) : payload;
+      const upstreamPayload = degraded ? withDegradedInstructions(sanitizedPayload) : sanitizedPayload;
       const upstreamHeaders = {
         Authorization: `Bearer ${upstreamGatewayToken}`,
         'Content-Type': 'application/json',
