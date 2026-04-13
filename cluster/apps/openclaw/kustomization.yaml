@@ -7,5 +7,6 @@ resources:
   - namespace.yaml
   - operator
   - instance
+  - bridge
   - litellm
   - whisper-stt

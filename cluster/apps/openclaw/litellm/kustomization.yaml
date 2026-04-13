@@ -5,5 +5,3 @@ namespace: openclaw
 resources:
   - litellm.yaml
   - litellm-secrets.sops.yaml
-  - openai-proxy-tls-secret.yaml
-  - openai-proxy-ingress.yaml
