@@ -8,5 +8,4 @@ resources:
   - operator
   - instance
   - bridge
-  - litellm
   - whisper-stt
