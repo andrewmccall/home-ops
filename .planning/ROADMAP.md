@@ -43,11 +43,11 @@ Plans:
   3. Home Assistant voice still reaches Ada's broader OpenClaw memory and tool-backed context through the bridge path.
   4. If continuity cannot be preserved, the bridge surfaces degraded mode clearly instead of silently creating a separate session.
   5. LiteLLM is removed once the bridge fully owns the HA-facing proxy path.
-**Plans:** 4 plans
+**Plans:** 2/4 plans executed
 
 Plans:
-- [ ] 01.1-01-PLAN.md — Enable OpenClaw responses support + add bridge smoke harness
-- [ ] 01.1-02-PLAN.md — Deploy HA-facing bridge + move spoof ingress/TLS ownership
+- [x] 01.1-01-PLAN.md — Enable OpenClaw responses support + add bridge smoke harness
+- [x] 01.1-02-PLAN.md — Deploy HA-facing bridge + move spoof ingress/TLS ownership
 - [ ] 01.1-03-PLAN.md — Prepare HA cutover + manual continuity/degraded-mode verification
 - [ ] 01.1-04-PLAN.md — Remove LiteLLM after successful bridge cutover
 
