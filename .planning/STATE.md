@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Plan 01.1-03 awaiting Home Assistant bridge approval
-last_updated: "2026-04-13T11:28:31.159Z"
-last_activity: 2026-04-13
+stopped_at: Phase 2 planning complete; ready to execute 02-01
+last_updated: "2026-04-13T12:46:25.533Z"
+last_activity: 2026-04-13 -- Phase 2 planning complete
 progress:
   total_phases: 5
   completed_phases: 1
-  total_plans: 7
+  total_plans: 10
   completed_plans: 6
-  percent: 86
+  percent: 60
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** Home Assistant and adjacent services should work together as a reliable self-hosted home operations platform without giving AI agents broader home control than they need.
-**Current focus:** Phase 01.1 — ha-openclaw-shared-session-bridge
+**Current focus:** Phase 2 — satellite-1-voice-launch
 
 ## Current Position
 
-Phase: 01.1 (ha-openclaw-shared-session-bridge) — EXECUTING
-Plan: 4 of 4
+Phase: 2 (satellite-1-voice-launch) — READY TO EXECUTE
+Plan: 0 of 3
 Status: Ready to execute
-Last activity: 2026-04-13
+Last activity: 2026-04-13 -- Phase 2 planning complete
 
-Progress: [████░░░░░░] 43%
+Progress: [██████░░░░] 60%
 
 ## Performance Metrics
 
@@ -74,18 +74,19 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-- Complete the Home Assistant OpenAI Conversation config entry through the UI and bind it to the Ada voice assistant.
-- Run the HA-side manual verification steps from `.planning/phases/01-shared-ada-voice-contract/MANUAL-TEST.md`.
+- Execute `02-01-PLAN.md` to create the dedicated Wyoming wake-word release and rollout tooling.
+- Supply the approved external `ada.tflite` and `hey_ada.tflite` artifacts for `02-02-PLAN.md`.
+- Bind the real Satellite 1 device and run the Phase 2 manual verification flow from `.planning/phases/02-satellite-1-voice-launch/MANUAL-TEST.md`.
 
 ### Blockers/Concerns
 
-- [Phase 1]: Preserve narrow approved home-action execution and denials even though voice uses the full shared Ada surface.
-- [Phase 1]: Built-in Home Assistant `openai_conversation` rejects YAML setup on this deployment; Plan 01-03 is blocked until the UI/config-entry flow is completed manually.
-- [Phase 2]: Validate custom Ada/Hey Ada wake-word quality and Kubernetes packaging on the chosen Satellite 1 runtime.
+- [Phase 1]: Plan 01-03 remains historically incomplete in the roadmap even though Phase 01.1 delivered the working bridge-based HA voice path.
+- [Phase 2]: Custom Ada/Hey Ada wake-word quality still needs live validation on the chosen Satellite 1 runtime.
+- [Phase 2]: External wake-word artifact generation remains an operator-provided input before Plan 02-02 can proceed.
 - [Phase 4]: Finalize the exact approved action allowlist and ingress hardening before implementation.
 
 ## Session Continuity
 
 Last session: 2026-04-13T09:15:30.273Z
-Stopped at: Plan 01.1-03 awaiting Home Assistant bridge approval
-Resume file: .planning/phases/01.1-ha-openclaw-shared-session-bridge/01.1-03-PLAN.md
+Stopped at: Phase 2 planning complete; ready to execute 02-01
+Resume file: .planning/phases/02-satellite-1-voice-launch/02-01-PLAN.md
