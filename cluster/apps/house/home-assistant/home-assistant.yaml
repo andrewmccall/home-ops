@@ -29,6 +29,28 @@ spec:
       home-assistant:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          init-merge-openai-ca:
+            image:
+              repository: ghcr.io/home-assistant/home-assistant
+              tag: 2026.4.2@sha256:4c940155cfd5b0187a6faee2db5d52b98bb573edc1aeee95d0818bb17b6534d7
+            command:
+              - sh
+              - -lc
+              - |
+                set -eu
+                base_ca=""
+                for candidate in /etc/ssl/certs/ca-certificates.crt /etc/ssl/cert.pem; do
+                  if [ -f "$candidate" ]; then
+                    base_ca="$candidate"
+                    break
+                  fi
+                done
+                if [ -z "$base_ca" ]; then
+                  echo "No system CA bundle found" >&2
+                  exit 1
+                fi
+                cat "$base_ca" /openai-ca/ca.pem > /work/combined-ca.pem
         containers:
           app:
             image:
@@ -38,8 +60,8 @@ spec:
             env:
               TZ: Europe/London
               HASS_HTTP_TRUSTED_PROXY_1: ${K8S_CLUSTER_CIDR}
-              # Trust the self-signed CA for internal api.openai.com proxy
-              REQUESTS_CA_BUNDLE: /config/certs/openai-internal-ca.pem
+              # Append the spoof CA to the default trust bundle so other integrations keep working.
+              REQUESTS_CA_BUNDLE: /work/combined-ca.pem
             hostAliases:
               - ip: "10.44.0.20"
                 hostnames:
@@ -124,9 +146,20 @@ spec:
         name: openai-internal-ca
         advancedMounts:
           home-assistant:
+            init-merge-openai-ca:
+              - path: /openai-ca/ca.pem
+                subPath: ca.pem
             app:
               - path: /config/certs/openai-internal-ca.pem
                 subPath: ca.pem
+      ca-bundle-workdir:
+        type: emptyDir
+        advancedMounts:
+          home-assistant:
+            init-merge-openai-ca:
+              - path: /work
+            app:
+              - path: /work
       logs:
         type: emptyDir
         globalMounts:
