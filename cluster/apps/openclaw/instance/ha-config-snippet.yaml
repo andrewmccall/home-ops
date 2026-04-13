@@ -1,35 +1,36 @@
 # Home Assistant voice assistant setup notes
-# Direct integration with OpenClaw gateway (full Ada with memory, tools, context)
-# Phase 1: Shared Ada Voice Contract
+# Bridge-backed OpenAI Conversation path for the shared Ada session
+# Phase 01.1: HA OpenClaw Shared Session Bridge
 
 # Current Home Assistant limitation:
 # - The built-in openai_conversation integration does not support YAML setup on this host.
 # - Configure it through the UI/config-entry flow instead of configuration.yaml.
 #
-# Values to enter in the OpenAI Conversation config entry:
-# - Base URL: http://home-ops-openclaw.openclaw.svc:18789/v1
-# - API key: the shared OpenClaw gateway token stored in /config/secrets.yaml as ha_voice_gateway_token
+# Supported Home Assistant setup (Settings -> Devices & Services -> OpenAI Conversation):
+# - Base URL: https://api.openai.com/v1
+# - API key: the dedicated bridge-facing key from Kubernetes Secret `openclaw-bridge-secrets`, key `bridge-api-key`
 # - Model: openclaw:main
 # - Assistant name: Ada
-
-# Then in Settings > Voice Assistants:
-# 1. Create a new assistant called "Ada"
-# 2. Set Conversation agent to the OpenAI Conversation config entry you created for Ada
+#
+# Why the Base URL still looks like OpenAI:
+# - Home Assistant resolves api.openai.com through the internal hostAlias in `home-assistant.yaml`
+# - The mounted `openai-internal-ca` trust bundle accepts the spoof TLS cert
+# - The bridge ingress now owns that spoof path and forwards to the bridge Service
+#
+# Then in Settings -> Voice Assistants:
+# 1. Create or edit the assistant named "Ada"
+# 2. Set Conversation agent to the OpenAI Conversation config entry created above
 # 3. Set STT to "Whisper" (wyoming at whisper-wyoming.house:10300)
 # 4. Set TTS to "Piper" with voice en_GB-cori-high (wyoming at piper-wyoming.house:10200)
-# 5. Assign to Satellite 1 device (Phase 2)
+# 5. Save and bind to the desired Assist-compatible device
 #
-# When you speak to a voice assistant:
-#   Your voice -> Whisper (STT) -> OpenClaw gateway (full Ada session) -> Piper (TTS) -> speaker
+# When you speak to Ada:
+#   Your voice -> Whisper (STT) -> bridge-backed api.openai.com spoof path -> OpenClaw -> Piper (TTS) -> speaker
 #
-# This gives you FULL Ada:
-# - Memory (MEMORY.md, daily notes)
-# - Tools (web search, GitHub, file access)
-# - Context from Telegram conversations (same Andrew/Ada session)
-# - Voice-first responses: brief, friendly, conversational
+# This preserves the shared Ada surface:
+# - Memory and tools from the main OpenClaw assistant
+# - Telegram continuity through the fixed Andrew/Ada shared session
+# - Brief, conversational voice replies
+# - Explicit degraded-mode signaling if shared continuity is unavailable
 #
-# Transport: direct in-cluster service URL (not ingress), shared OpenClaw gateway token
-# Token: stored in /config/secrets.yaml as ha_voice_gateway_token
-# Current limitations:
-# - OpenClaw's OpenAI-compatible endpoint accepts the shared gateway token only.
-# - HA conversation integration wiring must be completed through the UI/config-entry flow.
+# Do not create a custom Home Assistant integration or YAML conversation entry for this cutover.
