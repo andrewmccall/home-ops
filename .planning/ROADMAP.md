@@ -43,13 +43,13 @@ Plans:
   3. Home Assistant voice still reaches Ada's broader OpenClaw memory and tool-backed context through the bridge path.
   4. If continuity cannot be preserved, the bridge surfaces degraded mode clearly instead of silently creating a separate session.
   5. LiteLLM is removed once the bridge fully owns the HA-facing proxy path.
-**Plans:** 3/4 plans executed
+**Plans:** 4/4 plans complete
 
 Plans:
 - [x] 01.1-01-PLAN.md — Enable OpenClaw responses support + add bridge smoke harness
 - [x] 01.1-02-PLAN.md — Deploy HA-facing bridge + move spoof ingress/TLS ownership
 - [x] 01.1-03-PLAN.md — Prepare HA cutover + manual continuity/degraded-mode verification
-- [ ] 01.1-04-PLAN.md — Remove LiteLLM after successful bridge cutover
+- [x] 01.1-04-PLAN.md — Remove LiteLLM after successful bridge cutover
 
 ### Phase 2: Satellite 1 Voice Launch
 **Goal**: Users can reach Ada from Satellite 1 through the Home Assistant voice pipeline with launch wake-word, fallback, routing, and failure behavior in place.
