@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: blocked
-stopped_at: Blocked in 01-03 on HA UI config-entry setup
-last_updated: "2026-04-12T21:55:00Z"
-last_activity: 2026-04-12 -- Recovered OpenClaw and validated shared-token fallback
+status: Blocked on manual HA config-entry setup
+stopped_at: Phase 01.1 context gathered
+last_updated: "2026-04-13T07:00:40.845Z"
+last_activity: 2026-04-12 -- OpenClaw fallback validated; HA still needs UI-only conversation setup
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 0
   total_plans: 3
   completed_plans: 2
-  percent: 66
+  percent: 67
 ---
 
 # Project State
@@ -68,6 +68,10 @@ Recent decisions affecting current work:
 - [Phase 1]: OpenClaw's OpenAI-compatible endpoint only accepts the shared gateway token, so the dedicated HA token plan was reduced to a shared-token fallback.
 - [Phase 2]: Ship Satellite 1 with a custom Ada/Hey Ada wake-word path plus manual Assist fallback.
 
+### Roadmap Evolution
+
+- Phase 01.1 inserted after Phase 1: HA OpenClaw Shared Session Bridge (URGENT)
+
 ### Pending Todos
 
 - Complete the Home Assistant OpenAI Conversation config entry through the UI and bind it to the Ada voice assistant.
@@ -82,6 +86,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-04-12T21:55:00Z
-Stopped at: Blocked in 01-03 on HA UI config-entry setup
-Resume file: .planning/phases/01-shared-ada-voice-contract/01-03-PLAN.md
+Last session: 2026-04-13T07:00:40.842Z
+Stopped at: Phase 01.1 context gathered
+Resume file: .planning/phases/01.1-ha-openclaw-shared-session-bridge/01.1-CONTEXT.md
