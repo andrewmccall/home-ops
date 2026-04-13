@@ -32,6 +32,25 @@ Plans:
 - [x] 01-02-PLAN.md — Token, OpenClaw config (sender mapping + voice prompt), test harness
 - [ ] 01-03-PLAN.md — HA wiring (SOPS encrypt, PVC config) + end-to-end verification
 
+### Phase 01.1: HA OpenClaw Shared Session Bridge (INSERTED)
+
+**Goal:** Users can keep using Home Assistant's supported OpenAI Conversation setup while a lightweight bridge preserves shared Ada identity, shared cross-channel continuity, and explicit degraded-mode behavior on the HA -> OpenClaw path.
+**Requirements**: VOICE-03, VOICE-04, SAFE-02, SAFE-03
+**Depends on:** Phase 1
+**Success Criteria** (what must be TRUE):
+  1. Home Assistant can use its supported OpenAI Conversation setup against the new bridge without requiring a custom Home Assistant integration or YAML conversation config.
+  2. Home Assistant voice and Telegram can continue the same shared Ada conversation through one durable Andrew/Ada identity.
+  3. Home Assistant voice still reaches Ada's broader OpenClaw memory and tool-backed context through the bridge path.
+  4. If continuity cannot be preserved, the bridge surfaces degraded mode clearly instead of silently creating a separate session.
+  5. LiteLLM is removed once the bridge fully owns the HA-facing proxy path.
+**Plans:** 4 plans
+
+Plans:
+- [ ] 01.1-01-PLAN.md — Enable OpenClaw responses support + add bridge smoke harness
+- [ ] 01.1-02-PLAN.md — Deploy HA-facing bridge + move spoof ingress/TLS ownership
+- [ ] 01.1-03-PLAN.md — Prepare HA cutover + manual continuity/degraded-mode verification
+- [ ] 01.1-04-PLAN.md — Remove LiteLLM after successful bridge cutover
+
 ### Phase 2: Satellite 1 Voice Launch
 **Goal**: Users can reach Ada from Satellite 1 through the Home Assistant voice pipeline with launch wake-word, fallback, routing, and failure behavior in place.
 **Depends on**: Phase 1
@@ -69,11 +88,12 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3 -> 4
+Phases execute in numeric order: 1 -> 1.1 -> 2 -> 3 -> 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Shared Ada Voice Contract | 2/3 | Blocked | - |
+| 1.1. HA OpenClaw Shared Session Bridge | 0/4 | Planned | - |
 | 2. Satellite 1 Voice Launch | 0/TBD | Not started | - |
 | 3. Event-Driven Ada Skills | 0/TBD | Not started | - |
 | 4. Approved Home Action Bridge | 0/TBD | Not started | - |
