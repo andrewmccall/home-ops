@@ -33,7 +33,7 @@ spec:
           app:
             image:
               repository: rhasspy/wyoming-openwakeword
-              tag: 2.1.0@sha256:271ff3b56c13f400f7ced56b962fbc02de3cf5e5f34dc65d75ca63b4789de166
+              tag: 2.1.0@sha256:52cb1168731a1849fc28cf339c935fde58746bbabc94226668a40ef6ddf5d42b
             args:
               - --uri
               - tcp://0.0.0.0:10400
