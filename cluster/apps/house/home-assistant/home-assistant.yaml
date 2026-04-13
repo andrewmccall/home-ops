@@ -41,7 +41,7 @@ spec:
               # Trust the self-signed CA for internal api.openai.com proxy
               REQUESTS_CA_BUNDLE: /config/certs/openai-internal-ca.pem
             hostAliases:
-              - ip: "10.44.0.21"
+              - ip: "10.44.0.20"
                 hostnames:
                   - "api.openai.com"
             resources:
