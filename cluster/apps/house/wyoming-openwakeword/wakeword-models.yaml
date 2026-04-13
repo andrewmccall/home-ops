@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wakeword-models
+  namespace: house
+  annotations:
+    home-ops/ada-sha256: pending-render
+    home-ops/hey-ada-sha256: pending-render
+binaryData:
+  ada.tflite: ""
+  hey_ada.tflite: ""
