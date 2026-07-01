@@ -72,7 +72,7 @@ N/A
 | addons.netshoot.env | object | `{}` | Set any environment variables for netshoot here |
 | addons.netshoot.image.pullPolicy | string | `"IfNotPresent"` | Specify the netshoot image pull policy |
 | addons.netshoot.image.repository | string | `"ghcr.io/nicolaka/netshoot"` | Specify the netshoot image |
-| addons.netshoot.image.tag | string | `"v0.15@sha256:47b907d662d139d1e2f22bfe14f4efca1e3f1feed283572f47c970c780c03b61"` | Specify the netshoot image tag |
+| addons.netshoot.image.tag | string | `"v0.16@sha256:b09d9b21381f47a79b3cbcb30da25266dc17186ea00ae65e99fdc51396f48e70"` | Specify the netshoot image tag |
 | addons.promtail | object | See values.yaml | The common library supports adding a promtail add-on to to access logs and ship them to loki. It can be configured under this key. |
 | addons.promtail.args | list | `[]` | Set promtail command line arguments |
 | addons.promtail.enabled | bool | `false` | Enable running a promtail container in the pod |
