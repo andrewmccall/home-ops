@@ -41,7 +41,7 @@ jobs:
         if: steps.filter.outputs.addedOrModified == 'true'
         uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
         with:
-          version: v3.21.2
+          version: v4.2.2
 
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         if: steps.filter.outputs.addedOrModified == 'true'
@@ -117,7 +117,7 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
         with:
-          version: v3.21.2
+          version: v4.2.2
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@cae68fefc6b5f367a0275617c9f83181ba54714f # v1.7.0
