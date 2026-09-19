@@ -17,7 +17,7 @@ spec:
   values:
     image:
       repository: golift/unifi-poller
-      tag: v2.39.0@sha256:0a72d1809ad0eb9c4d51cbe99a713d8427fe33202e20631af68595ab097078e6
+      tag: v5.2.7@sha256:99f452d3180c7c8fc41d11d7db7fc4ed70eeef1e2bd3dc8e9181e9aca111b2cb
     env:
       UP_UNIFI_DEFAULT_URL: ${UNIFI_CONTROLLER_URL}
       UP_INFLUXDB_DISABLE: true
