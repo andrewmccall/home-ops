@@ -88,7 +88,13 @@ def configure(payload):
                 await ws.receive_json(timeout=15)
                 await ws.send_json({'type': 'auth', 'access_token': access})
                 assert (await ws.receive_json(timeout=15))['type'] == 'auth_ok'
-                await ws.send_json({'id': 1, 'type': 'assist_pipeline/run', 'pipeline': pipeline['id'], 'start_stage': 'intent', 'end_stage': 'tts', 'timeout': 120, 'input': {'text': 'Reply with exactly: Hermes voice ready. Do not use any tools.'}})
+                if payload.get('local_commands_first') and not pipeline.get('prefer_local_intents'):
+                    await ws.send_json({'id': 1, 'type': 'assist_pipeline/pipeline/update', 'pipeline': pipeline['id'], 'prefer_local_intents': True})
+                    result = await ws.receive_json(timeout=15)
+                    if not result.get('success'):
+                        raise RuntimeError('Could not enable local commands first: ' + str(result.get('error')))
+                    print('Enabled Home Assistant local commands first, with Hermes for other requests.')
+                await ws.send_json({'id': 2, 'type': 'assist_pipeline/run', 'pipeline': pipeline['id'], 'start_stage': 'intent', 'end_stage': 'tts', 'timeout': 120, 'input': {'text': 'Reply with exactly: Hermes voice ready. Do not use any tools.'}})
                 while True:
                     message = await ws.receive_json(timeout=150)
                     if message['type'] == 'result' and not message.get('success'):
@@ -121,7 +127,7 @@ def main():
     key = base64.b64decode(json.loads(result.stdout)['data']['API_SERVER_KEY']).decode()
     subprocess.run(
         ['kubectl', '-n', 'house', 'exec', '-i', 'deploy/home-assistant', '-c', 'app', '--', 'python3', '-c', Path(__file__).read_text(), '--in-container'],
-        input=json.dumps({'gateway_key': key, 'model': model}).encode(), check=True,
+        input=json.dumps({'gateway_key': key, 'model': model, 'local_commands_first': '--local-commands-first' in sys.argv}).encode(), check=True,
     )
 
 

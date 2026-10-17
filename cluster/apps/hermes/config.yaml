@@ -4,6 +4,16 @@ model:
 terminal:
   backend: local
   cwd: /opt/data/workspace
+platform_toolsets:
+  api_server: [home_assistant]
+mcp_servers:
+  home_assistant:
+    url: http://home-assistant-app.house.svc:8123/api/mcp
+    headers:
+      # Escape Flux substitution; Hermes expands this from its Secret-backed env.
+      Authorization: "Bearer $${HOME_ASSISTANT_TOKEN}"
+    timeout: 20
+    connect_timeout: 15
 platforms:
   api_server:
     enabled: true

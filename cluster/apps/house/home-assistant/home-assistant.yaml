@@ -132,7 +132,7 @@ spec:
         size: 50Gi
         advancedMounts:
           voice:
-            whisper-wyoming:
+            whisper:
               - path: /data
       piper-data:
         type: persistentVolumeClaim
@@ -140,5 +140,5 @@ spec:
         size: 50Gi
         advancedMounts:
           voice:
-            piper-wyoming:
+            piper:
               - path: /data

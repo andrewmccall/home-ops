@@ -63,13 +63,25 @@ def main():
     container = pod['containers'][0]
     assert '@sha256:' in container['image'], 'Hermes image must be pinned'
     refs = {e['name']: e['valueFrom']['secretKeyRef']['key'] for e in container['env'] if 'valueFrom' in e}
-    assert refs == {'OPENROUTER_API_KEY': 'OPENROUTER_API_KEY', 'API_SERVER_KEY': 'API_SERVER_KEY'}
+    assert refs == {key: key for key in ('OPENROUTER_API_KEY', 'API_SERVER_KEY', 'HOME_ASSISTANT_TOKEN')}
     assert sandbox['spec']['volumeClaimTemplates'][0]['spec']['storageClassName'] == 'longhorn'
     service = next(d for d in apps if d['kind'] == 'Service' and d['metadata']['name'] == 'hermes-api')
     assert service['spec']['selector'] == {'app.kubernetes.io/name': 'hermes'}
     assert service['spec']['ports'] == [{'name': 'api', 'port': 8642, 'targetPort': 'api'}]
     home_assistant = next(d for d in apps if d['kind'] == 'HelmRelease' and d['metadata']['name'] == 'home-assistant')
-    assert home_assistant['spec']['values']['controllers']['home-assistant']['containers']['app']['env']['OPENAI_BASE_URL'] == 'http://hermes-api.hermes.svc:8642/v1'
+    ha_values = home_assistant['spec']['values']
+    assert ha_values['controllers']['home-assistant']['containers']['app']['env']['OPENAI_BASE_URL'] == 'http://hermes-api.hermes.svc:8642/v1'
+    for volume, settings in ha_values['persistence'].items():
+        for controller, mounts in settings.get('advancedMounts', {}).items():
+            assert controller in ha_values['controllers'], f'{volume}: unknown controller {controller}'
+            for target in mounts:
+                assert target in ha_values['controllers'][controller]['containers'], f'{volume}: unknown container {target}'
+    config_map = next(d for d in apps if d['kind'] == 'ConfigMap' and d['metadata']['name'] == 'hermes-config')
+    hermes_config = yaml.safe_load(config_map['data']['config.yaml'])
+    assert hermes_config['platform_toolsets']['api_server'] == ['home_assistant']
+    mcp = hermes_config['mcp_servers']['home_assistant']
+    assert mcp['url'] == 'http://home-assistant-app.house.svc:8123/api/mcp'
+    assert mcp['headers']['Authorization'] == 'Bearer $${HOME_ASSISTANT_TOKEN}', 'MCP credential reference must survive Flux substitution'
     policy = next(d for d in apps if d['kind'] == 'NetworkPolicy' and d['metadata']['name'] == 'hermes')
     assert policy['spec']['ingress'] == [{
         'from': [{
@@ -78,10 +90,18 @@ def main():
         }],
         'ports': [{'protocol': 'TCP', 'port': 8642}],
     }]
+    assert {
+        'to': [{
+            'namespaceSelector': {'matchLabels': {'kubernetes.io/metadata.name': 'house'}},
+            'podSelector': {'matchLabels': {'app.kubernetes.io/instance': 'home-assistant', 'app.kubernetes.io/controller': 'home-assistant'}},
+        }],
+        'ports': [{'protocol': 'TCP', 'port': 8123}],
+    } in policy['spec']['egress'], 'Hermes cannot reach the Home Assistant MCP server'
     app_kustomization = next(d for d in rendered['base'] if d['kind'] == 'Kustomization' and d['metadata']['name'] == 'apps')
     assert {'name': 'agent-sandbox'} in app_kustomization['spec']['dependsOn']
     print('PASS: Hermes CRD schema, credential references, persistent storage and controller ordering')
     print('PASS: Home Assistant endpoint, Hermes API Service and scoped voice ingress')
+    print('PASS: Voice cache mount targets and scoped Home Assistant MCP configuration')
 
 
 if __name__ == '__main__':

@@ -35,14 +35,16 @@ def main():
         environment['SOPS_AGE_KEY'] = '\n'.join(identities)
 
     api_key = secrets.token_hex(32)
+    credentials = {}
     if target.exists():
         previous = subprocess.run(['sops', '--decrypt', '--output-type', 'json', str(target)], env=environment, check=True, capture_output=True)
-        api_key = json.loads(previous.stdout)['stringData']['API_SERVER_KEY']
+        credentials = json.loads(previous.stdout)['stringData']
+        api_key = credentials['API_SERVER_KEY']
     secret = {
         'apiVersion': 'v1', 'kind': 'Secret',
         'metadata': {'name': 'hermes-agent-api-keys', 'namespace': 'hermes'},
         'type': 'Opaque',
-        'stringData': {'OPENROUTER_API_KEY': key, 'API_SERVER_KEY': api_key},
+        'stringData': {**credentials, 'OPENROUTER_API_KEY': key, 'API_SERVER_KEY': api_key},
     }
     encrypted = subprocess.run(
         ['sops', '--encrypt', '--filename-override', str(target), '--input-type', 'json', '--output-type', 'yaml', '/dev/stdin'],

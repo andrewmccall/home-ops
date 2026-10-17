@@ -33,9 +33,10 @@ credentials never go into a temporary file. Configure your age identity as descr
 in the root README, or set `SOPS_AGE_KEY_FILE`. The helper preserves the separate
 gateway API key when updating the OpenRouter credential.
 
-The encrypted Secret must contain both `OPENROUTER_API_KEY` and the separate
-`API_SERVER_KEY`. Kubernetes refuses to start the Hermes container if either key
-is missing. Run the helper before publishing a newly created Secret.
+The encrypted Secret must contain `OPENROUTER_API_KEY`, the separate
+`API_SERVER_KEY`, and `HOME_ASSISTANT_TOKEN` (see Home Assistant voice below).
+Kubernetes refuses to start the Hermes container if a required key is missing.
+The OpenRouter helper preserves the other existing credentials.
 
 ## Retire OpenClaw without deleting its data
 
@@ -126,11 +127,37 @@ Home Assistant's `OPENAI_BASE_URL` points its OpenAI SDK client at
 NetworkPolicy allows port 8642 only from the Home Assistant controller in `house`.
 The Wyoming voice pod continues to provide Whisper speech recognition and Piper
 speech synthesis. Ada's existing pipeline and conversation entity stay in use.
+Each speech container mounts its own persistent `/data` cache. The current
+Wyoming Whisper image automatically selects Parakeet for English; the first use
+downloads that model. The cache keeps it across pod replacements.
+
+Hermes v0.22.2's OpenAI-compatible endpoint does not forward client-supplied tools
+to its agent. Home Assistant's tool selection alone therefore cannot give Hermes
+device control. Instead, Hermes connects to Home Assistant's native MCP Server.
+Configure that integration to expose only the Assist API, using the existing
+Assist entity exposure settings, then provision its credential:
+
+```sh
+python3 scripts/configure-hermes-ha-mcp.py --cluster-age-key
+```
+
+The helper requires the MCP integration to be present and restricted to Assist.
+It creates a named **Hermes Assist** token through Home Assistant's supported API
+and encrypts it directly into the existing SOPS Secret, retaining the other keys.
+It reuses a saved credential on subsequent runs. The token expires after 365 days
+and inherits the owner's account permissions; the token itself is not scoped to
+MCP. Revoke it in the owner's Security settings before replacing it or retiring
+Hermes. No plaintext token is written to disk or printed.
+
+The API platform enables only the Home Assistant MCP toolset, avoiding unrelated
+terminal and skill-management calls during voice requests. CLI tools retain their
+normal configuration. NetworkPolicy permits Hermes to reach only the Home
+Assistant controller on port 8123 inside the private network.
 
 After the endpoint rollout, configure the existing integration and verify Ada:
 
 ```sh
-python3 scripts/configure-ha-hermes.py
+python3 scripts/configure-ha-hermes.py --local-commands-first
 ```
 
 The helper uses Home Assistant's configuration APIs to update the gateway API key
@@ -139,6 +166,9 @@ reads the gateway credential from Kubernetes and exchanges an existing Home
 Assistant owner's refresh token inside the running container. Tokens stay in
 memory and are not printed. The key and model persist through Home Assistant's
 normal config storage on its PVC.
+The optional `--local-commands-first` flag enables Home Assistant's native intent
+handler for recognised home commands before falling back to Hermes. Other
+requests still use Hermes and OpenRouter. It preserves the rest of the pipeline.
 
 Verification sends one paid text request through the preferred Ada pipeline and
 requires both a Hermes response and generated Piper audio. It does not exercise a
@@ -168,8 +198,8 @@ The API has no Ingress. NetworkPolicy permits the Home Assistant controller and
 denies other incoming pod traffic. Use a localhost port-forward for laptop access.
 The dashboard and native messaging channels are not configured yet.
 The pod has no Kubernetes service-account token, host mounts or container socket.
-Egress permits cluster DNS and public IPv4 HTTPS, excluding private and link-local
-networks. This allows OpenRouter and upstream runtime downloads; it is not an
+Egress permits cluster DNS, Home Assistant on port 8123, and public IPv4 HTTPS,
+excluding other private and link-local networks. This allows OpenRouter and upstream runtime downloads; it is not an
 OpenRouter-only hostname allowlist. Agent Sandbox manages pod and volume lifecycle.
 This cluster uses its normal container runtime, with no gVisor/Kata RuntimeClass.
 The upstream image bootstraps as root and drops Hermes services to UID 10000.

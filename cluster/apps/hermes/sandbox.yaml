@@ -50,6 +50,11 @@ spec:
                 secretKeyRef:
                   name: hermes-agent-api-keys
                   key: API_SERVER_KEY
+            - name: HOME_ASSISTANT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-agent-api-keys
+                  key: HOME_ASSISTANT_TOKEN
           ports:
             - name: api
               containerPort: 8642
