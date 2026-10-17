@@ -25,6 +25,10 @@ spec:
     # breakage (volumes stuck attaching), fixed in 1.12.2. Keep the pre-1.12 behaviour.
     networkPolicies:
       restrictInternalTraffic: false
+    defaultSettings:
+      # Was 0, which left volumes on engines as old as v1.7.0 across upgrades. One at a
+      # time live-upgrades each volume to the manager's engine after every upgrade.
+      concurrentAutomaticEngineUpgradePerNodeLimit: 1
     persistence:
       defaultClassReplicaCount: 1
     metrics:
