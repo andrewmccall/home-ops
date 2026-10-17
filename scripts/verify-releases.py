@@ -3,7 +3,8 @@
 
 helm template validates values against each chart's schema. With --base REF, the
 renders are also compared with that git revision, and changes to fields Kubernetes
-cannot update in place fail. Requires helm, kubectl, git and PyYAML.
+cannot update in place fail. Label values the API server would reject also fail.
+Requires helm, kubectl, git and PyYAML.
 
 Limitations: SOPS-encrypted substitution variables render as placeholders, and
 postRenderers are not applied.
@@ -28,6 +29,7 @@ VARIABLE = re.compile(r'\$\{([A-Za-z_][A-Za-z0-9_]*)(?::?[=-]([^}]*))?\}')
 WORKLOAD_SELECTOR_KINDS = ('Deployment', 'DaemonSet', 'ReplicaSet')
 STATEFULSET_MUTABLE = {'replicas', 'template', 'updateStrategy', 'persistentVolumeClaimRetentionPolicy', 'minReadySeconds', 'ordinals', 'revisionHistoryLimit'}
 PVC_IMMUTABLE = ('accessModes', 'storageClassName', 'volumeName', 'volumeMode')
+LABEL_VALUE = re.compile(r'(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?')
 # PyYAML resolves a bare "=" to the YAML 1.1 value tag; Kubernetes treats it as a string.
 yaml.SafeLoader.add_constructor('tag:yaml.org,2002:value', yaml.SafeLoader.construct_yaml_str)
 
@@ -92,6 +94,15 @@ def render_release(release, repositories, apis, workdir):
     return [doc for doc in yaml.safe_load_all(result.stdout) if doc], None
 
 
+def invalid_labels(documents):
+    """Yield label values the API server rejects, e.g. an image digest copied into a version label."""
+    for doc in documents:
+        for meta in (doc.get('metadata'), ((doc.get('spec') or {}).get('template') or {}).get('metadata')):
+            for key, value in ((meta or {}).get('labels') or {}).items():
+                if len(str(value)) > 63 or not LABEL_VALUE.fullmatch(str(value)):
+                    yield f"{doc['kind']}/{doc['metadata'].get('name')}: label {key}={value!r} is not a valid label value"
+
+
 def release_policy_errors(documents):
     """Every Flux Kustomization that applies HelmReleases must patch in rollback remediation."""
     for name in ('apps', 'core'):
@@ -121,6 +132,7 @@ def render_releases(root):
                 errors.append(f'{key}: {error}')
             else:
                 rendered[key] = docs
+                errors += [f'{key}: {label}' for label in invalid_labels(docs)]
     return rendered, errors
 
 
