@@ -95,7 +95,6 @@ flux reconcile kustomization agent-sandbox -n flux-system
 flux reconcile kustomization apps -n flux-system
 kubectl -n hermes get sandbox,pod,pvc
 kubectl -n hermes wait --for=condition=Ready pod/hermes --timeout=600s
-kubectl -n hermes port-forward pod/hermes 8642:8642
 ```
 
 Check the old namespaces after reconciliation. The legacy bridge was installed
@@ -109,7 +108,25 @@ kubectl -n openclaw-operator-system wait --for=delete helmrelease/openclaw-opera
 kubectl -n openclaw get pods,pvc
 ```
 
-In another terminal:
+If Home Assistant previously received manual Deployment patches for the bridge,
+Helm can preserve those fields after the chart stops rendering them. Once the new
+Helm manifest is installed, remove those stale overrides with:
+
+```sh
+python3 scripts/cleanup-ha-openclaw-proxy.py
+kubectl -n house rollout status deployment/home-assistant --timeout=180s
+```
+
+The helper checks the current Helm manifest first and removes only the OpenClaw
+hostname alias, proxy CA mounts, CA merge init container and CA environment override.
+
+Start a local API tunnel:
+
+```sh
+kubectl -n hermes port-forward pod/hermes 8642:8642
+```
+
+Leave it running, then verify from another terminal:
 
 ```sh
 python3 scripts/verify-hermes.py
