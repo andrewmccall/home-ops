@@ -48,6 +48,10 @@ spec:
         retention_delete_worker_count: 150
         delete_request_store: filesystem
     gateway:
+      # The chart requires one gateway per node; on a single node a rolling update
+      # can never schedule the new pod.
+      affinity:
+        podAntiAffinity: null
       ingress:
         enabled: true
         ingressClassName: internal
