@@ -6,6 +6,7 @@ resources:
   - api-keys.sops.yaml
   - sandbox.yaml
   - networkpolicy.yaml
+  - service.yaml
 configMapGenerator:
   - name: hermes-config
     files:

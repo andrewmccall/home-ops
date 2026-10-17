@@ -7,7 +7,18 @@ spec:
     matchLabels:
       app.kubernetes.io/name: hermes
   policyTypes: [Ingress, Egress]
-  ingress: []
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: house
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/instance: home-assistant
+              app.kubernetes.io/controller: home-assistant
+      ports:
+        - protocol: TCP
+          port: 8642
   egress:
     - to:
         - namespaceSelector:

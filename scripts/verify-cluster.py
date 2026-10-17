@@ -65,9 +65,23 @@ def main():
     refs = {e['name']: e['valueFrom']['secretKeyRef']['key'] for e in container['env'] if 'valueFrom' in e}
     assert refs == {'OPENROUTER_API_KEY': 'OPENROUTER_API_KEY', 'API_SERVER_KEY': 'API_SERVER_KEY'}
     assert sandbox['spec']['volumeClaimTemplates'][0]['spec']['storageClassName'] == 'longhorn'
+    service = next(d for d in apps if d['kind'] == 'Service' and d['metadata']['name'] == 'hermes-api')
+    assert service['spec']['selector'] == {'app.kubernetes.io/name': 'hermes'}
+    assert service['spec']['ports'] == [{'name': 'api', 'port': 8642, 'targetPort': 'api'}]
+    home_assistant = next(d for d in apps if d['kind'] == 'HelmRelease' and d['metadata']['name'] == 'home-assistant')
+    assert home_assistant['spec']['values']['controllers']['home-assistant']['containers']['app']['env']['OPENAI_BASE_URL'] == 'http://hermes-api.hermes.svc:8642/v1'
+    policy = next(d for d in apps if d['kind'] == 'NetworkPolicy' and d['metadata']['name'] == 'hermes')
+    assert policy['spec']['ingress'] == [{
+        'from': [{
+            'namespaceSelector': {'matchLabels': {'kubernetes.io/metadata.name': 'house'}},
+            'podSelector': {'matchLabels': {'app.kubernetes.io/instance': 'home-assistant', 'app.kubernetes.io/controller': 'home-assistant'}},
+        }],
+        'ports': [{'protocol': 'TCP', 'port': 8642}],
+    }]
     app_kustomization = next(d for d in rendered['base'] if d['kind'] == 'Kustomization' and d['metadata']['name'] == 'apps')
     assert {'name': 'agent-sandbox'} in app_kustomization['spec']['dependsOn']
     print('PASS: Hermes CRD schema, credential references, persistent storage and controller ordering')
+    print('PASS: Home Assistant endpoint, Hermes API Service and scoped voice ingress')
 
 
 if __name__ == '__main__':

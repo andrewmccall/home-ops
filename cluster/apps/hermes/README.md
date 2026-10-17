@@ -2,8 +2,7 @@
 
 Hermes replaces the OpenClaw instance, operator, Home Assistant bridge, OpenAI
 hostname override and dedicated Whisper HTTP service. Home Assistant's Wyoming
-voice services remain. Its existing OpenAI conversation integration must be
-disabled or reconfigured in Home Assistant before using that voice pipeline again.
+voice services remain. Its existing Ada conversation integration uses the Hermes API.
 
 This follows the [upstream Hermes Sandbox example](https://agent-sandbox.sigs.k8s.io/docs/use-cases/examples/hermes-agent/).
 The controller and CRD are vendored from Agent Sandbox v1.0.7. Hermes uses
@@ -120,6 +119,31 @@ kubectl -n house rollout status deployment/home-assistant --timeout=180s
 The helper checks the current Helm manifest first and removes only the OpenClaw
 hostname alias, proxy CA mounts, CA merge init container and CA environment override.
 
+## Home Assistant voice
+
+Home Assistant's `OPENAI_BASE_URL` points its OpenAI SDK client at
+`http://hermes-api.hermes.svc:8642/v1`. The internal Service selects the Hermes pod.
+NetworkPolicy allows port 8642 only from the Home Assistant controller in `house`.
+The Wyoming voice pod continues to provide Whisper speech recognition and Piper
+speech synthesis. Ada's existing pipeline and conversation entity stay in use.
+
+After the endpoint rollout, configure the existing integration and verify Ada:
+
+```sh
+python3 scripts/configure-ha-hermes.py
+```
+
+The helper uses Home Assistant's configuration APIs to update the gateway API key
+and model. It preserves the existing prompt and exposed-entity API selection. It
+reads the gateway credential from Kubernetes and exchanges an existing Home
+Assistant owner's refresh token inside the running container. Tokens stay in
+memory and are not printed. The key and model persist through Home Assistant's
+normal config storage on its PVC.
+
+Verification sends one paid text request through the preferred Ada pipeline and
+requires both a Hermes response and generated Piper audio. It does not exercise a
+physical microphone, satellite wake word, speaker playback or device-control action.
+
 Start a local API tunnel:
 
 ```sh
@@ -140,8 +164,9 @@ Secret in memory without printing it. For interactive terminal chat:
 kubectl -n hermes exec -it hermes -c hermes -- hermes chat
 ```
 
-The API has no Ingress, and NetworkPolicy denies incoming pod traffic. Use a
-localhost port-forward. Dashboard and messaging channels are not configured yet.
+The API has no Ingress. NetworkPolicy permits the Home Assistant controller and
+denies other incoming pod traffic. Use a localhost port-forward for laptop access.
+The dashboard and native messaging channels are not configured yet.
 The pod has no Kubernetes service-account token, host mounts or container socket.
 Egress permits cluster DNS and public IPv4 HTTPS, excluding private and link-local
 networks. This allows OpenRouter and upstream runtime downloads; it is not an

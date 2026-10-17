@@ -38,6 +38,7 @@ spec:
             env:
               TZ: Europe/London
               HASS_HTTP_TRUSTED_PROXY_1: ${K8S_CLUSTER_CIDR}
+              OPENAI_BASE_URL: http://hermes-api.hermes.svc:8642/v1
             resources:
               requests:
                 cpu: 10m
