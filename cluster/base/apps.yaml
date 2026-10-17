@@ -25,3 +25,27 @@ spec:
         name: cluster-config
       - kind: Secret
         name: cluster-secrets
+  # Release safety defaults for every HelmRelease: a failed install is retried,
+  # a failed upgrade (including a failed readiness wait or Helm test) is rolled back.
+  # Releases that cannot be downgraded opt out with the remediation=manual label.
+  patches:
+    - target:
+        group: helm.toolkit.fluxcd.io
+        kind: HelmRelease
+        labelSelector: home-ops.andrewmccall.com/remediation!=manual
+      patch: |
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: release-defaults
+        spec:
+          install:
+            remediation:
+              retries: 3
+          upgrade:
+            cleanupOnFail: true
+            remediation:
+              strategy: rollback
+              retries: 3
+          rollback:
+            cleanupOnFail: true

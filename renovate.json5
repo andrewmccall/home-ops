@@ -52,6 +52,19 @@
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
     },
+    // Longhorn only upgrades from the previous minor version and its pre-upgrade
+    // check fails otherwise: one PR per minor, merged by hand after the previous one is healthy.
+    {
+      "matchDatasources": ["helm"],
+      "matchPackageNames": ["longhorn"],
+      "separateMultipleMinor": true
+    },
+    {
+      "matchDatasources": ["helm"],
+      "matchPackageNames": ["longhorn"],
+      "matchUpdateTypes": ["minor", "major"],
+      "automerge": false
+    },
     // datasource specific settings
     {
       "matchDatasources": ["custom.minecraft"],

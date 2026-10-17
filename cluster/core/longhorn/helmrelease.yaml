@@ -4,13 +4,18 @@ kind: HelmRelease
 metadata:
   name: longhorn
   namespace: longhorn
+  labels:
+    # Longhorn cannot be downgraded, so a failed upgrade stays failed for a human to fix.
+    # Its pre-upgrade job rejects unsupported version jumps before anything changes.
+    home-ops.andrewmccall.com/remediation: manual
 spec:
   interval: 10m
+  timeout: 15m
   chart:
     spec:
       chart: longhorn
       # renovate: datasource=helm registryUrl=https://charts.longhorn.io chart=longhorn
-      version: 1.13.0
+      version: 1.11.1
       sourceRef:
         kind: HelmRepository
         name: longhorn

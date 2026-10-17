@@ -15,6 +15,9 @@ spec:
         kind: HelmRepository
         name: grafana
         namespace: flux-system
+  # Runs loki-helm-test after each upgrade: the canary must write and read back logs.
+  test:
+    enable: true
   values:
     global:
       clusterDomain: ${CLUSTER_DOMAIN}

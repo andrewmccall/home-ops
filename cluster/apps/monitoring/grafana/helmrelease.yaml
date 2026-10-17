@@ -15,6 +15,9 @@ spec:
         kind: HelmRepository
         name: grafana
         namespace: flux-system
+  # Runs the chart's test pod after each upgrade: Grafana must answer on its service.
+  test:
+    enable: true
   values:
     env:
       VAR_BLOCKY_URL: "http://blocky.networking.svc.${CLUSTER_DOMAIN}:4000"
