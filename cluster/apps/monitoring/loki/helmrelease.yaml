@@ -49,9 +49,11 @@ spec:
         delete_request_store: filesystem
     gateway:
       # The chart requires one gateway per node; on a single node a rolling update
-      # can never schedule the new pod.
+      # can never schedule the new pod, so replace it instead.
       affinity:
         podAntiAffinity: null
+      deploymentStrategy:
+        type: Recreate
       ingress:
         enabled: true
         ingressClassName: internal
