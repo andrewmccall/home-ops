@@ -174,6 +174,24 @@ Verification sends one paid text request through the preferred Ada pipeline and
 requires both a Hermes response and generated Piper audio. It does not exercise a
 physical microphone, satellite wake word, speaker playback or device-control action.
 
+To verify speech recognition too, run:
+
+```sh
+python3 scripts/verify-ha-voice.py --mcp
+```
+
+This synthesises “What is your name?”, streams the actual audio through Ada's
+speech-to-text stage, checks the transcription, and downloads the generated reply
+audio. `--mcp` adds a read-only query about the office lights and requires a retained
+successful Home Assistant live-context tool result. This runs two paid model
+requests and does not change device state. A physical satellite test is still
+needed for its microphone, wake word and speaker.
+
+Satellite1 ce2dc4 currently has **Hey Jarvis** and **Okay Nabu** wake-word models,
+with Hey Jarvis selected. Naming the Assist pipeline Ada does not install an Ada
+wake-word model. The old `wakeword-models` source has empty Ada model payloads;
+custom Ada wake words need real compatible models and a separate firmware setup.
+
 Start a local API tunnel:
 
 ```sh

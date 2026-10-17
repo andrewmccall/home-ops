@@ -89,7 +89,8 @@ def configure(payload):
                 await ws.send_json({'type': 'auth', 'access_token': access})
                 assert (await ws.receive_json(timeout=15))['type'] == 'auth_ok'
                 if payload.get('local_commands_first') and not pipeline.get('prefer_local_intents'):
-                    await ws.send_json({'id': 1, 'type': 'assist_pipeline/pipeline/update', 'pipeline': pipeline['id'], 'prefer_local_intents': True})
+                    settings = {key: value for key, value in pipeline.items() if key != 'id'}
+                    await ws.send_json({**settings, 'id': 1, 'type': 'assist_pipeline/pipeline/update', 'pipeline_id': pipeline['id'], 'prefer_local_intents': True})
                     result = await ws.receive_json(timeout=15)
                     if not result.get('success'):
                         raise RuntimeError('Could not enable local commands first: ' + str(result.get('error')))
