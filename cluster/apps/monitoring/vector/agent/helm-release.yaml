@@ -21,7 +21,9 @@ spec:
   values:
     image:
       repository: timberio/vector
-      tag: 0.59.0-debian@sha256:98e7b4dfe50750e61470697bbd2fbeca643d12bea97f351005038ef506eab630
+      # The chart copies tag into a label, which can't hold '@'; it joins tag@digest itself.
+      tag: 0.59.0-debian
+      digest: sha256:98e7b4dfe50750e61470697bbd2fbeca643d12bea97f351005038ef506eab630
     role: Agent
     customConfig:
       data_dir: /vector-data-dir
