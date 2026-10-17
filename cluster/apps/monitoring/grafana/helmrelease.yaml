@@ -25,9 +25,16 @@ spec:
     grafana.ini:
       analytics:
         check_for_updates: false
+      # Still on the persistent volume from earlier installs; Grafana 12 refuses Angular plugins.
+      plugins:
+        disable_plugins: grafana-piechart-panel,grafana-worldmap-panel,natel-discrete-panel
     datasources:
       datasources.yaml:
         apiVersion: 1
+        # A hand-made duplicate with no URL; dashboards with a datasource picker offered it.
+        deleteDatasources:
+          - name: prometheus
+            orgId: 1
         datasources:
           - name: Prometheus
             type: prometheus

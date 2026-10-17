@@ -100,6 +100,10 @@ This requires `kubectl`, PyYAML and jsonschema. CI runs the same check and rejec
 `cluster.local` in rendered resources. This cluster's DNS domain is
 `cluster.andrewmccall.com`; see [Flux domain configuration](cluster/README.md#cluster-dns-domain).
 
+Check the live monitoring stack with `python3 scripts/verify-monitoring.py`: Grafana
+datasources, plugins and dashboards, scrape targets, Loki logs from every namespace,
+and Alertmanager delivery. It is read-only and needs `kubectl` access to the cluster.
+
 System requirements - 
 sops, age, yq, 
 
