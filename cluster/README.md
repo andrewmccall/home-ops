@@ -96,9 +96,13 @@ flux reconcile source git flux-system -n flux-system
 kubectl -n flux-system get gitrepositories,kustomizations
 ```
 
-Do not reapply the whole generated Flux bundle just to repair DNS. The checked-in
-bundle currently contains newer controller versions than the running installation.
-Review those changes as a Flux upgrade before applying the complete bundle.
+Do not reapply the whole generated Flux bundle just to repair DNS. Review any
+controller version changes as a Flux upgrade. Before reconciling an upgrade, run
+[`flux migrate`](https://fluxcd.io/flux/cmd/flux_migrate/) against the cluster to
+migrate stored custom-resource versions. During this cutover, a stored notification
+Provider `v1beta2` prevented the new CRD from applying until migration completed.
+`flux migrate -f cluster --dry-run` checks whether the repository also needs API
+version updates.
 
 Recovering Flux resumes deployment of the current contents of main. For the Hermes
 migration, first complete the credential and data-retention steps in the

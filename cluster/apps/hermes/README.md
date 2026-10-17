@@ -98,6 +98,17 @@ kubectl -n hermes wait --for=condition=Ready pod/hermes --timeout=600s
 kubectl -n hermes port-forward pod/hermes 8642:8642
 ```
 
+Check the old namespaces after reconciliation. The legacy bridge was installed
+outside Flux's inventory in this cluster, so it needed explicit removal:
+
+```sh
+kubectl -n openclaw delete deployment/openclaw-bridge service/openclaw-bridge \
+  configmap/bridge-runtime-configmap secret/openclaw-bridge-secrets \
+  networkpolicy/home-ops-openclaw-allow-house-voice --ignore-not-found
+kubectl -n openclaw-operator-system wait --for=delete helmrelease/openclaw-operator --timeout=180s
+kubectl -n openclaw get pods,pvc
+```
+
 In another terminal:
 
 ```sh
