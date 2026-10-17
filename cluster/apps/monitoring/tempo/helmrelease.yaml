@@ -37,6 +37,8 @@ spec:
       size: 50Gi
     service:
       type: ClusterIP
+    serviceMonitor:
+      enabled: true
     ingress:
       enabled: true
       ingressClassName: internal

@@ -49,13 +49,50 @@ spec:
       datasources:
         enabled: true
         searchNamespace: ALL
+    # Grafana 12 refuses Angular plugins (piechart, worldmap, discrete); use the built-in panels.
     plugins:
       - grafana-clock-panel
-      - grafana-piechart-panel
-      - grafana-worldmap-panel
-      - natel-discrete-panel
       - pr0ps-trackmap-panel
       - vonage-status-panel
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: platform
+            orgId: 1
+            folder: Platform
+            type: file
+            disableDeletion: true
+            editable: false
+            options:
+              path: /var/lib/grafana/dashboards/platform
+    dashboards:
+      platform:
+        flux-cluster:
+          url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/7ab65dc8b90f7a6751d88f18bbb4e1bee33bf334/monitoring/configs/dashboards/cluster.json
+          datasource: [{name: DS_PROMETHEUS, value: Prometheus}]
+        flux-control-plane:
+          url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/7ab65dc8b90f7a6751d88f18bbb4e1bee33bf334/monitoring/configs/dashboards/control-plane.json
+          datasource: [{name: DS_PROMETHEUS, value: Prometheus}]
+        flux-logs:
+          url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/7ab65dc8b90f7a6751d88f18bbb4e1bee33bf334/monitoring/configs/dashboards/logs.json
+          datasource: [{name: DS_LOKI, value: Loki}]
+        longhorn:
+          gnetId: 16888
+          revision: 14
+          datasource: [{name: DS_PROMETHEUS, value: Prometheus}]
+        ingress-nginx:
+          gnetId: 9614
+          revision: 1
+          datasource: [{name: DS_PROMETHEUS, value: Prometheus}]
+        cert-manager:
+          gnetId: 20842
+          revision: 3
+          datasource: [{name: DS_PROMETHEUS, value: Prometheus}]
+        logs:
+          gnetId: 13639
+          revision: 2
+          datasource: [{name: DS_LOKI, value: Loki}]
     serviceMonitor:
       enabled: true
     ingress:

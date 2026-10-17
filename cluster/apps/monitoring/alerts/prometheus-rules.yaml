@@ -101,18 +101,28 @@ spec:
 
     - name: flux
       rules:
+        # gotk_resource_info comes from kube-state-metrics custom resource state.
         - alert: FluxReconciliationFailure
-          expr: gotk_reconcile_condition{status="False",type="Ready"} == 1
-          for: 10m
+          expr: max by (customresource_kind, exported_namespace, name) (gotk_resource_info{ready="False"}) == 1
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Flux {{ $labels.customresource_kind }} {{ $labels.exported_namespace }}/{{ $labels.name }} is not ready"
+            description: "Not ready for 15 minutes. A failed upgrade has been rolled back or is waiting for a fix: flux get {{ $labels.customresource_kind | toLower }} -n {{ $labels.exported_namespace }} {{ $labels.name }}"
+
+        - alert: FluxSuspendedTooLong
+          expr: max by (customresource_kind, exported_namespace, name) (gotk_resource_info{suspended="true"}) == 1
+          for: 24h
           labels:
             severity: warning
           annotations:
-            summary: "Flux reconciliation failed for {{ $labels.kind }}/{{ $labels.name }}"
+            summary: "Flux {{ $labels.customresource_kind }} {{ $labels.exported_namespace }}/{{ $labels.name }} suspended for 24h+"
 
-        - alert: FluxSuspendedTooLong
-          expr: gotk_suspend_status == 1
-          for: 24h
+        - alert: FluxMetricsMissing
+          expr: absent(gotk_resource_info{customresource_kind="HelmRelease"})
+          for: 30m
           labels:
-            severity: info
+            severity: warning
           annotations:
-            summary: "{{ $labels.kind }}/{{ $labels.name }} suspended for 24h+"
+            summary: "No Flux HelmRelease state metrics; Flux failure alerts cannot fire"

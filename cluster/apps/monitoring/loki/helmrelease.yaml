@@ -69,6 +69,8 @@ spec:
               - *host
             secretName: loki-tls
     monitoring:
+      serviceMonitor:
+        enabled: true
       selfMonitoring:
         enabled: false
         grafanaAgent:
