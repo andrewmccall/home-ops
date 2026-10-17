@@ -6,5 +6,6 @@ resources:
   - databases
   - games
   - house
-  - openclaw
+  - hermes
+  - retained-data
   - tiles

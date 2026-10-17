@@ -29,28 +29,6 @@ spec:
       home-assistant:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          init-merge-openai-ca:
-            image:
-              repository: ghcr.io/home-assistant/home-assistant
-              tag: 2026.10.2@sha256:33afb0659d786213264c2211f8d91c5fe87461c56eba6a3a546eb05fc71e89f4
-            command:
-              - sh
-              - -lc
-              - |
-                set -eu
-                base_ca=""
-                for candidate in /etc/ssl/certs/ca-certificates.crt /etc/ssl/cert.pem; do
-                  if [ -f "$candidate" ]; then
-                    base_ca="$candidate"
-                    break
-                  fi
-                done
-                if [ -z "$base_ca" ]; then
-                  echo "No system CA bundle found" >&2
-                  exit 1
-                fi
-                cat "$base_ca" /openai-ca/ca.pem > /work/combined-ca.pem
         containers:
           app:
             image:
@@ -60,12 +38,6 @@ spec:
             env:
               TZ: Europe/London
               HASS_HTTP_TRUSTED_PROXY_1: ${K8S_CLUSTER_CIDR}
-              # Append the spoof CA to the default trust bundle so other integrations keep working.
-              REQUESTS_CA_BUNDLE: /work/combined-ca.pem
-            hostAliases:
-              - ip: "10.44.0.20"
-                hostnames:
-                  - "api.openai.com"
             resources:
               requests:
                 cpu: 10m
@@ -141,25 +113,6 @@ spec:
         existingClaim: home-assistant-config
         globalMounts:
           - path: /config
-      openai-ca:
-        type: configMap
-        name: openai-internal-ca
-        advancedMounts:
-          home-assistant:
-            init-merge-openai-ca:
-              - path: /openai-ca/ca.pem
-                subPath: ca.pem
-            app:
-              - path: /config/certs/openai-internal-ca.pem
-                subPath: ca.pem
-      ca-bundle-workdir:
-        type: emptyDir
-        advancedMounts:
-          home-assistant:
-            init-merge-openai-ca:
-              - path: /work
-            app:
-              - path: /work
       logs:
         type: emptyDir
         globalMounts:

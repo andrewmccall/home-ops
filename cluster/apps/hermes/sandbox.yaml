@@ -1,0 +1,88 @@
+apiVersion: agents.x-k8s.io/v1beta1
+kind: Sandbox
+metadata:
+  name: hermes
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  podTemplate:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hermes
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: configure
+          image: &image nousresearch/hermes-agent:v0.22.2@sha256:36099926da316742423544e055d4734777105ffe6341873af5459b957d0c2919
+          command: [python3, -c]
+          args:
+            - |
+              import os, pathlib, shutil
+              shutil.copyfile('/etc/hermes/config.yaml', '/opt/data/config.yaml')
+              os.chown('/opt/data/config.yaml', 10000, 10000)
+              workspace = pathlib.Path('/opt/data/workspace')
+              workspace.mkdir(exist_ok=True)
+              os.chown(workspace, 10000, 10000)
+          volumeMounts:
+            - name: data
+              mountPath: /opt/data
+            - name: config
+              mountPath: /etc/hermes
+              readOnly: true
+      containers:
+        - name: hermes
+          image: *image
+          args: [gateway, run]
+          workingDir: /opt/data/workspace
+          env:
+            - name: HERMES_HOME
+              value: /opt/data
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-agent-api-keys
+                  key: OPENROUTER_API_KEY
+            - name: API_SERVER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-agent-api-keys
+                  key: API_SERVER_KEY
+          ports:
+            - name: api
+              containerPort: 8642
+          startupProbe:
+            httpGet:
+              path: /health
+              port: api
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: api
+          resources:
+            requests:
+              cpu: 250m
+              memory: 1Gi
+            limits:
+              cpu: '2'
+              memory: 4Gi
+          volumeMounts:
+            - name: data
+              mountPath: /opt/data
+      volumes:
+        - name: config
+          configMap:
+            name: hermes-config
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: longhorn
+        resources:
+          requests:
+            storage: 20Gi

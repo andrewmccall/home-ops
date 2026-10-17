@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: hermes-agent-api-keys
+    namespace: hermes
+type: Opaque
+stringData:
+    OPENROUTER_API_KEY: ENC[AES256_GCM,data:qr3R5bY69Xc5g4+jv23JAd6NhssYiYSXt1JEV84UMe+koC+Lb/uBtHjeki/96hWk2Eb4ESv7YjEGxoCYAo+Wz4Ok+lzIOmdHyQ==,iv:ejsacbexWdheTInW6N4X4WoIJk8paq7NtO+ofmTyMhc=,tag:YxQxJgqpgHqQMXCv2Cuv4A==,type:str]
+    API_SERVER_KEY: ENC[AES256_GCM,data:tMF0P2RmBzGonV9m8bOk75863g0eqJDjJ8T2ig7+UInoBnN8KwQ3QUtY+wvkK9rxvnAwXKeMvus8oqRgw70Aiw==,iv:Y/aFkE0pY1jLa8olSeOMdUw7VzIv/vOmQC5IvTvm8ls=,tag:UKFqZid64GGbiI+cPIB0xQ==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSA0TW5rWHViWWdUTWNIdlhW
+            QjFKdi9IYUNtd2RDRVRHVjZzOW9JZTRZMUdZCjBZSWk2VnE5Uy91dGN1cDJ1b2Na
+            M3FMREppRmE2dmdZWTAvMDd4VS8rOUkKLS0tIE5PcXlHRWpnSUx0R0lUUlUxb3pI
+            KzhVNTgyNFIxZ2UwMHViL3Y4Q1IzOVEKJaHmZQSDV7iaLMkscvJMtLoEmBlYMbuh
+            WbomgZciQVscfhjtiWRboaDj6NhvbIoEATtzkcl2H2AqDqDCOerMvg==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-10-17T10:57:10Z"
+    mac: ENC[AES256_GCM,data:nob4WBKgcwoMCbClLX8qNRUiwUJn+gOwN1sjU42TFDS5ZafNJScuAta/Y9JcUe3NDw2pW7CsotrCcrCaRxdWJY+hQj8OUIf9Su+0/cDFLQr5vL7Gyw91fKr+PCpz5fYHvcVXvsv1khxQcNVT3+TE69YGFwhdTCXnewH2MDE5ikg=,iv:ThEWzBoG212Tylsl9EQeW/85w4qj+Z/gJv/RR5YZ2oA=,tag:gEZF3qSpPw7gpWqguBQh3A==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0

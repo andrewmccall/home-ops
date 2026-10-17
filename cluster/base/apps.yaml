@@ -9,6 +9,7 @@ spec:
   dependsOn:
     - name: crds
     - name: core
+    - name: agent-sandbox
   path: ./cluster/apps
   prune: true
   sourceRef:

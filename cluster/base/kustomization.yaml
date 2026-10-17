@@ -8,3 +8,4 @@ resources:
   - crds.yaml
   - core.yaml
   - apps.yaml
+  - agent-sandbox.yaml

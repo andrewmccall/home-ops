@@ -1,0 +1,62 @@
+# Retained data only. Pin the original volumes to prevent empty replacement storage.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openclaw
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openclaw-operator-system
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: home-ops-openclaw-data
+  namespace: openclaw
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 20Gi
+  volumeName: pvc-fe60b449-06f1-4dbe-9874-790ad1642bbd
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: home-ops-openclaw-chromium-data
+  namespace: openclaw
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: pvc-5a0766f5-8e48-4286-b37e-096687da4cb1
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: whisper-stt-cache
+  namespace: openclaw
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 10Gi
+  volumeName: pvc-4aeb449c-0059-418b-93ca-b328bffd798e

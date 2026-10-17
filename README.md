@@ -92,6 +92,14 @@ Elsewhere on the network:
 
 # Setting up. 
 
+Hermes runs in [Agent Sandbox](cluster/apps/hermes/README.md) with a dedicated
+OpenRouter key. See that guide for credential setup and the OpenClaw cutover.
+
+Validate rendered cluster manifests with `python3 scripts/verify-cluster.py`.
+This requires `kubectl`, PyYAML and jsonschema. CI runs the same check and rejects
+`cluster.local` in rendered resources. This cluster's DNS domain is
+`cluster.andrewmccall.com`; see [Flux domain configuration](cluster/README.md#cluster-dns-domain).
+
 System requirements - 
 sops, age, yq, 
 
