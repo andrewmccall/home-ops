@@ -15,9 +15,9 @@ spec:
         kind: HelmRepository
         name: grafana
         namespace: flux-system
-  # Runs loki-helm-test after each upgrade: the canary must write and read back logs.
-  test:
-    enable: true
+  # No Helm test: loki-helm-test asserts the canary's lifetime missing-entries
+  # counter is 0, so any earlier gateway gap fails every later upgrade and rolls
+  # back a working release. scripts/verify-monitoring.py checks Loki end to end.
   values:
     global:
       clusterDomain: ${CLUSTER_DOMAIN}
