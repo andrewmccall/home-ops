@@ -25,6 +25,10 @@ spec:
       strategy: rollback
       retries: 3
   values:
+    defaultPodOptions:
+      # Spotify Connect and player discovery need the node's LAN multicast.
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
     controllers:
       music-assistant:
         annotations:
