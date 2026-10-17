@@ -21,6 +21,10 @@ spec:
         name: longhorn
         namespace: flux-system
   values:
+    # 1.12 adds internal NetworkPolicies that Calico enforces; 1.12.1 has known CNI
+    # breakage (volumes stuck attaching), fixed in 1.12.2. Keep the pre-1.12 behaviour.
+    networkPolicies:
+      restrictInternalTraffic: false
     persistence:
       defaultClassReplicaCount: 1
     metrics:

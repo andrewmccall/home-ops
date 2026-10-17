@@ -1,0 +1,16 @@
+---
+# No backup target exists, so local snapshots are the only recovery point. They
+# undo a bad upgrade or a bad write but do not survive losing vecna's disk.
+# Volumes without recurring-job labels belong to the default group.
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: daily-snapshot
+  namespace: longhorn
+spec:
+  task: snapshot
+  cron: "0 3 * * *"
+  retain: 7
+  concurrency: 2
+  groups:
+    - default
