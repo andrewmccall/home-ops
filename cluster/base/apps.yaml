@@ -8,6 +8,8 @@ spec:
   interval: 3m
   dependsOn:
     - name: crds
+    # Applies the Prometheus Operator CRDs; crds only creates this Kustomization.
+    - name: kube-prometheus-stack-crds
     - name: core
     - name: agent-sandbox
   path: ./cluster/apps

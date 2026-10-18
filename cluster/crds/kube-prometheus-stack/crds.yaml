@@ -13,8 +13,9 @@ spec:
   ignore: |
     # exclude all
     /*
-    # include crds directory
-    !/charts/kube-prometheus-stack/crds
+    # include the crds subchart's plain CRD directory (charts/crds/crds since chart 4x;
+    # the old path matched nothing, so CRDs stayed at their 2022 versions)
+    !/charts/kube-prometheus-stack/charts/crds/crds
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -24,6 +25,7 @@ metadata:
 spec:
   interval: 30m
   prune: false
+  path: ./charts/kube-prometheus-stack/charts/crds/crds
   sourceRef:
     kind: GitRepository
     name: kube-prometheus-stack-crds
