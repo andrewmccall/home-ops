@@ -109,6 +109,12 @@ Disposable-pod replacement, relay replacement, API-access loss and route
 preservation were exercised before the production cutover. The unit tests cover
 ownership, reused interface names and interrupted route restoration.
 
+The 2026-10-18 cutover put Music Assistant 2.10.7 on normal pod networking.
+The UI, routed pod API and advertised Service ports were reachable from the LAN;
+Spotify logged in and Satellite1 reconnected over Sendspin. An untargeted Home
+Assistant pod received none of the tested discovery services. Physical Spotify
+playback is a separate audible acceptance check, not implied by these results.
+
 To roll back a Music Assistant pod-network cutover, restore its
 `hostNetwork: true` and `dnsPolicy: ClusterFirstWithHostNet`, then reconcile Flux.
 The relay ignores host-network targets. Remove the relay only after returning
