@@ -18,11 +18,13 @@ spec:
         namespace: flux-system
   values:
     defaultPodOptions:
-      # Spotify Connect and player discovery need the node's LAN multicast.
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
+      nodeSelector:
+        kubernetes.io/hostname: vecna
+      labels:
+        home-ops.andrewmccall.com/mdns-relay: music-assistant
     controllers:
       music-assistant:
+        strategy: Recreate
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
@@ -46,6 +48,8 @@ spec:
             port: 8097
           streaming-other:
             port: 8098
+          sendspin:
+            port: 8927
     ingress:
       music-assistant:
         className: internal
