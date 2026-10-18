@@ -12,24 +12,21 @@
   "dependencyDashboardTitle": "Renovate Dashboard",
   "suppressNotifications": ["prIgnoreNotification"],
   "kubernetes": {
-    "fileMatch": ["cluster/.+\\.ya?ml$"],
+    "managerFilePatterns": ["/cluster/.+\\.ya?ml$/"],
     "ignorePaths": ["cluster/flux/"]
   },
   "flux": {
-    "fileMatch": ["cluster/.+\\.ya?ml$"]
+    "managerFilePatterns": ["/cluster/.+\\.ya?ml$/"]
   },
   "helm-values": {
-    "fileMatch": ["cluster/.+\\.ya?ml$"]
+    "managerFilePatterns": ["/cluster/.+\\.ya?ml$/"]
   },
-  "regexManagers": [
+  "customManagers": [
     // generic matcher
     // see https://regex101.com/r/fzaLfV/1
     {
-      "fileMatch": [
-        "ansible/.+\\.ya?ml$",
-        "cluster/.+\\.ya?ml$",
-        "charts/.+\\.ya?ml$",
-      ],
+      "customType": "regex",
+      "managerFilePatterns": ["/ansible/.+\\.ya?ml$/", "/cluster/.+\\.ya?ml$/", "/charts/.+\\.ya?ml$/"],
       "matchStrings": [
         "datasource=(?<datasource>helm) registryUrl=(?<registryUrl>\\S+) chart=(?<depName>\\S+)\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
         "datasource=(?<datasource>docker) image=(?<depName>\\S+)\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
@@ -122,9 +119,9 @@
     // group snapshot-controller
     {
       "matchDatasources": ["github-releases", "docker"],
-      "matchPackagePatterns": [
-        "external-snapshotter",
-        "snapshot-controller"
+      "matchPackageNames": [
+        "/external-snapshotter/",
+        "/snapshot-controller/"
       ],
       "groupName": "external-snapshotter",
       "additionalBranchPrefix": "",
