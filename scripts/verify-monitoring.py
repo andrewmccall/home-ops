@@ -2,7 +2,7 @@
 """Verify against the live cluster that monitoring sees the cluster and can tell a human.
 
 Checks Grafana datasources, plugins and platform dashboards, Prometheus scrape
-targets, that Loki holds recent logs from every namespace running pods, and that
+targets, that Loki holds recent logs from every namespace whose pods logged, and that
 Alertmanager delivers notifications. Read-only. Requires kubectl and PyYAML.
 """
 
@@ -23,8 +23,6 @@ PROMETHEUS = '/api/v1/namespaces/monitoring/services/http:kube-prometheus-stack-
 LOKI = '/api/v1/namespaces/monitoring/services/http:loki-gateway:80/proxy'
 REQUIRED_JOBS = ('flux-system/helm-controller', 'flux-system/kustomize-controller', 'flux-system/source-controller',
                  'flux-system/notification-controller', 'longhorn-backend', 'monitoring/loki', 'monitoring/vector-agent')
-# default only runs the dnsutils debug pod, which sleeps without logging.
-SILENT_NAMESPACES = {'default'}
 
 
 def kubectl(*args):
@@ -87,12 +85,20 @@ def prometheus_errors():
         yield 'Prometheus has no Flux HelmRelease state metrics; FluxReconciliationFailure cannot fire'
 
 
+def logged_recently(pod):
+    """True if any container of pod wrote a log line in the last 50 minutes."""
+    result = subprocess.run(['kubectl', '-n', pod['metadata']['namespace'], 'logs', pod['metadata']['name'],
+                             '--all-containers', '--since=50m', '--tail=1'], capture_output=True, text=True)
+    return bool(result.stdout.strip())
+
+
 def loki_errors():
     pods = json.loads(kubectl('get', 'pods', '-A', '--field-selector=status.phase=Running', '-o', 'json'))['items']
-    running = {pod['metadata']['namespace'] for pod in pods} - SILENT_NAMESPACES
     logged = set(raw(f'{LOKI}/loki/api/v1/label/namespace/values', since='1h')['data'])
-    for namespace in sorted(running - logged):
-        yield f'Loki has no logs from namespace {namespace} in the last hour'
+    # Idle pods write nothing, so a namespace is only missing if its pods logged and Loki has none of it.
+    for namespace in sorted({pod['metadata']['namespace'] for pod in pods} - logged):
+        if any(logged_recently(pod) for pod in pods if pod['metadata']['namespace'] == namespace):
+            yield f'Loki has no logs from namespace {namespace} in the last hour, but its pods logged'
 
 
 def alertmanager_errors():
