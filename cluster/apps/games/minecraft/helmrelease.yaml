@@ -8,6 +8,8 @@ metadata:
   namespace: games
 spec:
   interval: 30m
+  # Startup downloads the server zip before the health probe can pass.
+  timeout: 10m
   chart:
     spec:
       chart: app-template
@@ -33,6 +35,37 @@ spec:
               SERVER_NAME: "home server"
               OPS: ${MINECRAFT_OPS}
               DIFFICULTY: normal
+              # The image downloads this server version at startup. Pinned so a release
+              # is a git change that restarts the pod; LATEST only updated on restarts.
+              # renovate: datasource=custom.minecraft-bedrock depName=bedrock-server versioning=loose
+              VERSION: "1.26.52.3"
+            # UDP has no TCP probe; mc-monitor is the image's own HEALTHCHECK.
+            probes:
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  exec: &mc-monitor
+                    command: [mc-monitor, status-bedrock, --host, 127.0.0.1, --port, "19132"]
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 30
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  exec: *mc-monitor
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec: *mc-monitor
+                  periodSeconds: 60
+                  timeoutSeconds: 10
+                  failureThreshold: 5
     service:
       app:
         controller: minecraft

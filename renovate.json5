@@ -42,9 +42,13 @@
     }
   ],
   "customDatasources": {
-    "minecraft": {
-      "defaultRegistryUrlTemplate": "https://mc-bds-helper.vercel.app/api/latest",
-      "format": "plain"
+    // Mojang's download API, which the bedrock image itself queries for LATEST.
+    "minecraft-bedrock": {
+      "defaultRegistryUrlTemplate": "https://net.web.minecraft-services.net/api/v1.0/download/links",
+      "format": "json",
+      "transformTemplates": [
+        "{\"releases\": [{\"version\": $match(result.links[downloadType=\"serverBedrockLinux\"].downloadUrl, /bedrock-server-([0-9.]+)\\.zip$/).groups[0]}]}"
+      ]
     }
   },
   "packageRules": [
@@ -66,9 +70,12 @@
       "automerge": false
     },
     // datasource specific settings
+    // Clients auto-update, so the server has to follow every release. Rollout gates
+    // and rollback apply as for any image; worlds a newer server has opened may not
+    // load on the older one, so a rollback is a stopgap.
     {
-      "matchDatasources": ["custom.minecraft"],
-      "extractVersion": "/(?<version>-+)(?<version>.+)\\.zip$"
+      "matchDatasources": ["custom.minecraft-bedrock"],
+      "automerge": true
     },
     {
       "matchDatasources": ["helm"],
