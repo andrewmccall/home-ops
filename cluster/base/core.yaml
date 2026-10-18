@@ -47,3 +47,26 @@ spec:
               retries: 3
           rollback:
             cleanupOnFail: true
+    # A pod must stay Ready for 30s before an upgrade counts as healthy, so a version
+    # that starts and then crash-loops fails Flux's wait and is rolled back. This
+    # replaces a release's own postRenderers, so releases that need their own carry
+    # this patch themselves and opt out with the post-renderers=own label.
+    - target:
+        group: helm.toolkit.fluxcd.io
+        kind: HelmRelease
+        labelSelector: home-ops.andrewmccall.com/post-renderers!=own
+      patch: |
+        apiVersion: helm.toolkit.fluxcd.io/v2
+        kind: HelmRelease
+        metadata:
+          name: release-defaults
+        spec:
+          postRenderers:
+            - kustomize:
+                patches:
+                  - target:
+                      kind: Deployment|StatefulSet|DaemonSet
+                    patch: |
+                      - op: add
+                        path: /spec/minReadySeconds
+                        value: 30

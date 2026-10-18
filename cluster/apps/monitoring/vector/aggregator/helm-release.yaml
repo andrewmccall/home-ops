@@ -4,6 +4,9 @@ kind: HelmRelease
 metadata:
   name: vector-aggregator
   namespace: monitoring
+  labels:
+    # Has its own postRenderers, so it repeats the minReadySeconds patch from cluster/base.
+    home-ops.andrewmccall.com/post-renderers: own
 spec:
   interval: 10m
   chart:
@@ -96,6 +99,12 @@ spec:
   postRenderers:
     - kustomize:
         patches:
+          - target:
+              kind: Deployment|StatefulSet|DaemonSet
+            patch: |-
+              - op: add
+                path: /spec/minReadySeconds
+                value: 30
           - target:
               kind: Service
               name: vector-aggregator

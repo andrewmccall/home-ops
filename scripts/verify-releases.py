@@ -29,6 +29,7 @@ VARIABLE = re.compile(r'\$\{([A-Za-z_][A-Za-z0-9_]*)(?::?[=-]([^}]*))?\}')
 WORKLOAD_SELECTOR_KINDS = ('Deployment', 'DaemonSet', 'ReplicaSet')
 STATEFULSET_MUTABLE = {'replicas', 'template', 'updateStrategy', 'persistentVolumeClaimRetentionPolicy', 'minReadySeconds', 'ordinals', 'revisionHistoryLimit'}
 PVC_IMMUTABLE = ('accessModes', 'storageClassName', 'volumeName', 'volumeMode')
+OWN_POST_RENDERERS = ('home-ops.andrewmccall.com/post-renderers', 'own')
 LABEL_VALUE = re.compile(r'(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?')
 # PyYAML resolves a bare "=" to the YAML 1.1 value tag; Kubernetes treats it as a string.
 yaml.SafeLoader.add_constructor('tag:yaml.org,2002:value', yaml.SafeLoader.construct_yaml_str)
@@ -104,7 +105,7 @@ def invalid_labels(documents):
 
 
 def release_policy_errors(documents):
-    """Every Flux Kustomization that applies HelmReleases must patch in rollback remediation."""
+    """Kustomizations patch in rollback and minReadySeconds; releases must not undo or dodge them."""
     for name in ('apps', 'core'):
         kustomization = next(d for d in documents if d['kind'] == 'Kustomization' and d['metadata']['name'] == name
                              and d['apiVersion'].startswith('kustomize.toolkit.fluxcd.io/'))
@@ -113,6 +114,26 @@ def release_policy_errors(documents):
         if not any(p.get('upgrade', {}).get('remediation', {}).get('strategy') == 'rollback'
                    and p.get('install', {}).get('remediation', {}).get('retries') for p in policies):
             yield f'Kustomization flux-system/{name}: missing the HelmRelease install retry and upgrade rollback patch'
+        if not any(sets_min_ready(p) for p in policies):
+            yield f'Kustomization flux-system/{name}: missing the HelmRelease minReadySeconds post-renderer patch'
+    for release in (d for d in documents if d['kind'] == 'HelmRelease'):
+        key = f"{release['metadata']['namespace']}/{release['metadata']['name']}"
+        own = (release['metadata'].get('labels') or {}).get(OWN_POST_RENDERERS[0]) == OWN_POST_RENDERERS[1]
+        if release['spec'].get('postRenderers') and not (own and sets_min_ready(release['spec'])):
+            yield (f'{key}: has its own postRenderers, which the cluster minReadySeconds patch would replace; '
+                   f'label it {"=".join(OWN_POST_RENDERERS)} and include the minReadySeconds patch')
+        if release['spec']['chart']['spec']['chart'] == 'app-template':
+            for controller, spec in (release['spec'].get('values', {}).get('controllers') or {}).items():
+                for container, values in (spec.get('containers') or {}).items():
+                    if 'enabled' not in ((values.get('probes') or {}).get('readiness') or {}):
+                        yield (f'{key}: container {controller}/{container} has no readiness probe, so a broken version '
+                               f'counts as healthy; enable one or set probes.readiness.enabled: false deliberately')
+
+
+def sets_min_ready(spec):
+    """True if spec's postRenderers set minReadySeconds on workloads."""
+    return any('minReadySeconds' in str(patch.get('patch', ''))
+               for renderer in spec.get('postRenderers') or [] for patch in (renderer.get('kustomize') or {}).get('patches', []))
 
 
 def render_releases(root):
@@ -190,7 +211,7 @@ def main():
     policy = list(release_policy_errors(render_tree(ROOT)))
     errors += policy
     if not policy:
-        print('PASS: apps and core retry failed installs and roll back failed upgrades')
+        print('PASS: releases retry failed installs, roll back failed upgrades, wait out minReadySeconds and probe app-template containers')
     for release in sorted(head):
         print(f'PASS: {release} renders and its values match the chart schema')
     if args.base:
