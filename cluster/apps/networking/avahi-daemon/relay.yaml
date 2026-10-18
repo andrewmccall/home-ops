@@ -1,0 +1,174 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: avahi-relay
+  namespace: networking
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: avahi-relay
+  namespace: house
+rules:
+  - apiGroups: [""]
+    resources: [pods]
+    verbs: [get, list]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: avahi-relay
+  namespace: house
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: avahi-relay
+subjects:
+  - kind: ServiceAccount
+    name: avahi-relay
+    namespace: networking
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: avahi-relay
+  namespace: networking
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: avahi-relay
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: avahi-relay
+    spec:
+      serviceAccountName: avahi-relay
+      automountServiceAccountToken: false
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      nodeSelector:
+        kubernetes.io/hostname: vecna
+      terminationGracePeriodSeconds: 15
+      securityContext:
+        fsGroup: 86
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: runtime-owner
+          image: python:3.14-alpine@sha256:f6a589d43c42b9e7f7dc67a12d37132491f362859a5d750607710cc56da3bc72
+          command: [chown, '86:86', /run/avahi-daemon]
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+              add: [CHOWN]
+          volumeMounts:
+            - name: avahi-runtime
+              mountPath: /run/avahi-daemon
+      containers:
+        - name: controller
+          image: python:3.14-alpine@sha256:f6a589d43c42b9e7f7dc67a12d37132491f362859a5d750607710cc56da3bc72
+          command: [python3, /opt/relay/reconcile.py]
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: LAN_INTERFACE
+              value: enp5s0
+            - name: TARGET_NAMESPACE
+              value: house
+            - name: TARGET_SELECTOR
+              value: home-ops.andrewmccall.com/mdns-relay=music-assistant
+            - name: SERVICE_TYPES
+              value: _spotify-connect._tcp.local,_sendspin._tcp.local,_sendspin-server._tcp.local,_mass._tcp.local
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+              add: [NET_ADMIN]
+          readinessProbe:
+            exec:
+              command: [python3, /opt/relay/reconcile.py, --health]
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: [python3, /opt/relay/reconcile.py, --health]
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 10m
+              memory: 24Mi
+            limits:
+              memory: 96Mi
+          volumeMounts:
+            - name: scripts
+              mountPath: /opt/relay
+              readOnly: true
+            - name: shared
+              mountPath: /run/relay
+            - name: state
+              mountPath: /var/lib/relay
+            - name: api
+              mountPath: /var/run/kubernetes
+              readOnly: true
+        - name: avahi
+          image: flungo/avahi@sha256:803451d0200610298d30d3151240f47c5de4d6558f6a3a36340692048cdf28e0
+          command: [/bin/sh, /opt/relay/supervise.sh]
+          securityContext:
+            runAsUser: 86
+            runAsGroup: 86
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          readinessProbe:
+            exec:
+              command: [/bin/sh, -c, 'test ! -s /run/relay/avahi-daemon.conf || avahi-daemon --check']
+            periodSeconds: 5
+          resources:
+            requests:
+              cpu: 10m
+              memory: 8Mi
+            limits:
+              memory: 64Mi
+          volumeMounts:
+            - name: scripts
+              mountPath: /opt/relay
+              readOnly: true
+            - name: shared
+              mountPath: /run/relay
+              readOnly: true
+            - name: avahi-runtime
+              mountPath: /run/avahi-daemon
+      volumes:
+        - name: scripts
+          configMap:
+            name: avahi-relay-scripts
+        - name: shared
+          emptyDir: {}
+        - name: avahi-runtime
+          emptyDir: {}
+        - name: state
+          hostPath:
+            path: /run/home-ops-mdns
+            type: DirectoryOrCreate
+        - name: api
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  expirationSeconds: 3600
+              - configMap:
+                  name: kube-root-ca.crt
+                  items:
+                    - key: ca.crt
+                      path: ca.crt

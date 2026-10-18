@@ -56,21 +56,63 @@ The official [UniFi policy API](https://developer.ui.com/network/v10.6.106/creat
 and [zone firewall documentation](https://help.ui.com/hc/en-us/articles/115003173168-Zone-Based-Firewalls-in-UniFi)
 provide the underlying policy model.
 
-## Scoped Avahi experiment
+## Scoped Avahi relay
 
-Avahi is an mDNS daemon with a reflector that can repeat discovery between
-interfaces. The existing `avahi-daemon` deployment has only a normal pod interface,
-so it does not provide a LAN-to-pod path.
+`avahi-relay` runs on `vecna` with host networking. Its controller selects exactly
+one local, running, non-host-network pod in `house` bearing the label
+`home-ops.andrewmccall.com/mdns-relay=music-assistant`. Avahi sees only `enp5s0`
+and that pod's host-side Calico veth. Other pods do not join this discovery path.
 
-An isolated host-network Avahi 0.8 relay was tested with exactly two allowed
-interfaces: the node LAN interface and one disposable pod's host-side Calico veth.
-The veth needed a temporary IPv4 address for Avahi to use it. A Spotify service
-filter allowed discovery and address resolution in both directions. Unrelated
-Sendspin/SSH services, a negative test service, and an untargeted pod were checked.
-Avahi's service filter is not a packet firewall: queries and host-address records
-can still pass between those two interfaces.
+The service allowlist is Spotify Connect, Sendspin clients and servers, and Music
+Assistant (`_spotify-connect`, `_sendspin`, `_sendspin-server`, `_mass`, all TCP).
+Avahi's filter restricts service advertisements; queries and host-address records
+can still pass between the two allowed interfaces. It is not a packet firewall.
+DLNA uses SSDP and is outside this relay. The configured Rec Room TV DLNA player
+will need a separate discovery path before its playback can be relied on after
+a pod-network cutover. AirPlay and Chromecast discovery are also outside the list.
 
-The temporary relay and its veth address were removed. A permanent relay still
-needs pod-replacement reconciliation and real Music Assistant playback verification.
-Music Assistant remains on its working host-network configuration meanwhile.
-Do not treat discovery alone as proof of working audio or routed connections.
+The controller polls namespaced pod metadata every three seconds and updates the
+interface allowlist after pod replacement. Multiple eligible pods or API errors
+stop reflection. Avahi also stops if its controller status goes stale for 25
+seconds. No eligible pod is a healthy idle state. Use a single-replica Recreate
+Music Assistant deployment to avoid ambiguous targets during updates.
+
+Calico veths normally have no IPv4 address, so the controller adds
+`169.254.1.1/32` only to the selected link. It journals ownership and the kernel
+interface index in `/run/home-ops-mdns/owned.json`; a reused interface name does
+not establish ownership. Removing an interface's last IPv4 address flushes its
+link routes, so cleanup journals and restores the existing direct pod route.
+It does not create a route where none existed. Pod deletion normally removes
+the veth and address together. Keep this Calico-specific behavior under test
+when changing CNI or kernel versions.
+
+Avahi runs as UID 86 with no capabilities and no D-Bus access. The controller has
+`NET_ADMIN` in the host network namespace and write access to its small host state
+directory; that capability can change node networking, despite the controller's
+narrow logic. Its projected API token can list/get pods in `house`, cannot read
+Secrets, and is mounted only into the controller. Images are pinned by digest.
+The host's existing non-reflecting Avahi instance remains separate.
+
+Verification:
+
+```sh
+python3 -m unittest discover -s tests -p test_avahi_relay.py
+python3 scripts/verify-mdns-relay.py
+# During isolated testing, select the labelled MA-image probe instead:
+python3 scripts/verify-mdns-relay.py --pod mdns-relay-probe-v3
+```
+
+The read-only live check verifies normal pod networking, active relay selection,
+Spotify/Sendspin resolution and TCP connectivity, and exclusion of SSH service
+discovery. It needs awake LAN devices. It does not prove audible playback.
+Disposable-pod replacement, relay replacement, API-access loss and route
+preservation were exercised before the production cutover. The unit tests cover
+ownership, reused interface names and interrupted route restoration.
+
+To roll back a Music Assistant pod-network cutover, restore its
+`hostNetwork: true` and `dnsPolicy: ClusterFirstWithHostNet`, then reconcile Flux.
+The relay ignores host-network targets. Remove the relay only after returning
+Music Assistant to that working configuration, allowing graceful controller
+shutdown to clean up its address. This arrangement is specific to this routed
+Calico home cluster; Music Assistant's upstream deployment guidance does not
+support Kubernetes networking.
