@@ -7,6 +7,8 @@ metadata:
   namespace: house
 spec:
   interval: 30m
+  # Longer than the slowest startup probe, so a slow healthy start is not rolled back.
+  timeout: 10m
   chart:
     spec:
       chart: app-template
@@ -33,6 +35,10 @@ spec:
               repository: ghcr.io/music-assistant/server
               tag: 2.10.7@sha256:dce482dc3bf4093735acf217b3bead74a05c46d40922341e775580c6d05394cd
               pullPolicy: IfNotPresent
+            probes:
+              startup: {enabled: true, port: 8095, spec: {periodSeconds: 10, failureThreshold: 30}}
+              readiness: {enabled: true, port: 8095}
+              liveness: {enabled: true, port: 8095, spec: {periodSeconds: 30, failureThreshold: 5}}
             resources:
               requests:
                 cpu: 10m

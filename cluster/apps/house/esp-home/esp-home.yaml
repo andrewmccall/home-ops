@@ -7,6 +7,8 @@ metadata:
   namespace: house
 spec:
   interval: 30m
+  # Longer than the slowest startup probe, so a slow healthy start is not rolled back.
+  timeout: 10m
   chart:
     spec:
       chart: app-template
@@ -27,6 +29,10 @@ spec:
               repository: ghcr.io/esphome/esphome
               tag: 2026.9.1@sha256:776a845d508909bf426d2ee7bdd81796361ebe6a7f091807ce1d6d0b48985413
               pullPolicy: IfNotPresent
+            probes:
+              startup: {enabled: true, port: 6052, spec: {periodSeconds: 10, failureThreshold: 30}}
+              readiness: {enabled: true, port: 6052}
+              liveness: {enabled: true, port: 6052, spec: {periodSeconds: 30, failureThreshold: 5}}
             env:
               TZ: Europe/London
               # From https://github.com/ptr727/ESPHome-NonRoot
@@ -47,6 +53,10 @@ spec:
               repository: ghcr.io/coder/code-server
               tag: 4.141.0@sha256:72ab24b5680ee597dd647b30d82625752f40109b5f61bef90ffbf1ea1f02dbb8
               pullPolicy: IfNotPresent
+            probes:
+              startup: {enabled: true, port: 8080, spec: {periodSeconds: 10, failureThreshold: 30}}
+              readiness: {enabled: true, port: 8080}
+              liveness: {enabled: true, port: 8080, spec: {periodSeconds: 30, failureThreshold: 5}}
             args:
               - --disable-telemetry
               - --disable-update-check

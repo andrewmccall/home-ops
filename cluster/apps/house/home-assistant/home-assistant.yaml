@@ -7,6 +7,8 @@ metadata:
   namespace: house
 spec:
   interval: 30m
+  # Longer than the slowest startup probe, so a slow healthy start is not rolled back.
+  timeout: 15m
   chart:
     spec:
       chart: app-template
@@ -27,6 +29,10 @@ spec:
               repository: ghcr.io/home-assistant/home-assistant
               # renovate: datasource=docker tag=home-assistant/home-assistant
               tag: 2026.10.2@sha256:33afb0659d786213264c2211f8d91c5fe87461c56eba6a3a546eb05fc71e89f4
+            probes:
+              startup: {enabled: true, port: 8123, spec: {periodSeconds: 10, failureThreshold: 60}}
+              readiness: {enabled: true, port: 8123}
+              liveness: {enabled: true, port: 8123, spec: {periodSeconds: 30, failureThreshold: 5}}
             env:
               TZ: Europe/London
               HASS_HTTP_TRUSTED_PROXY_1: ${K8S_CLUSTER_CIDR}
@@ -40,6 +46,10 @@ spec:
             image:
               repository: ghcr.io/coder/code-server
               tag: 4.141.0@sha256:72ab24b5680ee597dd647b30d82625752f40109b5f61bef90ffbf1ea1f02dbb8
+            probes:
+              startup: {enabled: true, port: 12321, spec: {periodSeconds: 10, failureThreshold: 30}}
+              readiness: {enabled: true, port: 12321}
+              liveness: {enabled: true, port: 12321, spec: {periodSeconds: 30, failureThreshold: 5}}
             args: [
               "--auth", "none",
               "--user-data-dir", "/config/.vscode",
@@ -61,11 +71,19 @@ spec:
               repository: rhasspy/wyoming-whisper
               # renovate: datasource=docker rhasspy/wyoming-whisper
               tag: 3.8.1@sha256:ba6fcb6056ebe237d15a325381763a80af2fc8fcedaa04f6a714a7375eb20d80
+            probes:
+              startup: {enabled: true, port: 10300, spec: {periodSeconds: 10, failureThreshold: 60}}
+              readiness: {enabled: true, port: 10300}
+              liveness: {enabled: true, port: 10300, spec: {periodSeconds: 30, failureThreshold: 5}}
           piper:
             image:
               repository: rhasspy/wyoming-piper
               # renovate: datasource=docker rhasspy/wyoming-piper
               tag: 2.5.2@sha256:7d39aafac409c2b6b09d999ed04d84c311d632e558b35baa60fad6aac722af7a
+            probes:
+              startup: {enabled: true, port: 10200, spec: {periodSeconds: 10, failureThreshold: 60}}
+              readiness: {enabled: true, port: 10200}
+              liveness: {enabled: true, port: 10200, spec: {periodSeconds: 30, failureThreshold: 5}}
             args: ["--voice", "en_GB-cori-high"]
     service:
       app:
