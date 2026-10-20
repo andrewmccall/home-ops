@@ -120,7 +120,7 @@ spec:
               mountPath: /var/run/kubernetes
               readOnly: true
         - name: avahi
-          image: flungo/avahi@sha256:6ddeff22199af82041926ac529fc004ca8fc7d4a15105bc62150f155f52b3d66
+          image: flungo/avahi@sha256:e9cf915eb87e1f90ec6708181e832addf9cc33f0edb058c13a26e4a6e8f41c5d
           command: [/bin/sh, /opt/relay/supervise.sh]
           securityContext:
             runAsUser: 86
