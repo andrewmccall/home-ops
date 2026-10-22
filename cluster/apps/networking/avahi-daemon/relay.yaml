@@ -56,7 +56,7 @@ spec:
           type: RuntimeDefault
       initContainers:
         - name: runtime-owner
-          image: python:3.15-alpine@sha256:2699b90f4d562a22e2dd076c82f964032f64814204bff36d271a54ba4cc2c7e2
+          image: python:3.15-alpine@sha256:d44b1254cb92329418d164b22b20d86bbd3869d48e80e09e476531a409a728bb
           command: [chown, '86:86', /run/avahi-daemon]
           securityContext:
             runAsUser: 0
@@ -70,7 +70,7 @@ spec:
               mountPath: /run/avahi-daemon
       containers:
         - name: controller
-          image: python:3.15-alpine@sha256:2699b90f4d562a22e2dd076c82f964032f64814204bff36d271a54ba4cc2c7e2
+          image: python:3.15-alpine@sha256:d44b1254cb92329418d164b22b20d86bbd3869d48e80e09e476531a409a728bb
           command: [python3, /opt/relay/reconcile.py]
           env:
             - name: NODE_NAME
