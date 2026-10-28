@@ -38,7 +38,7 @@ spec:
               # The image downloads this server version at startup. Pinned so a release
               # is a git change that restarts the pod; LATEST only updated on restarts.
               # renovate: datasource=custom.minecraft-bedrock depName=bedrock-server versioning=loose
-              VERSION: "1.26.52.3"
+              VERSION: "1.26.60.6"
             # UDP has no TCP probe; mc-monitor is the image's own HEALTHCHECK.
             probes:
               startup:
