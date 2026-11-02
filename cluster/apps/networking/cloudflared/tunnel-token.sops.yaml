@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: cloudflared-ashes
+    namespace: networking
+type: Opaque
+stringData:
+    token: ENC[AES256_GCM,data:AhGnrLf+u+LK1IDbmI8PFz12/kEnp/Ufpla35os+545l9JoLq76nXzh8f/sUmyQi/4ve925oYD1RKRgDNpBA8RdvjC7OGP89Q8rByZu17vVufuDffBMYG/ViuaeWIw7sfn8A4Ue9nW2DYo6HsF36MlLpQq8z93iGG2pi3mTOIdTVoC3TGvEwO61Fn9uIC5uNCXtV+3fKy0KI+gzXAarTdydMYzo6AsU5AqETtzzrEy99jljrLrT2nQ==,iv:PMFOlK95V3p3DZ21eUqJR8T22RnvqDSFl8j7hTNuPMA=,tag:tlEM4Khro5bVfP15QKMfMg==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBWYytqM25Nc003WDN5bm8y
+            T3hSZEhhK2d4VFhSamN6ZXFFdHpQMDNvQkVrCjJ2ZEFzZ1huUjBidGpiS2VtSFBQ
+            ZVZzRE9XN0xkMHpFY1FTWDBzdFFmMUkKLS0tIHpuT1FzS1VEcklWbUltQlA1cTEv
+            cGtVdmhRbWxhZXNhakpXSExQRXRNWGsKzseET3Arqq4BcAdCPH9DNfVyJWTnbBb2
+            F3yny0IB+TDKLDv5FPBH4PFRNaHOm5k/trwMpt1bdFUso+y6bfTm2g==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-02T18:15:07Z"
+    mac: ENC[AES256_GCM,data:g+7dhh1IkbmBeVzdzdm49cqXKx8jW8+9FjNomqoNceqNa8uqtOROP3u2IaYD7BSpF798SuC+vYW/UFDg0T9ye6+eAxw9Ay47Afyk3ryUhfj7U2tsKSHdb/wi+kt7DJdefHmX/Fwe2cEH/1oz4qWUKBBkz5DRFi0K1pzxerEjhM0=,iv:fkUdMsUFOI/ZVj5x+y9TQb3BfX+mcg3DRWpiQxVcdDk=,tag:271Q1px9LkWnHWWua6Xq0w==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0
