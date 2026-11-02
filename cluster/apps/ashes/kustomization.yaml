@@ -1,0 +1,10 @@
+---
+# Footsteps in the Ashes (andrewmccall/survival): Flux applies the game's own
+# kubernetes/overlays, one Kustomization per namespace. The overlays set their own
+# namespaces, so no targetNamespace (it would also break SOPS-encrypted files there).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deploy-key.sops.yaml
+  - git-repository.yaml
+  - overlays.yaml
