@@ -1,0 +1,14 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: survival
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  ref:
+    branch: main
+  url: ssh://git@github.com/andrewmccall/survival.git
+  secretRef:
+    # Read-only deploy key "flux ashes (home-ops)" on the survival repo.
+    name: survival-deploy-key
