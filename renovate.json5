@@ -85,6 +85,15 @@
       "matchUpdateTypes": ["minor", "major"],
       "automerge": false
     },
+    // CloudNativePG: every operator upgrade restarts each Postgres instance once, and
+    // with one instance per Cluster that's an outage. Never automerge; one PR per minor,
+    // merged by hand when a short database restart is acceptable.
+    {
+      "matchDatasources": ["helm"],
+      "matchPackageNames": ["cloudnative-pg"],
+      "separateMultipleMinor": true,
+      "automerge": false
+    },
     // datasource specific settings
     // Clients auto-update, so the server has to follow every release. Rollout gates
     // and rollback apply as for any image; worlds a newer server has opened may not
