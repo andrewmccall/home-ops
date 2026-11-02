@@ -1,0 +1,9 @@
+---
+# Cloudflare Tunnel "ashes": carries ashes.andrewmccall.com and ashes-dev.andrewmccall.com
+# to nginx-external without opening ports. Hostnames are configured on the tunnel in
+# Cloudflare Zero Trust; the token is SOPS-encrypted in tunnel-token.sops.yaml.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - tunnel-token.sops.yaml
+  - deployment.yaml
