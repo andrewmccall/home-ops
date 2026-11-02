@@ -4,3 +4,4 @@ resources:
   - namespaces
   - flux-system/monitoring
   - longhorn
+  - cloudnative-pg

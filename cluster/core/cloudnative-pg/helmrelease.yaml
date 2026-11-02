@@ -1,0 +1,38 @@
+---
+# CloudNativePG operator for the game's Postgres Clusters (ashes-dev/game-db, ashes-map/map-db).
+# It was installed by hand from the 1.26.0 manifest; README.md has the adoption runbook.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cloudnative-pg
+  namespace: cnpg-system
+  labels:
+    # The chart ships the CRDs. A rollback would apply older CRD schemas over Clusters
+    # stored by the newer operator, and CNPG does not support operator downgrades,
+    # so a failed upgrade stays failed for a human to fix.
+    home-ops.andrewmccall.com/remediation: manual
+spec:
+  interval: 10m
+  timeout: 10m
+  chart:
+    spec:
+      chart: cloudnative-pg
+      # renovate: datasource=helm registryUrl=https://cloudnative-pg.github.io/charts chart=cloudnative-pg
+      version: 0.29.1
+      sourceRef:
+        kind: HelmRepository
+        name: cloudnative-pg
+        namespace: flux-system
+  # The chart renders its CRDs as templates (crds.create), kept on uninstall by
+  # helm.sh/resource-policy: keep. These policies cover any CRDs a future chart
+  # moves to crds/.
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
+  values:
+    # Keep the manifest install's names (Deployment cnpg-controller-manager; the
+    # webhook Service and monitoring ConfigMap already match), easing adoption.
+    fullnameOverride: cnpg-controller-manager
+    crds:
+      create: true
