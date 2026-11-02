@@ -121,3 +121,7 @@ kubectl get clusters.postgresql.cnpg.io -A
 
 Then revert the PR. The 1.26.0 manifest restores the old CRD schemas. The `databaseroles` and
 `failoverquorums` CRDs remain, unused.
+
+## Upgrades
+
+Every operator upgrade restarts each Postgres instance once; with one instance per Cluster that is a short outage. Renovate never automerges `cloudnative-pg` (see `renovate.json5`): merge its PRs by hand at a time a database restart is acceptable, one minor at a time.
