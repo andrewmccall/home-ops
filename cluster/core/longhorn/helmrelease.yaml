@@ -31,6 +31,10 @@ spec:
       concurrentAutomaticEngineUpgradePerNodeLimit: 1
     persistence:
       defaultClassReplicaCount: 1
+      # Keep the default class on the SSD; the hdd disk is only for longhorn-hdd.
+      defaultDiskSelector:
+        enable: true
+        selector: "ssd"
     metrics:
       serviceMonitor:
         enabled: true

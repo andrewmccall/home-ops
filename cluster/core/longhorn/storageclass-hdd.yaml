@@ -1,0 +1,20 @@
+---
+# Bulk storage on vecna's 4 TB spinning disk (Longhorn disk "bulk0", tag hdd), for
+# large data that can be rebuilt: the game's planet map data. Retain, so deleting
+# a claim never throws away a multi-day import. Opted out of the daily snapshot
+# group: the data is regenerable and its churn would fill the disk with snapshots.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-hdd
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+parameters:
+  numberOfReplicas: "1"
+  diskSelector: "hdd"
+  dataLocality: "disabled"
+  staleReplicaTimeout: "30"
+  fsType: "ext4"
+  recurringJobSelector: '[{"name":"bulk-none","isGroup":true}]'
