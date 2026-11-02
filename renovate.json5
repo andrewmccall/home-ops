@@ -36,6 +36,18 @@
       ],
       "datasourceTemplate": "{{datasource}}",
       "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}{{#if (containsString datasource 'pypi')}}pep440{{else}}semver{{/if}}{{/if}}"
+    },
+    // Charts that take the image digest in its own value: the tag stays a plain
+    // version because charts copy it into a label, which can't hold '@'. Mark the
+    // pair with "# renovate-image-digest: depName=<image>" above the tag line.
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/cluster/.+\\.ya?ml$/"],
+      "matchStrings": [
+        "# renovate-image-digest: depName=(?<depName>\\S+)\\n\\s*tag: \"?(?<currentValue>[^\\s\"@]+)\"?\\n\\s*digest: \"?(?<currentDigest>sha256:[a-f0-9]{64})\"?"
+      ],
+      "datasourceTemplate": "docker",
+      "versioningTemplate": "docker"
     }
   ],
   "customDatasources": {
@@ -49,6 +61,13 @@
     }
   },
   "packageRules": [
+    // Images marked renovate-image-digest are kept by that custom manager; stop
+    // helm-values from also pinning a digest into their tag.
+    {
+      "matchManagers": ["helm-values"],
+      "matchPackageNames": ["timberio/vector"],
+      "enabled": false
+    },
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
