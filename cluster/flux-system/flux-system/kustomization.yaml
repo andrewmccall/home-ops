@@ -29,3 +29,19 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/args/6
         value: --storage-adv-addr=source-controller.$(RUNTIME_NAMESPACE).svc.cluster.andrewmccall.com.
+  # source-controller peaked at 0.97Gi of its 1Gi limit (2026-11 audit); the request was 64Mi.
+  - target:
+      group: apps
+      version: v1
+      kind: Deployment
+      name: source-controller
+    patch: |-
+      - op: test
+        path: /spec/template/spec/containers/0/name
+        value: manager
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/requests/memory
+        value: 256Mi
+      - op: replace
+        path: /spec/template/spec/containers/0/resources/limits/memory
+        value: 1536Mi

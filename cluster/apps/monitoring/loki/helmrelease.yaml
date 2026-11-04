@@ -24,6 +24,31 @@ spec:
     deploymentMode: SingleBinary
     singleBinary:
       replicas: 1
+      resources:
+        requests:
+          cpu: 50m
+          memory: 512Mi
+        limits:
+          memory: 1Gi
+    # The loki-sc-rules container in loki-0.
+    sidecar:
+      resources:
+        requests:
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+    lokiCanary:
+      resources:
+        requests:
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+    # memcached requests and limits are allocatedMemory (MB) x 1.2. The chart defaults of
+    # 8192 and 1024 reserved 9.6Gi and 1.2Gi; the caches used 0.67Gi and 0.01Gi at most.
+    chunksCache:
+      allocatedMemory: 1024
+    resultsCache:
+      allocatedMemory: 128
     backend:
       replicas: 0
     read:
@@ -54,6 +79,11 @@ spec:
         podAntiAffinity: null
       deploymentStrategy:
         type: Recreate
+      resources:
+        requests:
+          memory: 32Mi
+        limits:
+          memory: 64Mi
       ingress:
         enabled: true
         ingressClassName: internal

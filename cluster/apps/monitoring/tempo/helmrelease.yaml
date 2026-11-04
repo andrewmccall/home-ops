@@ -32,6 +32,13 @@ spec:
           local:
             path: /var/tempo/block
       retention: 336h  # 14 days
+      # The chart reads tempo.resources; a top-level resources key is ignored. Peak was 1.06Gi.
+      resources:
+        requests:
+          cpu: 20m
+          memory: 768Mi
+        limits:
+          memory: 2Gi
     persistence:
       enabled: true
       size: 50Gi
@@ -47,9 +54,3 @@ spec:
           paths:
             - path: /
               pathType: Prefix
-    resources:
-      requests:
-        cpu: 100m
-        memory: 256Mi
-      limits:
-        memory: 1Gi
