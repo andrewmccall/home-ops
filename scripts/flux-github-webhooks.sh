@@ -12,7 +12,7 @@
 # Needs kubectl (cluster access), gh (repo admin), jq, and sops without --token-file.
 set -euo pipefail
 
-HOST="${FLUX_WEBHOOK_HOST:-flux-webhook.andrewmccall.com}"
+HOST="${FLUX_WEBHOOK_HOST:-gh-webhook.andrewmccall.com}"
 NAMESPACE=flux-system
 # repository -> Receiver name
 HOOKS=("andrewmccall/home-ops=home-ops" "andrewmccall/survival=survival")
