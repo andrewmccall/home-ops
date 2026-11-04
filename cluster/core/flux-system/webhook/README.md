@@ -8,7 +8,7 @@ fallback: if a delivery is lost, the next interval picks the change up.
 ## How it works
 
 ```
-GitHub push -> https://flux-webhook.andrewmccall.com/hook/<sha256>
+GitHub push -> https://gh-webhook.andrewmccall.com/hook/<sha256>
   -> Cloudflare tunnel "vecna-infra" (Deployment cloudflared-infra, networking)
      routes only ^/hook/ on this hostname; anything else gets the tunnel's 404
   -> Service webhook-receiver:80 (notification-controller, port 9292)
@@ -43,7 +43,7 @@ Public hostnames → Add a public hostname**:
 
 | Field | Value |
 |---|---|
-| Subdomain / Domain | `flux-webhook` / `andrewmccall.com` |
+| Subdomain / Domain | `gh-webhook` / `andrewmccall.com` |
 | Path | `^/hook/` |
 | Service | `HTTP` `webhook-receiver.flux-system.svc.cluster.andrewmccall.com:80` |
 
@@ -51,7 +51,7 @@ Add no other routes. The cluster DNS domain is `cluster.andrewmccall.com`, so a
 `.svc.cluster.local` address does not resolve here.
 
 Optional: Cloudflare WAF custom rule on the zone to block anything not from GitHub:
-`(http.host eq "flux-webhook.andrewmccall.com" and not ip.src in {<gh api meta --jq '.hooks[]'>})`
+`(http.host eq "gh-webhook.andrewmccall.com" and not ip.src in {<gh api meta --jq '.hooks[]'>})`
 → Block. GitHub occasionally adds ranges; a stale list drops deliveries until polling
 catches up, so re-check it when deliveries fail with 403.
 
@@ -73,7 +73,7 @@ token and is safe to re-run.
 
 ```sh
 # Ping: expect "200 OK" from the script, or check the latest delivery
-gh api repos/andrewmccall/survival/hooks --jq '.[] | select((.config.url // "") | contains("flux-webhook")) | .id'
+gh api repos/andrewmccall/survival/hooks --jq '.[] | select((.config.url // "") | contains("gh-webhook")) | .id'
 gh api repos/andrewmccall/survival/hooks/<id>/deliveries --jq '.[0:3][] | [.event, .status_code, .delivered_at] | @tsv'
 
 # Push: the Receiver logs the request and the GitRepository fetches within seconds
