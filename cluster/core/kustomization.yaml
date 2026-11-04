@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
   - namespaces
   - flux-system/monitoring
+  - flux-system/webhook
   - longhorn
   - cloudnative-pg
