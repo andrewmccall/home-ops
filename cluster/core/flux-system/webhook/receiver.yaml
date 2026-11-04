@@ -1,4 +1,9 @@
 ---
+# One Receiver per repository, sharing one token: a push reconciles only its own
+# repository's source, and there is one secret to rotate. Each Receiver gets its own
+# path, /hook/sha256(token + name + namespace), published in .status.webhookPath.
+# Kustomizations are not listed: kustomize-controller reconciles every Kustomization
+# whose source has a new artifact, so the GitRepository is enough.
 apiVersion: notification.toolkit.fluxcd.io/v1
 kind: Receiver
 metadata:
@@ -14,9 +19,22 @@ spec:
   resources:
     - apiVersion: source.toolkit.fluxcd.io/v1
       kind: GitRepository
-      namespace: flux-system
-      name: flux-cluster
-    - apiVersion: kustomize.toolkit.fluxcd.io/v1
-      kind: Kustomization
-      namespace: flux-system
-      name: flux-cluster
+      name: flux-system
+---
+apiVersion: notification.toolkit.fluxcd.io/v1
+kind: Receiver
+metadata:
+  name: survival
+  namespace: flux-system
+spec:
+  type: github
+  events:
+    - ping
+    - push
+  secretRef:
+    name: github-webhook-token
+  resources:
+    # cluster/apps/ashes/git-repository.yaml; feeds ashes-map, ashes-dev, ashes-prod, ashes-ci.
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: GitRepository
+      name: survival
