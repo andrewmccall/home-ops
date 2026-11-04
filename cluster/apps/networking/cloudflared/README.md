@@ -8,7 +8,7 @@ dashboard, not external-dns.
 | Tunnel | Deployment | Carries | Routes to |
 |---|---|---|---|
 | `ashes` | `cloudflared-ashes` (2 replicas) | Game traffic only: `ashes.andrewmccall.com`, `ashes-dev.andrewmccall.com` | nginx-external (HTTPS) |
-| `vecna-infra` | `cloudflared-infra` (1 replica) | Cluster control-plane endpoints: `flux-webhook.andrewmccall.com/hook/` | the endpoint's Service directly |
+| `vecna-infra` | `cloudflared-infra` (1 replica) | Cluster control-plane endpoints: `gh-webhook.andrewmccall.com/hook/` | the endpoint's Service directly |
 
 Keep them apart: a game hostname never goes on `vecna-infra`, and an infrastructure
 endpoint never goes on `ashes`. Each tunnel can then be rotated, scaled or shut off on its
@@ -38,7 +38,7 @@ webhooks are covered by Flux polling.
 
    | Field | Value |
    |---|---|
-   | Subdomain / Domain | `flux-webhook` / `andrewmccall.com` (the zone the game uses) |
+   | Subdomain / Domain | `gh-webhook` / `andrewmccall.com` (the zone the game uses) |
    | Path | `^/hook/` |
    | Service | `HTTP` `webhook-receiver.flux-system.svc.cluster.andrewmccall.com:80` |
 
