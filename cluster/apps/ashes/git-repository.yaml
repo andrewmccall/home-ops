@@ -5,7 +5,9 @@ metadata:
   name: survival
   namespace: flux-system
 spec:
-  interval: 1m0s
+  # Pushes to main trigger a fetch through the survival Receiver
+  # (core/flux-system/webhook); polling only catches a missed delivery.
+  interval: 30m0s
   ref:
     branch: main
   url: ssh://git@github.com/andrewmccall/survival.git

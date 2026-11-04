@@ -49,8 +49,11 @@ Always pass `--cluster-domain=cluster.andrewmccall.com` to `flux bootstrap` or
 `flux install --export` when regenerating Flux components. Keep the Kustomize
 patches in `flux-system/flux-system/kustomization.yaml` aligned with the generated
 arguments. They change the event and source artifact addresses without editing
-`gotk-components.yaml`. Each patch tests the original argument first so generator
-changes fail visibly instead of overwriting a different flag.
+`gotk-components.yaml`. A further patch raises the generated `flux-system`
+GitRepository interval from 1m to 30m, because GitHub webhooks trigger fetches
+([polling intervals](core/flux-system/webhook/README.md#polling-intervals)). Each
+patch tests the original value first so generator changes fail visibly instead of
+overwriting a different flag.
 
 Run this after changing manifests:
 
