@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: cloudflared-infra
+    namespace: networking
+type: Opaque
+stringData:
+    token: ENC[AES256_GCM,data:Hq6n8bTcMJRwip6R7K3UMwpR6FDCHhYJxppsfHMJhV2sGFQyPcfSZRSGOkrctrvAhenmBw==,iv:JUX/3jalN/1vTtlWbHkQgPCIzilgNdEIAsqDVeNh2Lc=,tag:4ghncNyti66p9xxx/qtmmA==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBnaWZDVWpkS2x2N1ZGNkxJ
+            b1B1L1RhMlEwUkhaWDJGRThpc2Z1Ryt4Tnc0CndDcWtmM1RyR3lRaUo0cW95NWE5
+            bENWREFNV29GcjQvdEFCMU82NTZSeWsKLS0tIDlmREtKaklrS2Y4MUltcDd0ZG9M
+            TFBJVDFlUldqa1JhWDdoRytOalhXR1EK4epC7mez0my2gRPVGp6u4jpMoaNNW9Og
+            9qLv7JPaMn0UTOvEeotMYtb3rcyvghUrYcdxZ8k72P5zdK3VwVJ3Ow==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-04T10:05:38Z"
+    mac: ENC[AES256_GCM,data:q+N1Z8xqAIQNXPFKrjbRmdfeUDUDj142OIpToqpPLiikl56c7pGxRpOedXo+y+jmMRJWfbiNSa/7L8HTGhmR+5at0gXaohu3gFAk6+y7GQU414huKJmMW9S2lL9LJ0dI0xexYZiogJWKPaxlW5cr8gJuwkKnjUiA6Ima4ODpw1M=,iv:yn+0MxtbYDtwwYn1Mm7/U1UQdXH3Gl4wZBsjpSZCCKU=,tag:ZDmQyB24shNhPnCkPKNanw==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0
