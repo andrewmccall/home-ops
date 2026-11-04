@@ -82,6 +82,22 @@ kubectl -n flux-system get gitrepository survival flux-system -o wide
 flux get kustomizations
 ```
 
+## Polling intervals
+
+With the webhooks working, polling is only the safety net. GitHub does not redeliver a
+failed webhook on its own, so a delivery lost to a tunnel restart or a cluster outage
+waits for the next poll.
+
+| Object | Interval | Why |
+|---|---|---|
+| GitRepository `flux-system` (home-ops) | 30m | Fallback for a missed delivery. Set by a patch in `cluster/flux-system/flux-system/kustomization.yaml`, since `flux bootstrap` generates 1m. |
+| GitRepository `survival` | 30m | Same; prod follows survival's `main`, so 30m (not 1h) bounds a missed deploy. |
+| Kustomizations | unchanged (3m to 10m) | The interval is also drift correction: how soon a hand edit or a deleted object is put back. It never fetches Git; a new artifact reconciles them at once. |
+| HelmRepositories | 1h; `home-ops` 10m | Not covered by webhooks. A Renovate bump in git arrives by webhook, but the chart is resolved from the cached index, so a chart published within the last hour can take up to an hour to resolve. `home-ops` charts are published and consumed here, so it stays at 10m. |
+| GitRepositories for third-party CRDs | 30m | Pinned to tags or upstream branches; not covered by webhooks. |
+
+Force a fetch any time with `flux reconcile source git flux-system` (or `survival`).
+
 ## Rotate the token
 
 ```sh

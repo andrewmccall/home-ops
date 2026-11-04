@@ -45,3 +45,17 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/resources/limits/memory
         value: 1536Mi
+  # GitHub webhooks (core/flux-system/webhook) trigger fetches on push; polling only
+  # catches a missed delivery. `flux bootstrap` generates 1m0s.
+  - target:
+      group: source.toolkit.fluxcd.io
+      version: v1
+      kind: GitRepository
+      name: flux-system
+    patch: |-
+      - op: test
+        path: /spec/interval
+        value: 1m0s
+      - op: replace
+        path: /spec/interval
+        value: 30m0s
