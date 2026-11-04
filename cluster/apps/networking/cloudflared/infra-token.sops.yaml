@@ -1,0 +1,27 @@
+apiVersion: v1
+data:
+    token: ENC[AES256_GCM,data:Xsg/UZ6c4ByI544XPU+Zfht7ysAHtypqrt75pw9x4fnfvESNEIsdOjanFnqGttzr4bEtHPgn0QPt6alpK+Hrp2Hd1zh2QHb9wt4aajDDoqK6DopgxZaUvTJvhW383pEbDHv9kTGCGJNeFNPgVxEGZq6/2KtkBmDaNTyQnH8lZRQ6u0YAzIj7j2xNpf9HCj3xAbDv7EkNx+lHvhoc1yZAf1eiwQdqFSwWUCWWxrb+tYuemof2WDm5GA5IdyZIbt7e/PgCcce1OJH5paoI+bp0LNLa36BFp7e3iLbv7hWxeTWMT6d4Pt6WBt0ePPXpvVFt9uqzEN9SCs0=,iv:rlto2q+Cf9vaC4/Thz0qqQhlBl7ByLnKKPyNMFbEtFc=,tag:Ywpy2rea6sg0m0QjdflkSQ==,type:str]
+kind: Secret
+metadata:
+    name: cloudflared-infra
+    namespace: networking
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBlaDIzQk5sNnRxWGd0aWlS
+            VDYxQzE0S2ZGZHkxZHFXbExoVmdBbllmRUdvClRubWUyMy9Rb1JSU3RXQkFNNGt0
+            a0hWVU8wNG1wMTlKQi9UQklVVHlScU0KLS0tIHB6YzlPQnBPVEVaVXFFM05ZOHNy
+            OFNrMi9NeEtTRElWcFltNTVqTzhORlEKX+F8U5R3OBC2yA9SxHgqF8NpvpPqcXMm
+            WRsRI7LLVdbu86+v6RcoeWFSENntjP0P6fqJe0GA89tToK/PQlBiug==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-04T18:55:04Z"
+    mac: ENC[AES256_GCM,data:PvinjJmim9WqMHwa/s5pNRBhsp8o5UH7kpGQUr5gruYt/Ff/XrcK0m4TzkU9zHbxRCVNQZyrXSrg1pY7M4eUuP9/8x9Huo82AmR+1octpaFyCVjYOmyzG+T/pQ31Er4aShcRmpElwKWJYiMYX04R+R6ZE/AoKabEr4sSInvq5wU=,iv:Oqz5LEkaVisUlUWJe5eAuSa5Q6m6OMXWHMtR5abg3X8=,tag:eHR+ZTm1BmiL4OBlI4eDEg==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0

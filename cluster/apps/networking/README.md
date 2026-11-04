@@ -1,5 +1,8 @@
 # Home network discovery and routed pods
 
+Public hostnames come in through two Cloudflare tunnels, one for the game and one for
+cluster endpoints: [cloudflared/README.md](cloudflared/README.md).
+
 Calico peers with the home gateway at `10.0.0.1`. It advertises pod blocks from
 `10.42.0.0/16`, Service addresses from `10.43.0.0/16`, and external addresses from
 `10.44.0.0/16`. BGP supplies unicast routes; it does not forward mDNS discovery.

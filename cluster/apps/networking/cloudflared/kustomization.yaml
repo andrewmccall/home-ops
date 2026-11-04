@@ -1,9 +1,15 @@
 ---
-# Cloudflare Tunnel "ashes": carries ashes.andrewmccall.com and ashes-dev.andrewmccall.com
-# to nginx-external without opening ports. Hostnames are configured on the tunnel in
-# Cloudflare Zero Trust; the token is SOPS-encrypted in tunnel-token.sops.yaml.
+# Two remotely managed Cloudflare tunnels, kept apart (README.md):
+# - ashes (cloudflared-ashes): game traffic only, ashes.andrewmccall.com and
+#   ashes-dev.andrewmccall.com to nginx-external.
+# - vecna-infra (cloudflared-infra): cluster control-plane endpoints, such as the
+#   Flux webhook, routed straight to their Service.
+# Routes are configured on each tunnel in Cloudflare Zero Trust; the tokens are
+# SOPS-encrypted (scripts/cloudflared-tunnel-secret.sh).
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - tunnel-token.sops.yaml
-  - deployment.yaml
+  - ashes-token.sops.yaml
+  - ashes.yaml
+  - infra-token.sops.yaml
+  - infra.yaml
