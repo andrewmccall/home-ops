@@ -32,16 +32,37 @@ spec:
           - hosts:
               - *host-alert-manager
             secretName: alert-manager-tls
-      alertManagerSpec:
+      alertmanagerSpec:
+        # Silences and the notification log only; they are a few KB.
         storage:
           volumeClaimTemplate:
             spec:
               resources:
                 requests:
-                  storage: 10Gi
+                  storage: 1Gi
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
     grafana:
       enabled: false
       forceDeployDashboards: true
+    kubeApiServer:
+      serviceMonitor:
+        metricRelabelings:
+          # The chart default, repeated because this list replaces it.
+          - action: drop
+            regex: (etcd_request|apiserver_request_slo|apiserver_request_sli|apiserver_request)_duration_seconds_bucket;(0\.15|0\.2|0\.3|0\.35|0\.4|0\.45|0\.6|0\.7|0\.8|0\.9|1\.25|1\.5|1\.75|2|3|3\.5|4|4\.5|6|7|8|9|15|20|40|45|50)(\.0)?
+            sourceLabels:
+              - __name__
+              - le
+          # About 43k series that no dashboard or rule here reads.
+          - action: drop
+            regex: apiserver_request_body_size_bytes_bucket|apiserver_watch_.*|etcd_request_duration_seconds_bucket
+            sourceLabels:
+              - __name__
     kubelet:
       serviceMonitor:
         metricRelabelings:
@@ -49,6 +70,13 @@ spec:
             sourceLabels:
               - node
             targetLabel: instance
+          # k3s runs every component in one process, so the kubelet's /metrics also serves the
+          # apiserver and etcd metrics the apiserver job already scrapes (about 114k series).
+          # rest_client_* stays: the Kubelet dashboard reads it with job="kubelet".
+          - action: drop
+            regex: (apiserver|etcd|workqueue)_.*
+            sourceLabels:
+              - __name__
     kubeControllerManager:
       enabled: false
     kubeEtcd:
@@ -57,7 +85,27 @@ spec:
       enabled: false
     kubeProxy:
       enabled: false
+    prometheusOperator:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 96Mi
+        limits:
+          memory: 256Mi
+    prometheus-node-exporter:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
     kube-state-metrics:
+      resources:
+        requests:
+          cpu: 10m
+          memory: 192Mi
+        limits:
+          memory: 384Mi
       metricLabelsAllowlist:
         - "persistentvolumeclaims=[*]"
       # gotk_resource_info for Flux objects, from fluxcd/flux2-monitoring-example@7ab65dc8
@@ -565,6 +613,13 @@ spec:
         retention: 30d
         retentionSize: "10GB"
         walCompression: true
+        # The limit also sets GOMEMLIMIT to about 90 % of it, so the GC works before the OOM killer.
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1Gi
+          limits:
+            memory: 2Gi
         storageSpec:
           volumeClaimTemplate:
             spec:
@@ -575,6 +630,12 @@ spec:
           image: quay.io/thanos/thanos:v0.42.5@sha256:0a546b98a8dd47735456ab389983675ee363d68127e334937a9fceeea10da5e7
           # renovate: datasource=docker image=quay.io/thanos/thanos
           version: "v0.42.5"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 96Mi
+            limits:
+              memory: 256Mi
         #additionalScrapeConfigs:
         #- job_name: node-exporter
         #  static_configs:
