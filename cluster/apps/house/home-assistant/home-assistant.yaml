@@ -37,9 +37,11 @@ spec:
               TZ: Europe/London
               HASS_HTTP_TRUSTED_PROXY_1: ${K8S_CLUSTER_CIDR}
               OPENAI_BASE_URL: http://hermes-api.hermes.svc:8642/v1
+            # Without a memory request Kubernetes reserves the whole limit. Peak was 0.83Gi.
             resources:
               requests:
                 cpu: 10m
+                memory: 1Gi
               limits:
                 memory: 2Gi
           code-server:
@@ -62,6 +64,7 @@ spec:
             resources:
               requests:
                 cpu: 10m
+                memory: 128Mi
               limits:
                 memory: 512Mi
       voice:
@@ -75,6 +78,12 @@ spec:
               startup: {enabled: true, port: 10300, spec: {periodSeconds: 10, failureThreshold: 60}}
               readiness: {enabled: true, port: 10300}
               liveness: {enabled: true, port: 10300, spec: {periodSeconds: 30, failureThreshold: 5}}
+            # Peak 0.42Gi with the current model; the limit stops a larger model taking the node.
+            resources:
+              requests:
+                memory: 512Mi
+              limits:
+                memory: 1536Mi
           piper:
             image:
               repository: rhasspy/wyoming-piper
@@ -85,6 +94,11 @@ spec:
               readiness: {enabled: true, port: 10200}
               liveness: {enabled: true, port: 10200, spec: {periodSeconds: 30, failureThreshold: 5}}
             args: ["--voice", "en_GB-cori-high"]
+            resources:
+              requests:
+                memory: 128Mi
+              limits:
+                memory: 512Mi
     service:
       app:
         controller: home-assistant
