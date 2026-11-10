@@ -4,6 +4,8 @@ kind: HelmRelease
 metadata:
   name: kube-prometheus-stack
   namespace: monitoring
+  labels:
+    home-ops.andrewmccall.com/post-renderers: own
 spec:
   interval: 10m
   chart:
@@ -15,6 +17,26 @@ spec:
         kind: HelmRepository
         name: prometheus-community
         namespace: flux-system
+  # The chart always renders the multi-cluster dashboard; this is a single cluster.
+  postRenderers:
+    - kustomize:
+        patches:
+          # The cluster-wide default from cluster/base/apps.yaml, which own postRenderers replace.
+          - target:
+              kind: Deployment|StatefulSet|DaemonSet
+            patch: |
+              - op: add
+                path: /spec/minReadySeconds
+                value: 30
+          - target:
+              kind: ConfigMap
+              name: kube-prometheus-stack-k8s-resources-multicluster
+            patch: |-
+              $patch: delete
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: kube-prometheus-stack-k8s-resources-multicluster
   values:
     alertmanager:
       ingress:
@@ -49,6 +71,10 @@ spec:
     grafana:
       enabled: false
       forceDeployDashboards: true
+      sidecar:
+        dashboards:
+          annotations:
+            grafana_folder: Kubernetes
     kubeApiServer:
       serviceMonitor:
         metricRelabelings:
@@ -92,6 +118,12 @@ spec:
           memory: 96Mi
         limits:
           memory: 256Mi
+    nodeExporter:
+      operatingSystems:
+        aix:
+          enabled: false
+        darwin:
+          enabled: false
     prometheus-node-exporter:
       resources:
         requests:
@@ -587,25 +619,8 @@ spec:
           - /
         pathType: Prefix
         ingressClassName: "internal"
-      thanosService:
-        enabled: true
-      thanosServiceMonitor:
-        enabled: true
-      thanosIngress:
-        enabled: true
-        pathType: Prefix
-        ingressClassName: "internal"
-        annotations:
-          nginx.ingress.kubernetes.io/ssl-redirect: "true"
-          nginx.ingress.kubernetes.io/backend-protocol: "GRPC"
-        hosts:
-          - &host-thanos-sidecar "thanos-sidecar.${DOMAIN}"
-        tls:
-          - hosts:
-              - *host-thanos-sidecar
       prometheusSpec:
         enableAdminAPI: true
-        replicaExternalLabelName: __replica__
         ruleSelectorNilUsesHelmValues: false
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
@@ -626,16 +641,6 @@ spec:
               resources:
                 requests:
                   storage: 20Gi
-        thanos:
-          image: quay.io/thanos/thanos:v0.42.5@sha256:0a546b98a8dd47735456ab389983675ee363d68127e334937a9fceeea10da5e7
-          # renovate: datasource=docker image=quay.io/thanos/thanos
-          version: "v0.42.5"
-          resources:
-            requests:
-              cpu: 10m
-              memory: 96Mi
-            limits:
-              memory: 256Mi
         #additionalScrapeConfigs:
         #- job_name: node-exporter
         #  static_configs:

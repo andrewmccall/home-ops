@@ -1,0 +1,23 @@
+---
+# Home Assistant's prometheus integration (configuration.yaml on the config volume:
+# "prometheus: namespace: homeassistant"). The token comes from
+# scripts/configure-prometheus-ha-token.py.
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: home-assistant
+  namespace: house
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/service: home-assistant-app
+  endpoints:
+    - port: http
+      path: /api/prometheus
+      interval: 60s
+      scrapeTimeout: 30s
+      authorization:
+        type: Bearer
+        credentials:
+          name: home-assistant-prometheus-token
+          key: token

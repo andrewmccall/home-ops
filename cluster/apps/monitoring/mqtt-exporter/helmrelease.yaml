@@ -1,0 +1,58 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+# Zigbee2MQTT device state as Prometheus metrics, read straight from MQTT so Zigbee
+# alerts keep working when Home Assistant is down. Each device is a topic label,
+# e.g. mqtt_zigbee_availability{topic="zigbee2mqtt_Office Window 1"}.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: mqtt-exporter
+  namespace: monitoring
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      # renovate: datasource=helm registryUrl=https://bjw-s-labs.github.io/helm-charts chart=app-template
+      version: 5.3.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  values:
+    controllers:
+      mqtt-exporter:
+        containers:
+          app:
+            image:
+              repository: kpetrem/mqtt-exporter
+              tag: 1.12.1@sha256:dca3255f35310f6ceb80ed1de94eebd1fe9def7aacaec4107fe37cdaa9eb3be0
+            env:
+              MQTT_ADDRESS: mosquitto.databases.svc.cluster.${DOMAIN}
+              MQTT_V5_PROTOCOL: "True"
+              MQTT_TOPIC: zigbee2mqtt/#
+              # Device lists and logs, not device state.
+              MQTT_IGNORED_TOPICS: zigbee2mqtt/bridge/devices,zigbee2mqtt/bridge/groups,zigbee2mqtt/bridge/definitions,zigbee2mqtt/bridge/extensions,zigbee2mqtt/bridge/logging,zigbee2mqtt/bridge/info,zigbee2mqtt/bridge/converters,zigbee2mqtt/bridge/response/#,zigbee2mqtt/bridge/request/#
+              ZIGBEE2MQTT_AVAILABILITY: "True"
+              PROMETHEUS_PORT: "9000"
+            probes:
+              liveness: {enabled: true, port: 9000, type: TCP}
+              readiness: {enabled: true, port: 9000, type: TCP}
+            resources:
+              requests:
+                cpu: 5m
+                memory: 48Mi
+              limits:
+                memory: 128Mi
+    service:
+      app:
+        controller: mqtt-exporter
+        ports:
+          metrics:
+            port: 9000
+    serviceMonitor:
+      app:
+        serviceName: mqtt-exporter
+        endpoints:
+          - port: metrics
+            interval: 60s

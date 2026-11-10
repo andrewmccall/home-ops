@@ -16,7 +16,7 @@ spec:
         name: vector
         namespace: flux-system
   dependsOn:
-    - name: vector-aggregator
+    - name: loki
       namespace: monitoring
   values:
     image:
@@ -44,18 +44,46 @@ spec:
         vector_metrics:
           type: internal_metrics
       sinks:
-        journal_sink:
-          type: vector
+        # Straight to Loki: one node has no use for an aggregator hop.
+        loki_journal:
+          type: loki
           inputs:
             - journal_logs
-          address: vector-aggregator:6000
-          version: "2"
-        kubernetes_sink:
-          type: vector
+          # Vector 0.61+ needs the scheme; a bare host:port fails with "client error (Connect)".
+          endpoint: http://loki-gateway.monitoring.svc
+          encoding:
+            codec: json
+          out_of_order_action: accept
+          remove_timestamp: true
+          labels:
+            source: journal
+            node: >-
+              {{`{{ host }}`}}
+            unit: >-
+              {{`{{ _SYSTEMD_UNIT }}`}}
+        loki_kubernetes:
+          type: loki
           inputs:
             - kubernetes_logs
-          address: vector-aggregator:6010
-          version: "2"
+          endpoint: http://loki-gateway.monitoring.svc
+          encoding:
+            codec: json
+          out_of_order_action: accept
+          remove_timestamp: true
+          labels:
+            source: kubernetes
+            node: >-
+              {{`{{ kubernetes.pod_node_name }}`}}
+            namespace: >-
+              {{`{{ kubernetes.pod_namespace }}`}}
+            pod: >-
+              {{`{{ kubernetes.pod_name }}`}}
+            container: >-
+              {{`{{ kubernetes.container_name }}`}}
+            app: >-
+              {{`{{ kubernetes.pod_labels."app.kubernetes.io/name" }}`}}
+            instance: >-
+              {{`{{ kubernetes.pod_labels."app.kubernetes.io/instance" }}`}}
         prometheus_sink:
           type: prometheus_exporter
           inputs:

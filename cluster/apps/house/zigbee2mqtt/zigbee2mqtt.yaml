@@ -31,6 +31,9 @@ spec:
               ZIGBEE2MQTT_CONFIG_MQTT_SERVER: "mqtt://mosquitto.databases.svc.cluster.${DOMAIN}:1883"
               ZIGBEE2MQTT_CONFIG_MQTT_VERSION: 5
               ZIGBEE2MQTT_CONFIG_SERIAL_PORT: /dev/ttyUSB0
+              # Publishes <device>/availability, so a device that drops off shows offline
+              # in Home Assistant and mqtt-exporter (mains devices after 10 min, battery after 25 h).
+              ZIGBEE2MQTT_CONFIG_AVAILABILITY_ENABLED: "true"
             probes:
               liveness:
                 enabled: true

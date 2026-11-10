@@ -10,3 +10,4 @@ resources:
   - vector
   - otel-collector
   - alerts
+  - mqtt-exporter
