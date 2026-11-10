@@ -123,7 +123,8 @@ def main():
     import yaml
 
     root = Path(__file__).resolve().parents[1]
-    model = yaml.safe_load((root / 'cluster/apps/hermes/config.yaml').read_text())['model']['default']
+    # Hermes owns its model (cluster/apps/hermes/seed/config.yaml is only the first default).
+    model = yaml.safe_load(subprocess.run(['kubectl', '-n', 'hermes', 'exec', 'hermes', '-c', 'hermes', '--', 'cat', '/opt/data/config.yaml'], check=True, capture_output=True, text=True).stdout)['model']['default']
     result = subprocess.run(['kubectl', '-n', 'hermes', 'get', 'secret', 'hermes-agent-api-keys', '-o', 'json'], check=True, capture_output=True)
     key = base64.b64decode(json.loads(result.stdout)['data']['API_SERVER_KEY']).decode()
     subprocess.run(

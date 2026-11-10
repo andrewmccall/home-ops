@@ -3,7 +3,6 @@
 
 import base64
 import json
-from pathlib import Path
 import subprocess
 import urllib.error
 import urllib.request
@@ -20,7 +19,7 @@ def main():
     assert health.get('status') == 'ok' and health.get('platform') == 'hermes-agent', health
     print('PASS: Hermes health')
 
-    model = yaml.safe_load((Path(__file__).resolve().parents[1] / 'cluster/apps/hermes/config.yaml').read_text())['model']
+    model = yaml.safe_load(subprocess.run(['kubectl', '-n', 'hermes', 'exec', 'hermes', '-c', 'hermes', '--', 'cat', '/opt/data/config.yaml'], check=True, capture_output=True, text=True).stdout)['model']
     body = json.dumps({'model': model['default'], 'messages': [{'role': 'user', 'content': 'Reply with exactly: hermes ready. Do not use any tools.'}], 'stream': False}).encode()
     try:
         urllib.request.urlopen(urllib.request.Request(BASE + '/v1/chat/completions', data=body, headers={'Content-Type': 'application/json'}), timeout=10)

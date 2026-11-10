@@ -8,10 +8,19 @@ resources:
   - networkpolicy.yaml
   - service.yaml
 configMapGenerator:
-  - name: hermes-config
+  # Read-only at /etc/hermes: settings Hermes cannot change (managed scope).
+  - name: hermes-managed
     files:
-      - config.yaml
-      - SOUL.md
+      - config.yaml=managed/config.yaml
+  # First-start defaults Hermes then owns, and the init container's script.
+  - name: hermes-seed
+    files:
+      - config.yaml=seed/config.yaml
+      - SOUL.md=seed/SOUL.md
+      - init.py
+    options:
+      annotations:
+        kustomize.toolkit.fluxcd.io/substitute: disabled
   - name: hermes-trust
     files:
       - sproozi-tasks-ca.crt

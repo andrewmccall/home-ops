@@ -112,7 +112,7 @@ print(json.dumps({'result':'PASS','tool':'Home Assistant GetLiveContext','reply'
 def main():
     subprocess.run(['kubectl', '-n', 'house', 'exec', 'deploy/home-assistant', '-c', 'app', '--', 'python3', '-u', '-c', PROBE], check=True)
     if '--mcp' in sys.argv:
-        model = yaml.safe_load((Path(__file__).resolve().parents[1] / 'cluster/apps/hermes/config.yaml').read_text())['model']['default']
+        model = yaml.safe_load(subprocess.run(['kubectl', '-n', 'hermes', 'exec', 'hermes', '-c', 'hermes', '--', 'cat', '/opt/data/config.yaml'], check=True, capture_output=True, text=True).stdout)['model']['default']
         subprocess.run(['kubectl', '-n', 'hermes', 'exec', 'hermes', '-c', 'hermes', '--',
                         'env', f'HERMES_CHECK_MODEL={model}', 'python3', '-u', '-c', MCP_PROBE], check=True)
 

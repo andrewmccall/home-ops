@@ -9,17 +9,51 @@ The controller and CRD are vendored from Agent Sandbox v1.0.7. Hermes uses
 `nousresearch/hermes-agent:v0.22.2`, pinned by its multi-platform image digest.
 `cluster/base/agent-sandbox.yaml` waits for the controller before the apps reconcile.
 
-Hermes stores its home and workspace on a 20 GiB Longhorn volume. An init container
-copies the Git-managed `config.yaml` into that volume on every pod start. Edit the
-source config here, then recreate the pod after reconciliation to apply changes.
-The assistant is **Ada**: `SOUL.md` is Hermes's identity and style prompt, copied
-in with `config.yaml` on every start and used by every platform (voice, Telegram,
-CLI, alert runs). Edit it here, not in the pod. On Telegram the bot's display name
-and picture are set in @BotFather (`/setname`, `/setuserpic`).
+Hermes stores its home and workspace on a 20 GiB Longhorn volume.
 
-The model is Anthropic's `claude-sonnet-5-5` (`config.yaml`), with a dedicated API
-key. After changing the model, rerun `scripts/configure-ha-hermes.py` so Ada asks
-for it too: Hermes's API serves the model a request names.
+## Who owns the configuration
+
+| File | Owner | How it changes |
+| --- | --- | --- |
+| `managed/config.yaml` → `/etc/hermes/config.yaml` (read-only) | Git | Hermes's *managed scope*: these settings override Hermes's own and Hermes cannot change them (`hermes config set` refuses; saves drop them). Edit here, then recreate the pod. |
+| `/opt/data/config.yaml`, `/opt/data/SOUL.md` | Hermes | `hermes config set`, `hermes setup`, or by asking Ada. Edits persist on the volume. `seed/` holds the first-start copies, used only when a file is missing. |
+| `sre/` → script and `sre-alerts` skill | Git | Copied in on every start. |
+
+Pinned: tool limits per platform (voice gets only Home Assistant, alerts only
+web tools and Sproozi), the MCP servers, the API, Telegram and webhook platforms,
+the terminal backend, secret redaction and command deny rules. Everything else,
+including the model, memory, skills and Ada's personality, is Hermes's. The init
+container (`init.py`, tested in `tests/test_hermes_init.py`) removes from Hermes's
+`config.yaml` any setting Git pins, so a stale copy cannot take over if a pin is
+dropped. To start Hermes's own config again, delete `/opt/data/config.yaml` and
+recreate the pod.
+
+Run the wizard for Hermes-owned settings; it skips pinned ones:
+
+```sh
+kubectl -n hermes exec -it hermes -c hermes -- hermes setup          # or: hermes setup model|agent|tools
+```
+
+The assistant is **Ada**: `SOUL.md` is Hermes's identity and style prompt, used by
+every platform (voice, Telegram, CLI, alert runs). On Telegram the bot's display
+name and picture are set in @BotFather (`/setname`, `/setuserpic`).
+
+The model is Anthropic's `claude-sonnet-5-5`, with a dedicated API key. Home
+Assistant names a model in each Ada request and Hermes's API serves it, so after
+changing Hermes's model rerun `scripts/configure-ha-hermes.py`; it reads the live
+model from the pod.
+
+### Security limits
+
+Hermes runs its terminal locally (`terminal.backend: local`); the pod, with no
+Kubernetes token and a NetworkPolicy, is the isolation boundary. Hermes's Docker
+and SSH backends are unavailable in this pod. Hermes scrubs known keys from
+terminal commands, but a command runs as the gateway's own user and can read the
+gateway's environment (`/proc/<pid>/environ`), so **every key in the Secret is
+reachable from a Telegram or CLI session that runs commands**. The pinned deny
+rules and `HERMES_WRITE_SAFE_ROOT=/opt/data` raise the bar; they do not contain a
+determined prompt injection. Alert runs and Ada voice have no terminal or file tools.
+Checkpoints are on by default (`/rollback`).
 
 ## Credentials
 

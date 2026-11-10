@@ -1,9 +1,25 @@
-model:
-  provider: anthropic
-  default: claude-sonnet-5-5
+# Pinned by Git: mounted read-only at /etc/hermes/config.yaml, Hermes's managed scope.
+# These leaves override Hermes's own ~/config.yaml and cannot be changed from inside
+# Hermes (`hermes config set` refuses them; saves drop them). Everything not listed
+# here is Hermes's to change; ../seed/config.yaml is only its first-start default.
+# Keep here what protects the house or connects other services.
 terminal:
   backend: local
   cwd: /opt/data/workspace
+# Hardening from Hermes's guide (docs/guides/secure-hermes-on-a-work-machine).
+# Commands run as the gateway's user, which can read its environment, so these
+# raise the bar rather than contain a determined injection.
+security:
+  redact_secrets: true
+approvals:
+  timeout: 300
+  deny:
+    - "*environ*"
+    - "*printenv*"
+    - "*/proc/*"
+    - "git push --force*"
+    - "*curl*|*sh*"
+    - "*wget*|*sh*"
 platform_toolsets:
   # Ada voice: Home Assistant only.
   api_server: [home_assistant]

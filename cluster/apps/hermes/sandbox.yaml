@@ -17,31 +17,14 @@ spec:
       initContainers:
         - name: configure
           image: &image nousresearch/hermes-agent:v0.23.1@sha256:276d44685c65c0cb2a25f190b63c65c8906f9dc76486fb1c05ae71b5826bda08
-          command: [python3, -c]
-          args:
-            - |
-              import os, pathlib, shutil
-              # config.yaml and SOUL.md (Ada's identity) are owned by Git.
-              for name in ('config.yaml', 'SOUL.md'):
-                  shutil.copyfile(f'/etc/hermes/{name}', f'/opt/data/{name}')
-                  os.chown(f'/opt/data/{name}', 10000, 10000)
-              workspace = pathlib.Path('/opt/data/workspace')
-              workspace.mkdir(exist_ok=True)
-              os.chown(workspace, 10000, 10000)
-              # The image's public roots plus the private CA of the Sproozi task service.
-              bundle = open('/etc/ssl/certs/ca-certificates.crt').read() + open('/etc/hermes-trust/sproozi-tasks-ca.crt').read()
-              pathlib.Path('/etc/hermes-ca/ca-bundle.pem').write_text(bundle)
-              # Alert triage: the webhook route's script and the skill (cluster/apps/hermes/sre).
-              for source, target in (('sre_alerts.py', 'scripts/sre_alerts.py'), ('SKILL.md', 'skills/devops/sre-alerts/SKILL.md')):
-                  path = pathlib.Path('/opt/data', target)
-                  path.parent.mkdir(parents=True, exist_ok=True)
-                  shutil.copyfile(f'/etc/hermes-sre/{source}', path)
-                  for owned in (path, *path.relative_to('/opt/data').parents):
-                      os.chown(pathlib.Path('/opt/data', owned), 10000, 10000)
+          command: [python3, /etc/hermes-seed/init.py]
           volumeMounts:
             - name: data
               mountPath: /opt/data
-            - name: config
+            - name: seed
+              mountPath: /etc/hermes-seed
+              readOnly: true
+            - name: managed
               mountPath: /etc/hermes
               readOnly: true
             - name: trust
@@ -59,6 +42,9 @@ spec:
           workingDir: /opt/data/workspace
           env:
             - name: HERMES_HOME
+              value: /opt/data
+            # File tools may write only inside Hermes's own volume.
+            - name: HERMES_WRITE_SAFE_ROOT
               value: /opt/data
             - name: API_SERVER_KEY
               valueFrom:
@@ -131,13 +117,20 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /opt/data
+            # Hermes's managed scope: Git-pinned settings it can read but not change.
+            - name: managed
+              mountPath: /etc/hermes
+              readOnly: true
             - name: ca-bundle
               mountPath: /etc/hermes-ca
               readOnly: true
       volumes:
-        - name: config
+        - name: seed
           configMap:
-            name: hermes-config
+            name: hermes-seed
+        - name: managed
+          configMap:
+            name: hermes-managed
         - name: trust
           configMap:
             name: hermes-trust

@@ -78,9 +78,15 @@ def main():
             assert controller in ha_values['controllers'], f'{volume}: unknown controller {controller}'
             for target in mounts:
                 assert target in ha_values['controllers'][controller]['containers'], f'{volume}: unknown container {target}'
-    config_map = next(d for d in apps if d['kind'] == 'ConfigMap' and d['metadata']['name'] == 'hermes-config')
-    hermes_config = yaml.safe_load(config_map['data']['config.yaml'])
-    assert config_map['data']['SOUL.md'].startswith('You are Ada'), "Hermes's identity file must name Ada"
+    # Settings Git pins (Hermes's managed scope); the seed is Hermes's first-start default.
+    managed_map = next(d for d in apps if d['kind'] == 'ConfigMap' and d['metadata']['name'] == 'hermes-managed')
+    hermes_config = yaml.safe_load(managed_map['data']['config.yaml'])
+    seed = next(d for d in apps if d['kind'] == 'ConfigMap' and d['metadata']['name'] == 'hermes-seed')
+    assert seed['data']['SOUL.md'].startswith('You are Ada'), "Hermes's identity seed must name Ada"
+    assert seed['metadata']['annotations']['kustomize.toolkit.fluxcd.io/substitute'] == 'disabled'
+    assert 'model' in yaml.safe_load(seed['data']['config.yaml']) and 'model' not in hermes_config, 'Hermes owns its model'
+    mounts = {m['mountPath']: m['name'] for m in container['volumeMounts']}
+    assert mounts.get('/etc/hermes') == 'managed' and all(m.get('readOnly') for m in container['volumeMounts'] if m['name'] == 'managed'), 'Managed scope must be read-only at /etc/hermes'
     assert hermes_config['platform_toolsets']['api_server'] == ['home_assistant']
     mcp = hermes_config['mcp_servers']['home_assistant']
     assert mcp['url'] == 'http://home-assistant-app.house.svc:8123/api/mcp'

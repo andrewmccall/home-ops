@@ -1,0 +1,11 @@
+# Hermes's own config: copied to /opt/data/config.yaml only when that file is missing.
+# After that Hermes owns it (`hermes config set`, the setup wizard, its file tools) and
+# edits persist on the volume. Pinned settings are in ../managed/config.yaml.
+# Home Assistant names this model in Ada's requests; rerun scripts/configure-ha-hermes.py
+# after changing it here for a fresh volume.
+model:
+  provider: anthropic
+  default: claude-sonnet-5-5
+# Snapshot before file writes and destructive commands; /rollback undoes them.
+checkpoints:
+  enabled: true
