@@ -46,11 +46,11 @@ spec:
             port: http-webhook
           initialDelaySeconds: 10
           timeoutSeconds: 5
-    extraArgs:
-      - --ignore-ingress-tls-spec
     # sync creates, updates and deletes records it owns (a-<host> TXT, no txtPrefix).
     # Hand-made records without an owner TXT, e.g. internal/external, are left alone.
     policy: sync
-    sources: ["ingress", "service"]
+    # LAN records for every route on either Gateway, pointing at that Gateway, plus
+    # annotated Services. external-dns-cloudflare handles the public records.
+    sources: ["gateway-httproute", "gateway-grpcroute", "service"]
     txtOwnerId: default
     domainFilters: ["${DOMAIN}"]

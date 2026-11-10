@@ -212,7 +212,7 @@ Secret in memory without printing it. For interactive terminal chat:
 kubectl -n hermes exec -it hermes -c hermes -- hermes chat
 ```
 
-The API has no Ingress. NetworkPolicy permits the Home Assistant controller and
+The API has no route (Ingress or HTTPRoute). NetworkPolicy permits the Home Assistant controller and
 denies other incoming pod traffic. Use a localhost port-forward for laptop access.
 The dashboard and native messaging channels are not configured yet.
 The pod has no Kubernetes service-account token, host mounts or container socket.

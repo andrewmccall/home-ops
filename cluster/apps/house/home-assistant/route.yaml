@@ -1,4 +1,4 @@
-# Replaces the chart's Ingresses once Envoy Gateway takes over (apps/networking/envoy-gateway).
+# `external` makes Home Assistant public (the house namespace is labelled for it).
 ---
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute

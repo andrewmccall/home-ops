@@ -39,21 +39,6 @@ spec:
                 name: kube-prometheus-stack-k8s-resources-multicluster
   values:
     alertmanager:
-      ingress:
-        enabled: true
-        ingressClassName: internal
-        annotations:
-          external-dns.home.arpa/enabled: "true"
-          cert-manager.home.arpa/enabled: "true"
-        hosts:
-          - &host-alert-manager alert-manager.${DOMAIN}
-        paths:
-          - /
-        pathType: Prefix
-        tls:
-          - hosts:
-              - *host-alert-manager
-            secretName: alert-manager-tls
       alertmanagerSpec:
         # Without this the operator scopes an AlertmanagerConfig's route to its own
         # namespace, so a receiver in monitoring would miss house, flux-system and the rest.
@@ -696,14 +681,6 @@ spec:
                 - __meta_kubernetes_pod_node_name
               targetLabel: kubernetes_node
     prometheus:
-      ingress:
-        enabled: true
-        hosts:
-          - prometheus.${DOMAIN}
-        paths:
-          - /
-        pathType: Prefix
-        ingressClassName: "internal"
       prometheusSpec:
         enableAdminAPI: true
         ruleSelectorNilUsesHelmValues: false

@@ -107,10 +107,6 @@ spec:
           gnetId: 16888
           revision: 14
           datasource: [{name: DS_PROMETHEUS, value: Prometheus}]
-        ingress-nginx:
-          gnetId: 9614
-          revision: 1
-          datasource: [{name: DS_PROMETHEUS, value: Prometheus}]
         cert-manager:
           gnetId: 20842
           revision: 3
@@ -121,20 +117,6 @@ spec:
           datasource: [{name: DS_LOKI, value: Loki}]
     serviceMonitor:
       enabled: true
-    ingress:
-      enabled: true
-      ingressClassName: internal
-      annotations:
-        external-dns.home.arpa/enabled: "true"
-        cert-manager.home.arpa/enabled: "true"
-      hosts:
-        - &host-grafana grafana.${DOMAIN}
-      path: /
-      pathType: Prefix
-      tls:
-        - hosts:
-            - *host-grafana
-          secretName: grafana-tls
     persistence:
       enabled: true
       existingClaim: grafana-config

@@ -84,20 +84,6 @@ spec:
           memory: 32Mi
         limits:
           memory: 64Mi
-      ingress:
-        enabled: true
-        ingressClassName: internal
-        annotations:
-          cert-manager.home.arpa/enabled: "true"
-        hosts:
-          - host: &host "loki.${DOMAIN}"
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - hosts:
-              - *host
-            secretName: loki-tls
     monitoring:
       serviceMonitor:
         enabled: true

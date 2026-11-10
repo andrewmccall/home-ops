@@ -115,25 +115,6 @@ spec:
             port: 10300
           piper-wyoming:
             port: 10200
-    ingress:
-      app:
-        className: external
-        hosts:
-          - host: home-assistant.${DOMAIN}
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
-      code-server:
-        className: internal
-        hosts:
-          - host: home-assistant-code.${DOMAIN}
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: code-server
     persistence:
       config:
         existingClaim: home-assistant-config

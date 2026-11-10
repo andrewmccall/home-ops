@@ -8,11 +8,9 @@ data:
   K8S_CLUSTER_CIDR: 10.42.0.0/16
   K8S_SERVICE_CIDR: 10.43.0.0/16
   ROUTER_IP: 10.0.0.1
-  INTERNAL_NGINX_IP: 10.44.0.20
-  EXTERNAL_NGINX_IP: 10.44.0.21
-  # Envoy Gateway beside nginx during the migration; they take .20/.21 at cutover.
-  INTERNAL_GATEWAY_IP: 10.44.0.22
-  EXTERNAL_GATEWAY_IP: 10.44.0.23
+  # The Envoy Gateways (apps/networking/envoy-gateway); Calico advertises them over BGP.
+  INTERNAL_GATEWAY_IP: 10.44.0.20
+  EXTERNAL_GATEWAY_IP: 10.44.0.21
   # The Cloudflare tunnel public hosts come in through (cloudflared/public.yaml).
   PUBLIC_TUNNEL_ID: 0a09b6f9-5b0b-4ad2-91f5-6773dc98e8b2
   COREDNS_IP: 10.44.0.2

@@ -46,11 +46,3 @@ spec:
       type: ClusterIP
     serviceMonitor:
       enabled: true
-    ingress:
-      enabled: true
-      ingressClassName: internal
-      hosts:
-        - host: tempo.${DOMAIN}
-          paths:
-            - path: /
-              pathType: Prefix

@@ -83,25 +83,6 @@ spec:
             port: 6052
           code:
             port: 8080
-    ingress:
-      esphome:
-        className: internal
-        hosts:
-          - host: esphome.${DOMAIN}
-            paths:
-              - path: /
-                service:
-                  identifier: esphome
-                  port: http
-      code-server:
-        className: internal
-        hosts:
-          - host: esphome-code.${DOMAIN}
-            paths:
-              - path: /
-                service:
-                  identifier: esphome
-                  port: code
     persistence:
       config:
         existingClaim: esp-home-config

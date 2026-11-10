@@ -2,11 +2,9 @@
 # Two Gateways: `internal` for LAN-only hosts, `external` for public ones. A route on
 # `external` is published through the public Cloudflare tunnel (cloudflared/public.yaml,
 # external-dns-cloudflare) and must come from a namespace labelled
-# home-ops.andrewmccall.com/public-routes=true. The LAN reaches both directly. Routes in any namespace
-# attach with parentRefs { name: internal|external, namespace: networking }.
-#
-# Migration (phase 1): the Gateways sit on spare addresses beside nginx (.20/.21)
-# until every route is tested, then take over 10.44.0.20 and .21.
+# home-ops.andrewmccall.com/public-routes=true. The LAN reaches both directly.
+# Routes attach with parentRefs { name: internal|external, namespace: networking }
+# (cluster/apps/networking/README.md).
 apiVersion: gateway.networking.k8s.io/v1
 kind: GatewayClass
 metadata:

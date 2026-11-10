@@ -57,20 +57,6 @@ spec:
             port: 8098
           sendspin:
             port: 8927
-    ingress:
-      music-assistant:
-        className: internal
-        annotations:
-          nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-          nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-          nginx.ingress.kubernetes.io/proxy-buffering: "off"
-        hosts:
-          - host: music-assistant.${DOMAIN}
-            paths:
-              - path: /
-                service:
-                  identifier: music-assistant
-                  port: http
     persistence:
       config:
         existingClaim: music-assistant-data

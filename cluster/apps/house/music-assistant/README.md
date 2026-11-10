@@ -3,7 +3,7 @@
 Music Assistant uses the node's network namespace (`hostNetwork: true`) so it can
 send and receive LAN multicast for Spotify Connect, AirPlay, Cast and other player
 discovery. `ClusterFirstWithHostNet` retains Kubernetes DNS. The existing ClusterIP
-Service, internal Ingress and data PVC remain in use. Its listeners also bind the
+Service, internal route (route.yaml) and data PVC remain in use. Its listeners also bind the
 node's addresses, so their ports must be available on the node; run one replica.
 
 BGP routes make the pod and Service IP ranges reachable by unicast. They do not

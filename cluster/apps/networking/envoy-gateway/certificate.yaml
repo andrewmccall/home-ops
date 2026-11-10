@@ -1,4 +1,5 @@
 ---
+# The wildcard certificate both Gateways serve (gateway.yaml: certificateRefs ingress-tls).
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
