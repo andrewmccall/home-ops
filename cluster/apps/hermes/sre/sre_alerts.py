@@ -11,7 +11,8 @@ alerts clear any decision except "ignore".
   sre_alerts.py decide KEY later [--hours N]   (default 24)
   sre_alerts.py list
 
-`decide KEY fix` prints the submit fields for Sproozi's fix workflow.
+`decide KEY fix` prints the submit fields for Sproozi's fix workflow: new ones for a
+new decision, the same ones when the decision is repeated (a retry).
 State is one JSON file, written atomically: $SRE_ALERTS_STATE or
 $HERMES_HOME/sre/decisions.json.
 """
@@ -56,8 +57,12 @@ def alert_key(labels):
     return '/'.join((labels.get('alertname', 'unknown'), labels.get('namespace', '-'), obj))
 
 
-def request_fields(workflow, key, started):
-    digest = hashlib.sha256(f'{workflow}|{key}|{started}'.encode()).hexdigest()[:12]
+def request_fields(workflow, key, asked):
+    """Sproozi submit fields for one question or decision (asked: its timestamp).
+
+    Sproozi binds a requestId to its task text, so each new question or decision
+    needs its own id; a retry of the same one must resend these exact fields."""
+    digest = hashlib.sha256(f'{workflow}|{key}|{asked}'.encode()).hexdigest()[:12]
     return {'workflow': workflow, 'requestId': f'{workflow}-{digest}', 'expiresAt': stamp(now() + REQUEST_LIFETIME)}
 
 
@@ -126,7 +131,7 @@ def _select(state, payload, moment):
             'labels': labels,
             'annotations': alert.get('annotations', {}),
             'startsAt': alert.get('startsAt', ''),
-            'triage': request_fields('triage', key, alert.get('startsAt', '')),
+            'triage': request_fields('triage', key, stamp(moment)),
         })
     return selected
 
@@ -139,14 +144,19 @@ def decide(key, action, hours):
             state.save()
             print(f'{key}: cleared')
             return
-        started = state.data.get(key, {}).get('startsAt', '')
-        record = {'action': action, 'since': stamp(moment), 'startsAt': started}
+        previous = state.data.get(key, {})
+        if action == 'fix' and previous.get('action') == 'fix' and previous.get('request'):
+            print(json.dumps(previous['request']))  # a retry of the same decision
+            return
+        record = {'action': action, 'since': stamp(moment), 'startsAt': previous.get('startsAt', '')}
         if action == 'later':
             record['until'] = stamp(moment + timedelta(hours=hours))
+        if action == 'fix':
+            record['request'] = request_fields('fix', key, record['since'])
         state.data[key] = record
         state.save()
     if action == 'fix':
-        print(json.dumps(request_fields('fix', key, started)))
+        print(json.dumps(record['request']))
     elif action == 'later':
         print(f'{key}: ask again after {record["until"]} if still firing')
     else:

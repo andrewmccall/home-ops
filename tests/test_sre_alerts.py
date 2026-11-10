@@ -56,6 +56,9 @@ class AlertDecisionsTest(unittest.TestCase):
         self.assertRegex(item['triage']['requestId'], r'^triage-[0-9a-f]{12}$')
         self.assertEqual(item['triage']['expiresAt'], '2026-11-10T12:50:00Z')
         self.assertIsNone(self.send(alert()), 'a repeat while pending is not asked again')
+        self.at(START + timedelta(hours=24))
+        self.assertNotEqual(self.send(alert())['alerts'][0]['triage']['requestId'], item['triage']['requestId'],
+                            'asking again triages again')
 
     def test_unanswered_question_is_asked_again_after_a_day(self):
         self.send(alert())
@@ -83,7 +86,11 @@ class AlertDecisionsTest(unittest.TestCase):
         fields = json.loads(self.decide('KubePodCrashLooping/games/bedrock', 'fix'))
         self.assertEqual(fields['workflow'], 'fix')
         self.assertRegex(fields['requestId'], r'^fix-[0-9a-f]{12}$')
+        self.at(START + timedelta(minutes=5))
         self.assertEqual(fields, json.loads(self.decide('KubePodCrashLooping/games/bedrock', 'fix')), 'retries reuse the request')
+        self.decide('KubePodCrashLooping/games/bedrock', 'later')
+        again = json.loads(self.decide('KubePodCrashLooping/games/bedrock', 'fix'))
+        self.assertNotEqual(again['requestId'], fields['requestId'], 'a new fix decision gets its own request')
         self.assertIsNone(self.send(alert()), 'no new question while a fix is in progress')
         self.send(alert(status='resolved'))
         self.assertEqual(self.send(alert())['count'], 1, 'a recurrence after resolution is new')
