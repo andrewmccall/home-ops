@@ -25,11 +25,11 @@ spec:
     # breakage (volumes stuck attaching), fixed in 1.12.2. Keep the pre-1.12 behaviour.
     networkPolicies:
       restrictInternalTraffic: false
-    # Off-site backups through the encrypting gateway (backup-crypt.yaml); the bucket
-    # name is the gateway's, which maps to the R2 bucket.
+    # Off-site backups to the R2 bucket vecna-backup (EU jurisdiction); the endpoint and
+    # a token for that bucket only are in backup-target.sops.yaml. README.md#off-site-backups
     defaultBackupStore:
-      backupTarget: s3://longhorn@auto/
-      backupTargetCredentialSecret: longhorn-backup-target
+      backupTarget: s3://vecna-backup@auto/
+      backupTargetCredentialSecret: backup-target-r2
     defaultSettings:
       # Was 0, which left volumes on engines as old as v1.7.0 across upgrades. One at a
       # time live-upgrades each volume to the manager's engine after every upgrade.

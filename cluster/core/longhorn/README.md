@@ -42,20 +42,13 @@ volume is recreated.
 
 Every night at 03:30 Longhorn backs up the volumes in the `default` group
 (`recurring-jobs.yaml`, `daily-backup`), keeps 14, and uploads only the blocks that
-changed. The backups go to the R2 bucket `vecna-backup` in Cloudflare's EU
-jurisdiction, encrypted before they leave vecna:
+changed. The target is the R2 bucket `vecna-backup` in Cloudflare's EU jurisdiction
+(`s3://vecna-backup@auto/`); `backup-target.sops.yaml` holds its endpoint and a token
+for that bucket only.
 
-```
-Longhorn ──S3──▶ backup-crypt (rclone serve s3 + crypt) ──S3──▶ R2 vecna-backup
-```
-
-- `backup-crypt.yaml`: the rclone gateway. Longhorn's target is `s3://longhorn@auto/`
-  at the gateway (`backup-gateway.sops.yaml`); the gateway encrypts contents and names
-  (rclone crypt) and writes to the bucket. Cloudflare only holds ciphertext.
-  `rclone serve s3` is experimental upstream, so a restore is tested after changes.
-- `backup-target.sops.yaml`: the R2 token (this bucket only) and endpoint.
-- `backup-crypt.sops.yaml`: the crypt passwords, rclone-obscured. **Without these and
-  the SOPS age key the backups cannot be read.** Keep the age key outside vecna.
+- Encryption at rest is Cloudflare's, with keys Cloudflare manages. R2 has no
+  customer-managed keys, and Longhorn cannot send the per-request keys of SSE-C, so
+  client-side encryption would need a gateway in front of the bucket.
 - Not backed up: `longhorn-hdd` volumes (`bulk-none`: the ashes map, rebuilt weekly from
   OSM), Prometheus (`no-snapshots`), and the `snapshot-only` volumes below. Detached
   volumes are skipped.
@@ -66,13 +59,9 @@ A volume, with vecna up: Longhorn UI > Backup > pick the backup > Restore, then 
 the workload's claim at the new volume (or restore in place over a detached volume).
 
 Everything, after losing vecna: rebuild the node and Flux (the SOPS age key is needed
-to decrypt this directory), let Longhorn and `backup-crypt` come up, and the backups
-reappear in the UI within `pollInterval` (5 minutes). Restore each volume before its
-app starts, or scale the app down first.
-
-Without the cluster, rclone alone reads the bucket: configure the `r2` and `crypt`
-remotes from the two Secrets (`rclone config` takes the obscured passwords as they are)
-and `rclone ls crypt:`.
+to decrypt the token), let Longhorn come up, and the backups reappear in the UI within
+`pollInterval` (5 minutes). Restore each volume before its app starts, or scale the
+app down first. Keep the age key outside vecna.
 
 ## Volumes labelled by hand
 

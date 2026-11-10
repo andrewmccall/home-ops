@@ -18,7 +18,7 @@ spec:
     # (labelled by hand; README.md#volumes-labelled-by-hand).
     - snapshot-only
 ---
-# Off-site, encrypted (backup-crypt.yaml), 14 days. Incremental: only blocks changed
+# Off-site to R2, 14 days. Incremental: only blocks changed
 # since the last backup are uploaded. Detached volumes are skipped.
 apiVersion: longhorn.io/v1beta2
 kind: RecurringJob
