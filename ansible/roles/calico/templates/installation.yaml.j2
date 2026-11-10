@@ -5,9 +5,18 @@ metadata:
   name: default
 spec:
   calicoNetwork:
+    # The list replaces the live one, so it spells out the fields the operator
+    # defaults; leaving them out would rename or reshape the existing pool.
     ipPools:
-    - blockSize: 26
+    - name: default-ipv4-ippool
+      blockSize: 26
       cidr: {{ calico_installation.cidr }}
       encapsulation: None
       natOutgoing: Enabled
       nodeSelector: all()
+      allowedUses:
+        - Workload
+        - Tunnel
+      assignmentMode: Automatic
+      disableBGPExport: false
+      disableNewAllocations: false

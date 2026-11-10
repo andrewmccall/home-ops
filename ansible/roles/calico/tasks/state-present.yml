@@ -7,18 +7,22 @@
   loop:
     - operator-crds.yaml
     - tigera-operator.yaml
+  # Only writes to /tmp, so --check can still diff the apply below.
+  check_mode: no
   run_once: yes
   delegate_to: localhost
 
-# CRDs first; they are too large for client-side apply.
+# CRDs first; they are too large for client-side apply. kubectl rather than
+# kubernetes.core.k8s, whose server_side_apply fails here with "Object of type
+# bytes is not JSON serializable". --check becomes a server-side dry run.
 - name: install calico CRDs and tigera operator
-  kubernetes.core.k8s:
-    state: present
-    src: "/tmp/calico-{{ calico_version }}-{{ item }}"
-    apply: yes
-    server_side_apply:
-      field_manager: ansible
-      force_conflicts: yes
+  command: >-
+    kubectl apply --server-side --force-conflicts --field-manager=ansible
+    {{ '--dry-run=server' if ansible_check_mode else '' }}
+    -f /tmp/calico-{{ calico_version }}-{{ item }}
+  register: calico_apply
+  changed_when: calico_apply.stdout_lines | reject('search', ' unchanged$') | list | length > 0
+  check_mode: no
   loop:
     - operator-crds.yaml
     - tigera-operator.yaml
