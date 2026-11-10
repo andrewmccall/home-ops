@@ -1,0 +1,35 @@
+---
+# The Envoy Gateways are the way in, so their proxies accept traffic from anywhere.
+# Everything else here (cert-manager, external-dns, the Envoy Gateway controller)
+# accepts only this namespace (the proxies fetch their configuration from the
+# controller) and Prometheus. Pod addresses are routed to the LAN over BGP, so without
+# this the LAN could reach them directly. The API server's webhook calls and the
+# kubelet's probes come from the node, which Calico always allows.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default
+  namespace: networking
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {}
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: envoy-proxies
+  namespace: networking
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/managed-by: envoy-gateway
+      app.kubernetes.io/component: proxy
+  policyTypes: [Ingress]
+  ingress:
+    - {}

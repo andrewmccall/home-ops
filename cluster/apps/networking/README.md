@@ -52,6 +52,35 @@ kubectl -n <namespace> get httproute <name> -o jsonpath='{.status.parents[*].con
 `GatewayRouteNotAccepted` alerts on any route a Gateway refuses. Before publishing,
 decide how the service authenticates: anything on `external` faces the whole internet.
 
+## NetworkPolicies: pods are reachable from the LAN
+
+BGP routes pod addresses to the LAN, so a pod with no NetworkPolicy can be reached
+directly from any LAN device, bypassing the Gateways. Every namespace this repo owns
+carries a `default` policy (in its `networkpolicy.yaml`) that selects all pods and
+admits only:
+
+- the same namespace;
+- `monitoring`, for Prometheus scrapes, where the namespace serves metrics;
+- the Envoy proxies, where the namespace has routes on a Gateway:
+
+```yaml
+- namespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: networking
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/managed-by: envoy-gateway
+      app.kubernetes.io/component: proxy
+```
+
+Anything else is an extra named policy beside `default` (policies add up): the Envoy
+proxies accept all traffic, OTLP on the collector is open to every namespace, MQTT
+admits `house` and `monitoring`, and Home Assistant and Music Assistant admit the LAN
+(`${LAN_CIDR}`) for discovery and players. Traffic from the node is always allowed by
+Calico, so kubelet probes, API-server webhook calls and `kubectl port-forward` need no
+rule. A new namespace copies the `default` pattern; a new app needing LAN access gets
+its own policy scoped to its pods. `kube-system`, `calico-system` and `games` have none.
+
 ## UniFi asymmetric pod TCP
 
 The node and home clients share `10.0.0.0/23`. A client sends traffic for a pod

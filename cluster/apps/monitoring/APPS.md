@@ -139,8 +139,10 @@ spec:
 
 ## NetworkPolicies
 
-A namespace with a default-deny ingress policy must let Prometheus in to scrape
-(`namespace: monitoring`, `app.kubernetes.io/name: prometheus`, to the metrics port), and
-one restricting egress must allow the OTLP ports to the collector. Logs, Gateway traffic,
-Kubernetes and Postgres metrics need no policy changes: they are collected from outside
-the pod (CloudNativePG instances excepted, which Prometheus scrapes on 9187).
+Pods are reachable from the LAN over BGP, so give each namespace the `default` policy
+from [networking/README.md](../networking/README.md#networkpolicies-pods-are-reachable-from-the-lan):
+it admits the namespace itself, `monitoring` (Prometheus scrapes) and the Envoy proxies
+(Gateway routes). A policy restricting egress must also allow the OTLP ports (4317, 4318)
+to the collector. Logs, Gateway traffic and Kubernetes metrics are collected outside the
+pod and need no rule; CloudNativePG instances are scraped on 9187, which `monitoring`
+covers.

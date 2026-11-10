@@ -9,10 +9,11 @@ Cluster setup and DNS domain: `cluster/README.md`.
 - **Postgres.** The CloudNativePG operator and its CRDs come from the HelmRelease in
   `cluster/core/cloudnative-pg/`. Read its README before upgrading the operator: each upgrade
   restarts every Postgres instance, and downgrades are unsupported.
-- **Exposing a service.** Before adding a route, publishing anything on the internet, or touching
-  DNS, the Gateways or the Cloudflare tunnel, read `cluster/apps/networking/README.md`: routes
-  attach to the `internal` or `external` Gateway, and `external` (public) also needs a namespace
-  label.
+- **Exposing a service.** Before adding a route or a namespace, a NetworkPolicy, publishing
+  anything on the internet, or touching DNS, the Gateways or the Cloudflare tunnel, read
+  `cluster/apps/networking/README.md`: routes attach to the `internal` or `external` Gateway,
+  `external` (public) also needs a namespace label, and pods are reachable from the LAN unless
+  a NetworkPolicy closes them.
 - **Monitoring.** Before adding a dashboard (here or from another repo), alert rule, scrape
   target or log query, or touching Grafana, Prometheus, Alertmanager, Loki or Vector, read
   `cluster/apps/monitoring/README.md`. To monitor an app (its logs, metrics, OTLP traces,
