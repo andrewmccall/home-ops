@@ -27,7 +27,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: agent
-          image: ghcr.io/andrewmccall/sproozi-native:0.2.5@sha256:bfc7fb9b47904b29108dfc7776e2237239628af6cc25c05110c0eeb3603e1de0
+          image: ghcr.io/andrewmccall/sproozi-native:0.2.6@sha256:e4a615cf67c3d826bcc41b2b3eac67114800dad6d10433648863f53ac2b6497f
           command: [/bin/sh, -ec]
           args:
             - |
@@ -128,7 +128,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: agent
-          image: ghcr.io/andrewmccall/sproozi-native:0.2.5@sha256:bfc7fb9b47904b29108dfc7776e2237239628af6cc25c05110c0eeb3603e1de0
+          image: ghcr.io/andrewmccall/sproozi-native:0.2.6@sha256:e4a615cf67c3d826bcc41b2b3eac67114800dad6d10433648863f53ac2b6497f
           command: [/bin/sh, -ec]
           args:
             - |
