@@ -124,6 +124,10 @@ spec:
             - name: ca-bundle
               mountPath: /etc/hermes-ca
               readOnly: true
+            # The shared Obsidian vault as plain files, read and write; the bridge
+            # syncs it with every device (cluster/apps/obsidian).
+            - name: vault
+              mountPath: /opt/data/workspace/vault
       volumes:
         - name: seed
           configMap:
@@ -140,6 +144,9 @@ spec:
         - name: sre
           configMap:
             name: hermes-sre
+        - name: vault
+          persistentVolumeClaim:
+            claimName: obsidian-vault
   volumeClaimTemplates:
     - metadata:
         name: data

@@ -39,7 +39,7 @@ spec:
       # so the settings are written into a writable local.d rather than mounted there.
       # LiveSync deletes and recreates the database when a vault is initialised or
       # rebuilt, which takes a server admin and wipes per-database permissions, so
-      # the apps' user is a server admin, defined here on every start. CouchDB
+      # the apps' user and the bridge's are server admins, defined here on every start. CouchDB
       # hashes the password when it loads the file.
       initContainers:
         - name: config
@@ -49,13 +49,18 @@ spec:
             - -c
             - |
               cp /config/livesync.ini /local.d/10-livesync.ini
-              printf '[admins]\nobsidian = %s\n' "$OBSIDIAN_PASSWORD" > /local.d/20-admins.ini
+              printf '[admins]\nobsidian = %s\nbridge = %s\n' "$OBSIDIAN_PASSWORD" "$BRIDGE_PASSWORD" > /local.d/20-admins.ini
           env:
             - name: OBSIDIAN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: couchdb
                   key: OBSIDIAN_PASSWORD
+            - name: BRIDGE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: couchdb
+                  key: BRIDGE_PASSWORD
           volumeMounts:
             - name: config
               mountPath: /config

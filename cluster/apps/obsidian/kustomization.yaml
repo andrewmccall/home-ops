@@ -7,6 +7,8 @@ resources:
   - couchdb.yaml
   - setup.yaml
   - route.yaml
+  # The bridge to Hermes, in the hermes namespace.
+  - bridge
 configMapGenerator:
   - name: couchdb-config
     namespace: obsidian

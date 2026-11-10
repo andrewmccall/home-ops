@@ -1,0 +1,150 @@
+---
+# livesync-bridge (github.com/vrtmrz/livesync-bridge, by LiveSync's author) keeps
+# the vault's CouchDB database and a plain-file copy in step, both ways. Hermes
+# mounts the copy (hermes/sandbox.yaml) and edits it with its own tools. See
+# ../README.md.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: obsidian-vault
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
+---
+# The bridge's code, Deno's cache and its sync checkpoints (Deno localStorage).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: livesync-bridge-state
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livesync-bridge
+  labels:
+    app.kubernetes.io/name: livesync-bridge
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: livesync-bridge
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: livesync-bridge
+    spec:
+      automountServiceAccountToken: false
+      # Hermes's user, so the files are its own.
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10000
+        runAsGroup: 10000
+        fsGroup: 10000
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: install
+          image: &image denoland/deno:debian-2.9.8@sha256:a0d88a7fcbd44f062cba2748e19df67d30290ad12aa203c7c1e0b12462c483f0
+          command: [sh, /install/install.sh]
+          env: &env
+            # Reviewed commit; move it by hand, at least 7 days after it landed
+            # (cluster/README.md#updates-and-maintenance-windows).
+            - name: BRIDGE_COMMIT
+              value: 1c252305bbddcacd200b8560d3bb786afe0906e9
+            - name: DENO_DIR
+              value: /state/deno
+            - name: HOME
+              value: /tmp
+          securityContext: &container-security
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: install
+              mountPath: /install
+            - name: state
+              mountPath: /state
+            - name: tmp
+              mountPath: /tmp
+      containers:
+        - name: bridge
+          image: *image
+          workingDir: /state/app/1c252305bbddcacd200b8560d3bb786afe0906e9
+          command: [deno, run, -A, main.ts]
+          env:
+            - name: BRIDGE_COMMIT
+              value: 1c252305bbddcacd200b8560d3bb786afe0906e9
+            - name: DENO_DIR
+              value: /state/deno
+            - name: HOME
+              value: /tmp
+            - name: LSB_CONFIG
+              value: /config/config.json
+            - name: LSB_HEALTH_FILE
+              value: /tmp/lsb-health.json
+          # The bridge rewrites its health file every 10s; stale or restartWorthy
+          # means a wedged or failed sync.
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - '[ -n "$(find /tmp/lsb-health.json -mmin -2)" ] && ! grep -q "\"restartWorthy\":true" /tmp/lsb-health.json'
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 4
+          resources:
+            requests:
+              cpu: 25m
+              memory: 192Mi
+            limits:
+              memory: 1Gi
+          securityContext: *container-security
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: state
+              mountPath: /state
+            - name: vault
+              mountPath: /vault
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: install
+          configMap:
+            name: livesync-bridge-install
+        - name: config
+          secret:
+            secretName: livesync-bridge
+        - name: state
+          persistentVolumeClaim:
+            claimName: livesync-bridge-state
+        - name: vault
+          persistentVolumeClaim:
+            claimName: obsidian-vault
+        - name: tmp
+          emptyDir:
+            sizeLimit: 512Mi
+---
+# The bridge serves nothing.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: livesync-bridge
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: livesync-bridge
+  policyTypes: [Ingress]

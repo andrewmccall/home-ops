@@ -1,29 +1,29 @@
 # Obsidian: the shared vault
 
 One Obsidian vault on the server, synced to every device by
-[Self-hosted LiveSync](https://github.com/vrtmrz/obsidian-livesync) and open to
-Hermes through an MCP server.
+[Self-hosted LiveSync](https://github.com/vrtmrz/obsidian-livesync), and open to
+Hermes as plain Markdown files.
 
 | Piece | Where | What |
 |---|---|---|
 | CouchDB | `couchdb.yaml`, `livesync.ini` | The vault's database; LiveSync's required settings in `livesync.ini` |
 | Database | `setup.sh`, run by the `setup.yaml` Job | Database `vault` |
-| Users | `couchdb.yaml` (init container) | `obsidian` (the apps) is a CouchDB server admin: LiveSync deletes and recreates the database when it initialises or rebuilds a vault |
-| Hermes access | `mcp.yaml` | [obsidian-livesync-mcp](https://github.com/adambenhassen/obsidian-livesync-mcp): note tools over MCP |
-| Passwords | `secrets.sops.yaml` | `COUCHDB_PASSWORD` (admin), `OBSIDIAN_PASSWORD`, `MCP_PASSWORD` |
+| Users | `couchdb.yaml` (init container) | `obsidian` (the apps) and `bridge` are CouchDB server admins: LiveSync deletes and recreates the database when it initialises or rebuilds a vault, which wipes per-database permissions |
+| Hermes's copy | `bridge/` (in the `hermes` namespace) | [livesync-bridge](https://github.com/vrtmrz/livesync-bridge) syncs the database with the `obsidian-vault` volume, both ways |
+| Passwords | `secrets.sops.yaml`, `bridge/config.sops.yaml` | `COUCHDB_PASSWORD` (admin), `OBSIDIAN_PASSWORD`, `BRIDGE_PASSWORD` (also in the bridge's config) |
 
 The apps sync at `https://obsidian.${DOMAIN}` on the internal Gateway: the LAN, or
 the VPN when away. Nothing is public.
 
-## Vault settings that must not change
+## Vault settings
 
-- **File identity: Legacy.** The MCP server's bundled LiveSync CLI predates
-  LiveSync's NFC identity, which new vaults use by default. Mismatched, it skips
-  or duplicates notes.
-- **End-to-end encryption and path obfuscation: off.** The database and the MCP
-  server's plain copy sit on the same disk, so encryption would protect nothing
-  here, and the MCP server would need the passphrase. Turning either on later
-  means a rebuild of every device and `mcp.yaml`.
+- **File identity: Unicode NFC**, LiveSync's default for a new vault. The bridge
+  is configured to match (`pathNormalizationVersion: 1`); a device on Legacy
+  identity would see duplicated or missing notes.
+- **End-to-end encryption and path obfuscation: off.** The database and Hermes's
+  plain copy sit on the same disk, so encryption would protect nothing here, and
+  the bridge would need the passphrase. Turning either on later means rebuilding
+  every device and the bridge's config.
 
 ## Setting up a device
 
@@ -33,23 +33,32 @@ The first device creates the vault; the rest copy its settings with a Setup URI.
 2. First device only: choose manual setup and enter
    - URI `https://obsidian.${DOMAIN}`, database `vault`, user `obsidian`;
    - password: `kubectl -n obsidian get secret couchdb -o jsonpath='{.data.OBSIDIAN_PASSWORD}' | base64 -d | pbcopy`;
-   - end-to-end encryption off, path obfuscation off;
-   - **General Settings > File identity: Legacy**.
+   - end-to-end encryption off, path obfuscation off.
    Then **Copy setup URI** (it asks for a passphrase that protects the URI only).
 3. Other devices: **Use a setup URI**, paste it and its passphrase. Away from home
    the phone syncs while the VPN is on.
 
 ## Hermes
 
-Hermes reaches the MCP server at `http://livesync-mcp.obsidian.svc:8765/mcp` with
-read and write on every note (`hermes/managed/config.yaml`). Telegram and the CLI
-have the tools; Ada's voice and the alert webhook do not. Only the Hermes pod can
-reach the server, and the server can reach only CouchDB (`networkpolicy.yaml`): it
-is a single maintainer's unlicensed code, so it gets no other network access.
+Hermes sees the vault at `/opt/data/workspace/vault` (`hermes/sandbox.yaml`), read
+and write, and works on it with its own file and terminal tools: search, bulk edits,
+scripts. A change there reaches every device through the bridge within seconds, and
+a change on a device reaches the files the same way. Telegram and the CLI have
+those tools; Ada's voice and the alert webhook do not.
 
-Deletions are soft (LiveSync marks a note deleted) and Longhorn's daily snapshots
-cover `couchdb-data`, so an unwanted edit can be undone: in Obsidian from the
-note's history, or by restoring the volume.
+A note edited in Obsidian and by Hermes at the same moment becomes a LiveSync
+conflict, which Obsidian shows for you to resolve. Deletions are soft (LiveSync
+marks a note deleted), and Longhorn's daily snapshots cover both volumes, so an
+unwanted edit can be undone from the note's history in Obsidian or by restoring a
+volume.
+
+### The bridge
+
+livesync-bridge publishes no image or release. The pod runs the official Deno
+image; its init container (`bridge/install.sh`) downloads the pinned commit and its
+locked dependencies onto `livesync-bridge-state` once, so restarts need no internet.
+To move the commit, change `BRIDGE_COMMIT` and `workingDir` in `bridge/bridge.yaml`
+to a commit at least 7 days old.
 
 ## Agents and folders
 
