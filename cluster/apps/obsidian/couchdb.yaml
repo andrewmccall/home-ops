@@ -58,15 +58,17 @@ spec:
               containerPort: 5984
             - name: metrics
               containerPort: 17986
+          # require_valid_user puts every path on the main port behind a login, so the
+          # probes use the open metrics port.
           readinessProbe:
             httpGet:
-              path: /_up
-              port: http
+              path: /_node/_local/_prometheus
+              port: metrics
             periodSeconds: 10
           livenessProbe:
             httpGet:
-              path: /_up
-              port: http
+              path: /_node/_local/_prometheus
+              port: metrics
             initialDelaySeconds: 30
             periodSeconds: 30
           resources:
