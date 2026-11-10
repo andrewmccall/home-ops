@@ -7,3 +7,4 @@ resources:
   - prometheus-token.sops.yaml
   - servicemonitor.yaml
   - route.yaml
+  - tesla-public-key.yaml

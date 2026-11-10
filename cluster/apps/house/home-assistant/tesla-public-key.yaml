@@ -1,0 +1,23 @@
+---
+# The Tesla Fleet integration's public key, which Tesla fetches from
+# https://home-assistant.${DOMAIN}/.well-known/appspecific/com.tesla.3p.public-key.pem
+# when the domain is registered, and which signs commands to the car. Envoy answers it
+# directly (route.yaml); Home Assistant is not involved. The private key is
+# /config/tesla_fleet.key on Home Assistant's volume; if it is ever regenerated, replace
+# this with its public half and re-pair the car's virtual key.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: HTTPRouteFilter
+metadata:
+  name: tesla-public-key
+  namespace: house
+spec:
+  directResponse:
+    statusCode: 200
+    contentType: application/x-pem-file
+    body:
+      type: Inline
+      inline: |
+          -----BEGIN PUBLIC KEY-----
+          MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAErskSYQwkRp4Rzs8FaHfQkKTaGgF1
+          zbKI+62ZhP1APHQZe5pFZCI0y2pXFdjvc5uxC3PPXIpruomlEF9I2jrCTQ==
+          -----END PUBLIC KEY-----

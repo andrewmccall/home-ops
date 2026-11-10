@@ -13,6 +13,17 @@ spec:
   hostnames:
     - home-assistant.${DOMAIN}
   rules:
+    # Tesla Fleet's public key (tesla-public-key.yaml); an exact match wins over "/".
+    - matches:
+        - path:
+            type: Exact
+            value: /.well-known/appspecific/com.tesla.3p.public-key.pem
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: gateway.envoyproxy.io
+            kind: HTTPRouteFilter
+            name: tesla-public-key
     - backendRefs:
         - name: home-assistant-app
           port: 8123
