@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - config-pvc.yaml
   - helmrelease.yaml
+  - route.yaml
 # Dashboards kept in this repo; see ../README.md#dashboards. The Grafana sidecar loads
 # every ConfigMap labelled grafana_dashboard into the folder named by grafana_folder.
 # Flux substitution is off because Grafana and PromQL use $ themselves.

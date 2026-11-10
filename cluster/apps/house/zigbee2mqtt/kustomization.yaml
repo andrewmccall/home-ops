@@ -4,3 +4,4 @@ resources:
   - generic-device-plugin.yaml
   - config-pvc.yaml
   - zigbee2mqtt.yaml
+  - route.yaml

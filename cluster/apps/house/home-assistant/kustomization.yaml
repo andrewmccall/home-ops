@@ -6,3 +6,4 @@ resources:
   - home-assistant.yaml
   - prometheus-token.sops.yaml
   - servicemonitor.yaml
+  - route.yaml

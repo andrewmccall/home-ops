@@ -1,0 +1,18 @@
+---
+# OTLP over gRPC; the Gateway terminates TLS and speaks HTTP/2 to the collector.
+apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute
+metadata:
+  name: otel
+  namespace: monitoring
+spec:
+  parentRefs:
+    - name: internal
+      namespace: networking
+      sectionName: https
+  hostnames:
+    - otel.${DOMAIN}
+  rules:
+    - backendRefs:
+        - name: otel-collector
+          port: 4317

@@ -1,0 +1,32 @@
+---
+# Envoy Gateway: the Gateway API controller that replaces the retired ingress-nginx.
+# It runs Envoy proxies in this namespace for the Gateways in gateway.yaml.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: envoy-gateway
+  namespace: networking
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: gateway-helm
+      # renovate: datasource=docker image=docker.io/envoyproxy/gateway-helm
+      version: v1.10.0
+      sourceRef:
+        kind: HelmRepository
+        name: envoyproxy
+        namespace: flux-system
+  values:
+    # Envoy Gateway's CRDs come from cluster/crds/envoy-gateway, the Gateway API ones
+    # from k3s.
+    crds:
+      enabled: false
+    deployment:
+      envoyGateway:
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+          limits:
+            memory: 512Mi

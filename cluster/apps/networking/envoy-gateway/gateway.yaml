@@ -1,0 +1,194 @@
+---
+# Two Gateways, as the two ingress-nginx classes were: `internal` for LAN-only hosts
+# and `external` for hosts the Cloudflare tunnel publishes. Routes in any namespace
+# attach with parentRefs { name: internal|external, namespace: networking }.
+#
+# Migration (phase 1): the Gateways sit on spare addresses beside nginx (.20/.21)
+# until every route is tested, then take over 10.44.0.20 and .21.
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: envoy
+spec:
+  controllerName: gateway.envoyproxy.io/gatewayclass-controller
+---
+# Per-Gateway proxy settings. The Service name is fixed so the Cloudflare tunnel's
+# origin (set in Zero Trust, not git) can name it once.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: internal
+  namespace: networking
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        name: envoy-internal
+        # LoadBalancer, not ClusterIP: only then does Envoy Gateway put the Gateway's
+        # addresses on the Service as externalIPs (ClusterIP would try to use them as
+        # the cluster IP). No load-balancer controller is needed; Calico advertises them.
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+      envoyDeployment:
+        replicas: 1
+        container:
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: EnvoyProxy
+metadata:
+  name: external
+  namespace: networking
+spec:
+  provider:
+    type: Kubernetes
+    kubernetes:
+      envoyService:
+        name: envoy-external
+        # LoadBalancer, not ClusterIP: only then does Envoy Gateway put the Gateway's
+        # addresses on the Service as externalIPs (ClusterIP would try to use them as
+        # the cluster IP). No load-balancer controller is needed; Calico advertises them.
+        type: LoadBalancer
+        externalTrafficPolicy: Local
+      envoyDeployment:
+        replicas: 1
+        container:
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: internal
+  namespace: networking
+spec:
+  gatewayClassName: envoy
+  infrastructure:
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: internal
+  # Becomes the Service's external IP, which Calico advertises over BGP.
+  addresses:
+    - type: IPAddress
+      value: ${INTERNAL_GATEWAY_IP}
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: ingress-tls
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: external
+  namespace: networking
+spec:
+  gatewayClassName: envoy
+  infrastructure:
+    parametersRef:
+      group: gateway.envoyproxy.io
+      kind: EnvoyProxy
+      name: external
+  addresses:
+    - type: IPAddress
+      value: ${EXTERNAL_GATEWAY_IP}
+  listeners:
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: ingress-tls
+      allowedRoutes:
+        namespaces:
+          from: All
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+# Plain HTTP only ever redirects to HTTPS.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: https-redirect
+  namespace: networking
+spec:
+  parentRefs:
+    - name: internal
+      sectionName: http
+    - name: external
+      sectionName: http
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+# Envoy's default 15 s route timeout would cut off Music Assistant streams and
+# long-lived websockets (Home Assistant, code-server, ESPHome logs). nginx only timed
+# out after 60 s of silence; here a request has no total limit and a stream closes
+# after an hour with no data.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: BackendTrafficPolicy
+metadata:
+  name: timeouts
+  namespace: networking
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: internal
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: external
+  timeout:
+    http:
+      requestTimeout: 0s
+      streamIdleTimeout: 1h
+---
+# Tunnel traffic reaches the external Gateway from the cloudflared pods, which put the
+# client's address in X-Forwarded-For. Trust that header only from the pod network,
+# so a LAN client connecting directly cannot claim another address (nginx did the
+# same with CF-Connecting-IP and proxy-real-ip-cidr).
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: ClientTrafficPolicy
+metadata:
+  name: external-client-ip
+  namespace: networking
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: external
+  clientIPDetection:
+    xForwardedFor:
+      trustedCIDRs:
+        - ${K8S_CLUSTER_CIDR}

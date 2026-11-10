@@ -4,3 +4,4 @@ kind: Kustomization
 namespace: monitoring
 resources:
   - otel-collector.yaml
+  - route.yaml

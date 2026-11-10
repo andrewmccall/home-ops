@@ -122,6 +122,11 @@
       "matchPackageNames": ["/system-upgrade-controller/"],
       "groupName": "system-upgrade-controller"
     },
+    // Envoy Gateway's chart and its CRD source (cluster/crds/envoy-gateway) move together.
+    {
+      "matchPackageNames": ["/envoyproxy/gateway/"],
+      "groupName": "envoy-gateway"
+    },
     // datasource specific settings
     // Clients auto-update, so the server has to follow every release. Rollout gates
     // and rollback apply as for any image; worlds a newer server has opened may not

@@ -10,6 +10,9 @@ data:
   ROUTER_IP: 10.0.0.1
   INTERNAL_NGINX_IP: 10.44.0.20
   EXTERNAL_NGINX_IP: 10.44.0.21
+  # Envoy Gateway beside nginx during the migration; they take .20/.21 at cutover.
+  INTERNAL_GATEWAY_IP: 10.44.0.22
+  EXTERNAL_GATEWAY_IP: 10.44.0.23
   COREDNS_IP: 10.44.0.2
   UNIFI_IP: 10.44.0.3
   MINECRAFT_IP: 10.44.10.44

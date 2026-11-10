@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
   - config-pvc.yaml
   - music-assistant.yaml
+  - route.yaml
