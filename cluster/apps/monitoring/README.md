@@ -74,12 +74,17 @@ Prometheus selects every ServiceMonitor, PodMonitor and PrometheusRule in the
 cluster, without label selectors. An app or an external repo adds scraping and
 alerts by shipping those resources next to its workloads.
 
-Alertmanager has **no notification receiver**: the Telegram one never had a real
-token and was removed. Alerts show on the Home dashboard and in Alertmanager. To add
-a channel, put an AlertmanagerConfig in `alerts/` (any namespace's alerts reach it,
-because `alertmanagerConfigMatcherStrategy: None` is set in
-`kube-prometheus-stack/`) with its credentials in a SOPS secret, and send
-`Watchdog` to a dead man's switch so a broken channel is noticed.
+Alertmanager's one receiver is **Hermes**: warning and critical alerts, except the
+house device alerts the k3s upgrade gate also ignores, go to its webhook. Hermes
+triages each with Sproozi and asks Andrew on Telegram whether to fix, ignore or be
+reminded later (`cluster/apps/hermes/README.md#alert-triage`). That receiver and
+its route are in `kube-prometheus-stack/helmrelease.yaml` (`alertmanager.config`),
+because the token header needs Alertmanager's own `http_headers`. Keep the
+excluded alert names there in step with `cluster/core/system-upgrade/server-plan.yaml`.
+To add another channel, put an AlertmanagerConfig in `alerts/` (any namespace's
+alerts reach it, because `alertmanagerConfigMatcherStrategy: None` is set in
+`kube-prometheus-stack/`) with its credentials in a SOPS secret. `Watchdog` still
+goes nowhere; a dead man's switch would notice a broken channel.
 
 | `severity` | Meaning |
 |---|---|

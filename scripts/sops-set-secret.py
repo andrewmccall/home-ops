@@ -34,7 +34,8 @@ def main():
     parser.add_argument('file', type=Path, help='Secret manifest ending in .sops.yaml under cluster/')
     parser.add_argument('namespace')
     parser.add_argument('name')
-    parser.add_argument('keys', nargs='+', metavar='KEY[=@FILE]')
+    parser.add_argument('keys', nargs='*', metavar='KEY[=@FILE]')
+    parser.add_argument('--delete', action='append', default=[], metavar='KEY', help='Remove KEY from the Secret.')
     parser.add_argument('--cluster-age-key', action='store_true',
                         help='Decrypt with the age identity from flux-system/sops-age, held in memory.')
     args = parser.parse_args()
@@ -54,6 +55,11 @@ def main():
             parser.error(f'{args.file} holds {document["metadata"]["namespace"]}/{document["metadata"]["name"]}.')
         values = document.get('stringData', {})
 
+    if not args.keys and not args.delete:
+        parser.error('Name at least one KEY to set or --delete.')
+    for key in args.delete:
+        if values.pop(key, None) is None:
+            parser.error(f'{key} is not in {args.file}.')
     for spec in args.keys:
         key, _, source = spec.partition('=@')
         value = Path(source).read_text() if source else getpass.getpass(f'{args.name} {key}: ').strip()

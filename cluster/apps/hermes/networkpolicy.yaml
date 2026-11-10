@@ -64,3 +64,25 @@ spec:
       ports:
         - protocol: TCP
           port: 443
+---
+# Alertmanager posts alerts to the webhook route (config.yaml, route alertmanager).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: hermes-alertmanager
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: hermes
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/name: alertmanager
+      ports:
+        - protocol: TCP
+          port: 8644

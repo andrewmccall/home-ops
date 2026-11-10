@@ -63,7 +63,9 @@ def main():
     container = pod['containers'][0]
     assert '@sha256:' in container['image'], 'Hermes image must be pinned'
     refs = {e['name']: e['valueFrom']['secretKeyRef']['key'] for e in container['env'] if 'valueFrom' in e}
-    assert refs == {key: key for key in ('OPENROUTER_API_KEY', 'API_SERVER_KEY', 'HOME_ASSISTANT_TOKEN', 'SPROOZI_TASK_TOKEN')}
+    assert refs == {**{key: key for key in ('ANTHROPIC_API_KEY', 'API_SERVER_KEY', 'HOME_ASSISTANT_TOKEN',
+                                            'SPROOZI_TASK_TOKEN', 'ALERTMANAGER_WEBHOOK_TOKEN', 'TELEGRAM_BOT_TOKEN')},
+                    'TELEGRAM_ALLOWED_USERS': 'TELEGRAM_USER_ID', 'TELEGRAM_HOME_CHANNEL': 'TELEGRAM_USER_ID'}
     assert sandbox['spec']['volumeClaimTemplates'][0]['spec']['storageClassName'] == 'longhorn'
     service = next(d for d in apps if d['kind'] == 'Service' and d['metadata']['name'] == 'hermes-api')
     assert service['spec']['selector'] == {'app.kubernetes.io/name': 'hermes'}
@@ -114,6 +116,20 @@ def main():
     for workflow in json.loads(tasks_config['data']['tasks.json'])['workflows'].values():
         assert any(d['kind'] == 'AgentTemplate' and d['metadata']['name'] == workflow['template'] for d in apps), f'{workflow["template"]}: no AgentTemplate'
     print('PASS: Hermes reaches only the Sproozi task service, whose workflows name existing templates')
+    route = hermes_config['platforms']['webhook']['extra']['routes']['alertmanager']
+    assert route['secret'] == '$${ALERTMANAGER_WEBHOOK_TOKEN}', 'Webhook secret reference must survive Flux substitution'
+    assert hermes_config['platform_toolsets']['webhook'] == ['hermes-webhook', 'sproozi-tasks'], 'Alert payloads must not reach Home Assistant or the terminal'
+    sre = next(d for d in apps if d['kind'] == 'ConfigMap' and d['metadata']['name'] == 'hermes-sre')
+    assert sre['metadata']['annotations']['kustomize.toolkit.fluxcd.io/substitute'] == 'disabled'
+    assert route['script'] in sre['data'] and set(route['skills']) == {'sre-alerts'}
+    stack = next(d for d in apps if d['kind'] == 'HelmRelease' and d['metadata']['name'] == 'kube-prometheus-stack')['spec']['values']['alertmanager']
+    receiver = next(r for r in stack['config']['receivers'] if r['name'] == 'hermes')['webhook_configs'][0]
+    assert receiver['url'] == 'http://hermes-webhook.hermes.svc:8644/webhooks/alertmanager'
+    secret_file = receiver['http_config']['http_headers']['X-Gitlab-Token']['files'][0]
+    assert secret_file.split('/')[4] in stack['alertmanagerSpec']['secrets'], 'Alertmanager does not mount the webhook token'
+    webhook_policy = next(d for d in apps if d['kind'] == 'NetworkPolicy' and d['metadata']['name'] == 'hermes-alertmanager')
+    assert webhook_policy['spec']['ingress'][0]['ports'] == [{'protocol': 'TCP', 'port': 8644}]
+    print('PASS: Alertmanager reaches the authenticated Hermes webhook route, whose tools exclude Home Assistant')
     app_kustomization = next(d for d in rendered['base'] if d['kind'] == 'Kustomization' and d['metadata']['name'] == 'apps')
     assert {'name': 'agent-sandbox'} in app_kustomization['spec']['dependsOn']
     print('PASS: Hermes CRD schema, credential references, persistent storage and controller ordering')

@@ -7,6 +7,8 @@ resources:
   - tasks.yaml
   - task-tls.sops.yaml
   - task-token.sops.yaml
+  - model-gateway-credentials.sops.yaml
+  - capability-proxy-github-app.sops.yaml
 configMapGenerator:
   - name: sproozi-tasks
     namespace: sproozi-system
@@ -14,7 +16,8 @@ configMapGenerator:
       - tasks.json
 patches:
   # The gateway refuses to start a capability whose credentials are missing.
-  # Enable each one here once its credential Secret exists.
+  # Enabled: Kubernetes reads, Anthropic (model-gateway-credentials) and PRs
+  # through the GitHub App (capability-proxy-github-app).
   - target:
       kind: Deployment
       name: sproozi-gateway
@@ -24,7 +27,7 @@ patches:
         value: SPROOZI_ENABLED_CAPABILITIES
       - op: replace
         path: /spec/template/spec/containers/0/env/0/value
-        value: kubernetes.read
+        value: kubernetes.read,model.inference,github.pull_request
   # This cluster's DNS domain is cluster.andrewmccall.com, not cluster.local.
   - target:
       kind: Deployment

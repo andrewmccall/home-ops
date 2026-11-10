@@ -29,6 +29,13 @@ spec:
               # The image's public roots plus the private CA of the Sproozi task service.
               bundle = open('/etc/ssl/certs/ca-certificates.crt').read() + open('/etc/hermes-trust/sproozi-tasks-ca.crt').read()
               pathlib.Path('/etc/hermes-ca/ca-bundle.pem').write_text(bundle)
+              # Alert triage: the webhook route's script and the skill (cluster/apps/hermes/sre).
+              for source, target in (('sre_alerts.py', 'scripts/sre_alerts.py'), ('SKILL.md', 'skills/devops/sre-alerts/SKILL.md')):
+                  path = pathlib.Path('/opt/data', target)
+                  path.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copyfile(f'/etc/hermes-sre/{source}', path)
+                  for owned in (path, *path.relative_to('/opt/data').parents):
+                      os.chown(pathlib.Path('/opt/data', owned), 10000, 10000)
           volumeMounts:
             - name: data
               mountPath: /opt/data
@@ -40,6 +47,9 @@ spec:
               readOnly: true
             - name: ca-bundle
               mountPath: /etc/hermes-ca
+            - name: sre
+              mountPath: /etc/hermes-sre
+              readOnly: true
       containers:
         - name: hermes
           image: *image
@@ -48,11 +58,6 @@ spec:
           env:
             - name: HERMES_HOME
               value: /opt/data
-            - name: OPENROUTER_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: hermes-agent-api-keys
-                  key: OPENROUTER_API_KEY
             - name: API_SERVER_KEY
               valueFrom:
                 secretKeyRef:
@@ -68,6 +73,33 @@ spec:
                 secretKeyRef:
                   name: hermes-agent-api-keys
                   key: SPROOZI_TASK_TOKEN
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-agent-api-keys
+                  key: ANTHROPIC_API_KEY
+            - name: ALERTMANAGER_WEBHOOK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-agent-api-keys
+                  key: ALERTMANAGER_WEBHOOK_TOKEN
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-agent-api-keys
+                  key: TELEGRAM_BOT_TOKEN
+            # Andrew's Telegram user ID: the only account the bot answers, and the
+            # chat webhook results are delivered to.
+            - name: TELEGRAM_ALLOWED_USERS
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-agent-api-keys
+                  key: TELEGRAM_USER_ID
+            - name: TELEGRAM_HOME_CHANNEL
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-agent-api-keys
+                  key: TELEGRAM_USER_ID
             - name: SSL_CERT_FILE
               value: /etc/hermes-ca/ca-bundle.pem
             - name: REQUESTS_CA_BUNDLE
@@ -75,6 +107,8 @@ spec:
           ports:
             - name: api
               containerPort: 8642
+            - name: webhook
+              containerPort: 8644
           startupProbe:
             httpGet:
               path: /health
@@ -108,6 +142,9 @@ spec:
         - name: ca-bundle
           emptyDir:
             sizeLimit: 4Mi
+        - name: sre
+          configMap:
+            name: hermes-sre
   volumeClaimTemplates:
     - metadata:
         name: data

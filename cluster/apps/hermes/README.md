@@ -12,31 +12,36 @@ The controller and CRD are vendored from Agent Sandbox v1.0.7. Hermes uses
 Hermes stores its home and workspace on a 20 GiB Longhorn volume. An init container
 copies the Git-managed `config.yaml` into that volume on every pod start. Edit the
 source config here, then recreate the pod after reconciliation to apply changes.
-The initial model is `google/gemini-3-flash-preview` through OpenRouter, matching the
-previous provider/model choice. No previous provider keys or channel tokens are reused.
+The model is Anthropic's `claude-sonnet-5-5` (`config.yaml`), with a dedicated API
+key. After changing the model, rerun `scripts/configure-ha-hermes.py` so Ada asks
+for it too: Hermes's API serves the model a request names.
 
-## Create the new key
+## Credentials
 
-Create a dedicated key at [OpenRouter keys](https://openrouter.ai/settings/keys).
-Set the spending limit on the key there. From the repo root, run:
+`api-keys.sops.yaml` holds the Secret `hermes-agent-api-keys`:
+
+| Key | What |
+| --- | --- |
+| `ANTHROPIC_API_KEY` | Hermes's own Anthropic key; set a spending limit on its Console workspace |
+| `API_SERVER_KEY` | Bearer key for Hermes's API (Home Assistant uses it) |
+| `HOME_ASSISTANT_TOKEN` | Home Assistant MCP token (see Home Assistant voice below) |
+| `SPROOZI_TASK_TOKEN` | Bearer token for the Sproozi task service (`../sproozi`) |
+| `ALERTMANAGER_WEBHOOK_TOKEN` | Shared with Alertmanager's `hermes-alert-webhook` Secret |
+| `TELEGRAM_BOT_TOKEN` | From @BotFather |
+| `TELEGRAM_USER_ID` | Andrew's numeric Telegram ID: the only allowed user and the delivery chat |
+
+Kubernetes refuses to start the Hermes container if a key is missing. Set or
+replace keys from the repo root; each is prompted for without echo and encrypted
+straight into the file, keeping the others:
 
 ```sh
-python3 scripts/configure-hermes-secret.py
-# Or use Flux's existing age identity from the current Kubernetes context:
-python3 scripts/configure-hermes-secret.py --cluster-age-key
-# Or read a key you saved locally, outside this checkout:
-python3 scripts/configure-hermes-secret.py --key-file /absolute/path/to/key
+python3 scripts/sops-set-secret.py --cluster-age-key \
+  cluster/apps/hermes/api-keys.sops.yaml hermes hermes-agent-api-keys ANTHROPIC_API_KEY
 ```
 
-The helper prompts without echo and encrypts directly through SOPS. Plaintext
-credentials never go into a temporary file. Configure your age identity as described
-in the root README, or set `SOPS_AGE_KEY_FILE`. The helper preserves the separate
-gateway API key when updating the OpenRouter credential.
-
-The encrypted Secret must contain `OPENROUTER_API_KEY`, the separate
-`API_SERVER_KEY`, and `HOME_ASSISTANT_TOKEN` (see Home Assistant voice below).
-Kubernetes refuses to start the Hermes container if a required key is missing.
-The OpenRouter helper preserves the other existing credentials.
+`--cluster-age-key` decrypts with Flux's age identity from the current Kubernetes
+context; without it, configure your age identity as in the root README or set
+`SOPS_AGE_KEY_FILE`.
 
 ## Retire OpenClaw without deleting its data
 
@@ -156,7 +161,7 @@ memory and are not printed. The key and model persist through Home Assistant's
 normal config storage on its PVC.
 The optional `--local-commands-first` flag enables Home Assistant's native intent
 handler for recognised home commands before falling back to Hermes. Other
-requests still use Hermes and OpenRouter. It preserves the rest of the pipeline.
+requests still use Hermes and Anthropic. It preserves the rest of the pipeline.
 
 Verification sends one paid text request through the preferred Ada pipeline and
 requires both a Hermes response and generated Piper audio. It does not exercise a
@@ -200,13 +205,13 @@ Secret in memory without printing it. For interactive terminal chat:
 kubectl -n hermes exec -it hermes -c hermes -- hermes chat
 ```
 
-The API has no route (Ingress or HTTPRoute). NetworkPolicy permits the Home Assistant controller and
+The API has no route (Ingress or HTTPRoute). NetworkPolicy permits the Home Assistant controller (API) and Alertmanager (webhook) and
 denies other incoming pod traffic. Use a localhost port-forward for laptop access.
-The dashboard and native messaging channels are not configured yet.
+Telegram is the only messaging channel; the dashboard is not configured.
 The pod has no Kubernetes service-account token, host mounts or container socket.
 Egress permits cluster DNS, Home Assistant on port 8123, the Sproozi task service on 8443, and public IPv4 HTTPS,
-excluding other private and link-local networks. This allows OpenRouter and upstream runtime downloads; it is not an
-OpenRouter-only hostname allowlist. Agent Sandbox manages pod and volume lifecycle.
+excluding other private and link-local networks. This allows Anthropic, Telegram and upstream runtime downloads; it is not a
+hostname allowlist. Agent Sandbox manages pod and volume lifecycle.
 This cluster uses its normal container runtime, with no gVisor/Kata RuntimeClass.
 The upstream image bootstraps as root and drops Hermes services to UID 10000.
 
@@ -224,4 +229,41 @@ Check the connection after a pod restart:
 
 ```sh
 kubectl -n hermes exec hermes -c hermes -- hermes mcp test sproozi-tasks
+```
+
+## Alert triage
+
+Alertmanager sends warning and critical alerts (house device alerts excepted) to
+the `alertmanager` webhook route on port 8644, with the shared token in an
+`X-Gitlab-Token` header. Hermes then:
+
+1. runs `sre/sre_alerts.py` on the payload. It keeps only alerts Andrew has not
+   decided about and records them as pending in `/opt/data/sre/decisions.json`.
+   An alert is keyed by alert name, namespace and the object it names, such as
+   `KubePodCrashLooping/games/bedrock`;
+2. follows the `sre-alerts` skill (`sre/SKILL.md`): submits a Sproozi `triage` run
+   per alert, waits, and sends one Telegram message per alert, ending with
+   *fix · ignore · later*;
+3. on Andrew's Telegram reply, records the decision with
+   `sre_alerts.py decide KEY ignore|later|fix` and, for *fix*, submits Sproozi's
+   `fix` run, which opens a home-ops PR.
+
+| Decision | Effect |
+| --- | --- |
+| *ignore* | Never asked again, even after the alert resolves; `decide KEY clear` undoes it |
+| *later* | Asked again after N hours (default 24) if still firing; the route's hourly repeat delivers it |
+| *fix* | Not asked again while the fix runs; a recurrence after the alert resolves is asked as new |
+| no answer | Asked again after 24 hours if still firing |
+
+The webhook platform's tools are web/vision and `sproozi-tasks` only: no Home
+Assistant, terminal or files for untrusted alert text. Telegram answers only
+`TELEGRAM_USER_ID` and is the full assistant. The init container copies the script
+and skill from the `hermes-sre` ConfigMap on every start. Flux substitution is
+disabled for that ConfigMap. `tests/test_sre_alerts.py` covers the decision rules.
+
+Inspect or change decisions:
+
+```sh
+kubectl -n hermes exec hermes -c hermes -- python3 /opt/data/scripts/sre_alerts.py list
+kubectl -n hermes exec hermes -c hermes -- python3 /opt/data/scripts/sre_alerts.py decide 'KEY' clear
 ```

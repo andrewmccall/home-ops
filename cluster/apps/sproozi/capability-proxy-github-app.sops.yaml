@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+    name: capability-proxy-github-app
+    namespace: sproozi-system
+stringData:
+    app-id: ENC[AES256_GCM,data:IogCjI7AFQ==,iv:1ioN6lctihkD3AcORGq3mscgXbtZEyhcFnA6u8VevEY=,tag:bYO449Frw1ZBkEGyuacjDg==,type:str]
+    installation-id: ENC[AES256_GCM,data:iEFYlXqIhEIE,iv:YOO3/uVCmqnlJRsFPNHS7qDMKjPB+Nw+9cYpldfkvT0=,tag:CbpHMHm2vlKWmb//T7ESnA==,type:str]
+    private-key.pem: ENC[AES256_GCM,data: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,iv:PNsD7JFi4QGlCGJ2BZuEOqzgYUfrb0xXG1/12D0T+XM=,tag:lU+etNj3K3D1USmNEe0evg==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBEWkMzbmpXRWJHd2pEb1li
+            N1doOVVmbnhmTUdUOURuWkVrMyt4WUU5MERZCjV5WVRvSE9aUE5PZ0ZaSmtWbk9N
+            NTZHejJjR3lIUEpoR3c2Z2hTYlRMN0UKLS0tIDBmOWZMdll4b0lhNVdjNGk3OGtQ
+            SXhsUExxencxSDcxQUJNNXNJSlk0NmcKPyZlXZpTiCqqlJgy3PDImP+Ozw/sXAT4
+            i/P3m5UX3ujrZo1U99pntLwe2QMm2mh7Fgd9upQ2sns135YArnAz6Q==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-10T16:38:59Z"
+    mac: ENC[AES256_GCM,data:OQz4gXn8R1pO8juyq1E7WE+38FXphmuUZ1xRSIFUB7vw8ikbOHYYWTQoNBdylsmDeDkqX4rlXLzr2cg2wU4ClesNmkoSK5CO/7FE5r95l4jSrv49JVB2nkR0bK77xgTCNhcZQx8PHhh6IjWs4l+JQ3bIe2/gvSizQOw6P27agrA=,iv:MRgIBXTz/NNem0TQAN40lY2L/pasTgAPHhGVmW+rd5w=,tag:PChdXycSDnzHSRuyZpz1nw==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0

@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+    name: hermes-alert-webhook
+    namespace: monitoring
+stringData:
+    token: ENC[AES256_GCM,data:iOpCEO0ejBikzy+edewKilFDhXVsWREpyskeAGwrXJ6GgJBqXPETuiJfphLXgcGGQXCai+F8KoollH3QAsHUoQ==,iv:1Q4XOxA8GaqvroGqtlTj4K7ix1rkrN7YkjxSIZF3Vl0=,tag:vN4s7H1Gtu/EI6mE/J89BQ==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBLSmk5Y05GRnE5eUFhQ2dP
+            WkdQK3ZwMWR5STlkaDRvdEgva3dsUUxieUNJCnR1Y1lVSWlWTER2N1JiWm1wVXk3
+            bkJkRVp5Tk5KMjNMWEZlVTJHQ3N2eWcKLS0tIE41MUNIdVN3b1kySmF5dFZNL0Jn
+            SlFCV3dTYXNFcm1yN3NpNGxnYXZ3aDQK90t9aCsJg+v8mH+XP1EN2tJAZ7Efo8Pp
+            IjUVdb1ecJ56vvHoYcHVk7QehuvEG+quZLYYRYX5jNPW4wEVHmQhaQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-10T16:13:04Z"
+    mac: ENC[AES256_GCM,data:uxetK4THuFeNNZCHSC+59Sns7/J4ACvoc6r476128eFKZNH5x2jbQn3UgbMcyglr7ozz3OgeXf823Oi6TWcnITY/QaL5PEmCwGdEPb7Jla6zQQMz4a21lf3RvoHfMjnVKjGs3RMKmhs8Hpj82/3PKN50eytP3C18c5tnoG1xeIE=,iv:7cMYJJPkUgoTNeRq4xdApZH6gjEVGIPMYPif9u1qd8I=,tag:HGSy9y2yQOGf1m9heihxXQ==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0

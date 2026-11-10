@@ -39,7 +39,57 @@ spec:
                 name: kube-prometheus-stack-k8s-resources-multicluster
   values:
     alertmanager:
+      # The chart's default config plus a Hermes receiver. It lives here rather than in
+      # an AlertmanagerConfig because Hermes authenticates webhooks by a token header,
+      # which only Alertmanager's own http_headers can send. See cluster/apps/hermes/README.md.
+      config:
+        global:
+          resolve_timeout: 5m
+        inhibit_rules:
+          - source_matchers: ['severity = critical']
+            target_matchers: ['severity =~ warning|info']
+            equal: [namespace, alertname]
+          - source_matchers: ['severity = warning']
+            target_matchers: ['severity = info']
+            equal: [namespace, alertname]
+          - source_matchers: ['alertname = InfoInhibitor']
+            target_matchers: ['severity = info']
+            equal: [namespace]
+          - target_matchers: ['alertname = InfoInhibitor']
+        route:
+          group_by: [namespace]
+          group_wait: 30s
+          group_interval: 5m
+          repeat_interval: 12h
+          receiver: 'null'
+          routes:
+            - matchers: ['alertname = "Watchdog"']
+              receiver: 'null'
+            # House device alerts are excluded as in the k3s upgrade gate
+            # (cluster/core/system-upgrade/server-plan.yaml).
+            - receiver: hermes
+              matchers:
+                - severity =~ "warning|critical"
+                - alertname !~ "InfoInhibitor|ZigbeeDeviceOffline|ZigbeeBatteryLow|HeatingZoneUnavailable|VoiceSatelliteOffline"
+              group_by: [alertname, namespace]
+              # Hermes drops repeats it has already asked about; an hourly repeat lets a
+              # "later" reminder arrive soon after its time.
+              repeat_interval: 1h
+        receivers:
+          - name: 'null'
+          - name: hermes
+            webhook_configs:
+              - url: http://hermes-webhook.hermes.svc:8644/webhooks/alertmanager
+                send_resolved: true
+                max_alerts: 20
+                http_config:
+                  http_headers:
+                    X-Gitlab-Token:
+                      files: [/etc/alertmanager/secrets/hermes-alert-webhook/token]
+        templates:
+          - /etc/alertmanager/config/*.tmpl
       alertmanagerSpec:
+        secrets: [hermes-alert-webhook]
         # Without this the operator scopes an AlertmanagerConfig's route to its own
         # namespace, so a receiver in monitoring would miss house, flux-system and the rest.
         alertmanagerConfigMatcherStrategy:

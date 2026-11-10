@@ -9,3 +9,16 @@ spec:
     - name: api
       port: 8642
       targetPort: api
+---
+# Alertmanager's webhook receiver (route alertmanager in config.yaml).
+apiVersion: v1
+kind: Service
+metadata:
+  name: hermes-webhook
+spec:
+  selector:
+    app.kubernetes.io/name: hermes
+  ports:
+    - name: webhook
+      port: 8644
+      targetPort: webhook

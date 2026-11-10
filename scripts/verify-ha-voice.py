@@ -5,8 +5,11 @@ Runs one paid conversation request; --mcp adds a second, read-only state query.
 Does not test the physical satellite.
 """
 
+from pathlib import Path
 import subprocess
 import sys
+
+import yaml
 
 
 PROBE = r'''
@@ -90,7 +93,7 @@ asyncio.run(main())
 MCP_PROBE = r'''
 import json, os, sqlite3, urllib.request, uuid
 session = 'voice-mcp-check-' + uuid.uuid4().hex
-body = {'model':'google/gemini-3-flash-preview','messages':[
+body = {'model':os.environ['HERMES_CHECK_MODEL'],'messages':[
     {'role':'system','content':'You are a concise home voice assistant. Use the Home Assistant MCP tools when live state is requested.'},
     {'role':'user','content':'Read the current state of the office lights from Home Assistant. Do not change any devices. Answer in one short sentence.'}]}
 request = urllib.request.Request('http://127.0.0.1:8642/v1/chat/completions',data=json.dumps(body).encode(),headers={
@@ -109,7 +112,9 @@ print(json.dumps({'result':'PASS','tool':'Home Assistant GetLiveContext','reply'
 def main():
     subprocess.run(['kubectl', '-n', 'house', 'exec', 'deploy/home-assistant', '-c', 'app', '--', 'python3', '-u', '-c', PROBE], check=True)
     if '--mcp' in sys.argv:
-        subprocess.run(['kubectl', '-n', 'hermes', 'exec', 'hermes', '-c', 'hermes', '--', 'python3', '-u', '-c', MCP_PROBE], check=True)
+        model = yaml.safe_load((Path(__file__).resolve().parents[1] / 'cluster/apps/hermes/config.yaml').read_text())['model']['default']
+        subprocess.run(['kubectl', '-n', 'hermes', 'exec', 'hermes', '-c', 'hermes', '--',
+                        'env', f'HERMES_CHECK_MODEL={model}', 'python3', '-u', '-c', MCP_PROBE], check=True)
 
 
 if __name__ == '__main__':

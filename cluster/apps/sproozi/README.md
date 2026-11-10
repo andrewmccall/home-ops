@@ -28,8 +28,13 @@ Patches:
 
 - The certificate's DNS name uses `cluster.andrewmccall.com`; the release names
   `cluster.local`, which this cluster does not use.
-- `SPROOZI_ENABLED_CAPABILITIES` is `kubernetes.read` until the model and GitHub
-  App credentials exist. The gateway refuses to start a capability without them.
+- `SPROOZI_ENABLED_CAPABILITIES` is `kubernetes.read,model.inference,github.pull_request`
+  (the release also enables package installs and egress, which nothing here uses).
+  The gateway refuses to start a capability without its credential:
+  `model-gateway-credentials.sops.yaml` (`anthropic-api-key`) and
+  `capability-proxy-github-app.sops.yaml` (`app-id`, `installation-id`,
+  `private-key.pem` of the `drew-pull-request-agent` App, installed only on home-ops).
+  Set them with `scripts/sops-set-secret.py`.
 
 Each patch tests the release's original value first, so a new release that changes
 it fails to render instead of being silently overwritten.

@@ -14,5 +14,13 @@ configMapGenerator:
   - name: hermes-trust
     files:
       - sproozi-tasks-ca.crt
+  - name: hermes-sre
+    files:
+      - sre/sre_alerts.py
+      - sre/SKILL.md
+    # Copied verbatim: Flux must not substitute variables in the script or skill.
+    options:
+      annotations:
+        kustomize.toolkit.fluxcd.io/substitute: disabled
 generatorOptions:
   disableNameSuffixHash: true
