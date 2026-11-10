@@ -24,7 +24,9 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/koenkk/zigbee2mqtt
+              # Docker Hub, the project's official copy: the only registry Renovate gets release
+              # dates from (with a token, for repos over 1,000 tags); see renovate.json5.
+              repository: koenkk/zigbee2mqtt
               tag: 2.14.3@sha256:fb4a6b0f6868ad1cd6a9996479802b2420e599c3463b62bbff8c8cd9a908f43a
             env:
               ZIGBEE2MQTT_DATA: /data

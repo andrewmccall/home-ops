@@ -1,0 +1,30 @@
+---
+# The Plan CRD for core/system-upgrade. Keep the tag equal to the controller's ref
+# there; Renovate groups both as system-upgrade-controller.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: system-upgrade-controller-crds
+  namespace: flux-system
+spec:
+  interval: 30m
+  url: https://github.com/rancher/system-upgrade-controller.git
+  ref:
+    tag: v0.21.0
+  ignore: |
+    # exclude all
+    /*
+    # include the generated CRD
+    !/pkg/crds/yaml/generated/upgrade.cattle.io_plans.yaml
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: system-upgrade-controller-crds
+  namespace: flux-system
+spec:
+  interval: 30m
+  prune: false
+  sourceRef:
+    kind: GitRepository
+    name: system-upgrade-controller-crds

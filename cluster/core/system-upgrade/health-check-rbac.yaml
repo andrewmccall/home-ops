@@ -1,0 +1,52 @@
+---
+# Read-only access for the k3s-server Plan's prepare step (server-plan.yaml).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: k3s-upgrade-health-check
+rules:
+  - apiGroups: ["kustomize.toolkit.fluxcd.io"]
+    resources: ["kustomizations"]
+    verbs: ["get", "list"]
+  - apiGroups: ["helm.toolkit.fluxcd.io"]
+    resources: ["helmreleases"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: k3s-upgrade-health-check
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: k3s-upgrade-health-check
+subjects:
+  - kind: ServiceAccount
+    name: system-upgrade
+    namespace: system-upgrade
+---
+# Finding Alertmanager's ClusterIP; the job runs on the host network.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: k3s-upgrade-health-check
+  namespace: monitoring
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    resourceNames: ["kube-prometheus-stack-alertmanager"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: k3s-upgrade-health-check
+  namespace: monitoring
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: k3s-upgrade-health-check
+subjects:
+  - kind: ServiceAccount
+    name: system-upgrade
+    namespace: system-upgrade

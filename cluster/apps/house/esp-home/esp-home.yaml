@@ -26,8 +26,10 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/esphome/esphome
-              tag: 2026.10.2@sha256:4a918585150e95e7675be84a347384ff308fde1bd32d0e4472666e1252cc0e8f
+              # Docker Hub, the project's official copy: the only registry Renovate gets release
+              # dates from (with a token, for repos over 1,000 tags); see renovate.json5.
+              repository: esphome/esphome
+              tag: 2026.10.2@sha256:c994a49a945094643b14c213bfd500a95ffed94cd68848772828192e126bd375
               pullPolicy: IfNotPresent
             probes:
               startup: {enabled: true, port: 6052, spec: {periodSeconds: 10, failureThreshold: 30}}
@@ -52,7 +54,7 @@ spec:
                 memory: 2Gi
           code:
             image:
-              repository: ghcr.io/coder/code-server
+              repository: codercom/code-server
               tag: 4.145.2@sha256:09565f9e07f5624554e295e8bab0e2fec4a7c533eb3cff459ed6596a4d3d7c1c
               pullPolicy: IfNotPresent
             probes:

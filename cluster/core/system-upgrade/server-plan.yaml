@@ -1,27 +1,62 @@
 ---
+# One server node (vecna), so no agent plan. Renovate bumps version together with
+# k3s_release_version in ansible/inventory/group_vars/all/k3s.yml; patch releases
+# merge automatically, minor releases wait for a person (check Calico supports the
+# new Kubernetes minor first).
+#
+# Timing: merged any day, the upgrade only starts in the Sunday 21:00 window, nine
+# hours after Renovate's Sunday-morning automerges (renovate.json5), so anything
+# those broke has time to alert. The prepare step then refuses to upgrade unless
+# nodes are Ready, every Flux Kustomization and HelmRelease is Ready, and no
+# warning or critical alert is firing (house device alerts aside). A refusal leaves
+# the node untouched, and the job retries during the window.
 apiVersion: upgrade.cattle.io/v1
 kind: Plan
 metadata:
   name: k3s-server
   namespace: system-upgrade
-  labels:
-    k3s-upgrade: server
 spec:
+  # renovate: datasource=github-releases repos=k3s-io/k3s
+  version: v1.37.2+k3s1
   concurrency: 1
-  channel: https://update.k3s.io/v1-release/channels/v1.24
+  # No cordon: with one node there is nowhere to move work, running pods keep running
+  # through the k3s restart either way, and a failed upgrade would leave the only node
+  # cordoned (the controller uncordons only on success).
+  cordon: false
+  window:
+    days: ["sunday"]
+    startTime: "21:00"
+    endTime: "23:59"
+    timeZone: Europe/London
   nodeSelector:
     matchExpressions:
-      - key: node-role.kubernetes.io/master
+      - key: node-role.kubernetes.io/control-plane
         operator: In
-        values:
-          - "true"
-      - key: k3s-upgrade
-        operator: Exists
-      - key: k3s-upgrade
-        operator: In
-        values:
-          - "true"
+        values: ["true"]
   serviceAccountName: system-upgrade
-  cordon: true
+  prepare:
+    # The upgrade image at the plan's version: Alpine with jq, wget and k3s kubectl.
+    image: rancher/k3s-upgrade
+    command: ["/bin/sh", "-c"]
+    args:
+      - |
+          set -eu
+          k() { /opt/k3s kubectl "$@"; }
+          fail() { echo "NOT UPGRADING: $*"; exit 1; }
+          k get nodes -o json | jq -e '[.items[].status.conditions[] | select(.type == "Ready") | .status == "True"] | all' >/dev/null \
+            || fail "a node is not Ready"
+          for kind in kustomizations.kustomize.toolkit.fluxcd.io helmreleases.helm.toolkit.fluxcd.io; do
+            bad=$(k get "$kind" -A -o json | jq -r '.items[] | select(.spec.suspend != true)
+              | select([.status.conditions[]? | select(.type == "Ready" and .status == "True")] | length == 0)
+              | .metadata.namespace + "/" + .metadata.name')
+            [ -z "$bad" ] || fail "Flux $kind not ready: $bad"
+          done
+          ip=$(k -n monitoring get svc kube-prometheus-stack-alertmanager -o jsonpath='{.spec.clusterIP}')
+          firing=$(wget -qO- "http://$ip:9093/api/v2/alerts?active=true&silenced=false&inhibited=false" | jq -r '.[]
+            | select(.labels.severity == "critical" or .labels.severity == "warning")
+            | select(.labels.alertname | test("^(Watchdog|InfoInhibitor|ZigbeeDeviceOffline|ZigbeeBatteryLow|HeatingZoneUnavailable|VoiceSatelliteOffline)$") | not)
+            | .labels.alertname' | sort -u | tr '\n' ' ')
+          [ -z "$firing" ] || fail "alerts firing: $firing"
+          echo "Cluster is healthy; upgrading."
   upgrade:
     image: rancher/k3s-upgrade

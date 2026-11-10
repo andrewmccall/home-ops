@@ -5,3 +5,4 @@ resources:
   - flux-system/webhook
   - longhorn
   - cloudnative-pg
+  - system-upgrade
