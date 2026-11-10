@@ -1,5 +1,12 @@
 ---
 calico_state: present
+# A release, never master: master is Calico's development branch and installed a
+# dev build (v3.34.0-0.dev) whose admission policies blocked the released CNI plugin.
+# Check the Kubernetes versions a release supports before bumping:
+# https://docs.tigera.io/calico/latest/getting-started/kubernetes/requirements
+# renovate: datasource=github-releases repos=projectcalico/calico
+calico_version: v3.33.0
+calico_manifests_url: "https://raw.githubusercontent.com/projectcalico/calico/{{ calico_version }}/manifests"
 calico_installation:
   cidr: 10.42.0.0/16
 calico_bgp_configuration:

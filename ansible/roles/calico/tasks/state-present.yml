@@ -1,16 +1,27 @@
 ---
-- name: download tigera operator manifest
+- name: download calico manifests
   get_url:
-    url: https://raw.githubusercontent.com/projectcalico/calico/master/manifests/tigera-operator.yaml
-    dest: /tmp/tigera-operator.yaml
+    url: "{{ calico_manifests_url }}/{{ item }}"
+    dest: "/tmp/calico-{{ calico_version }}-{{ item }}"
     mode: '0664'
+  loop:
+    - operator-crds.yaml
+    - tigera-operator.yaml
   run_once: yes
   delegate_to: localhost
 
-- name: install tigera operator
+# CRDs first; they are too large for client-side apply.
+- name: install calico CRDs and tigera operator
   kubernetes.core.k8s:
     state: present
-    src: /tmp/tigera-operator.yaml
+    src: "/tmp/calico-{{ calico_version }}-{{ item }}"
+    apply: yes
+    server_side_apply:
+      field_manager: ansible
+      force_conflicts: yes
+  loop:
+    - operator-crds.yaml
+    - tigera-operator.yaml
   run_once: yes
   delegate_to: localhost
 
