@@ -74,7 +74,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: tasks
-          image: ghcr.io/andrewmccall/sproozi:0.2.4@sha256:a7bd217c216e72bf296ec8aeb701706dab7425fddea5d5aa4e3e3447d566115f
+          image: ghcr.io/andrewmccall/sproozi:0.2.5@sha256:72963b704a30606a27fa9554849c4d90f1e0c3bf66ba1803b82e6593329603cc
           command: [/tasks]
           env:
             - name: SPROOZI_TASK_CONFIG

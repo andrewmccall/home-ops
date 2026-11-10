@@ -1,5 +1,5 @@
-# Vendored from andrewmccall/sproozi v0.2.4 sproozi_0.2.4_kubernetes.tar.gz (self-managed-ca/certificates.yaml).
-# Source: https://github.com/andrewmccall/sproozi/releases/download/v0.2.4/sproozi_0.2.4_kubernetes.tar.gz
+# Vendored from andrewmccall/sproozi v0.2.5 sproozi_0.2.5_kubernetes.tar.gz (self-managed-ca/certificates.yaml).
+# Source: https://github.com/andrewmccall/sproozi/releases/download/v0.2.5/sproozi_0.2.5_kubernetes.tar.gz
 apiVersion: v1
 automountServiceAccountToken: true
 kind: ServiceAccount
@@ -130,7 +130,7 @@ spec:
         - --dns=kubernetes.default.svc
         command:
         - /certificates
-        image: ghcr.io/andrewmccall/sproozi@sha256:a7bd217c216e72bf296ec8aeb701706dab7425fddea5d5aa4e3e3447d566115f
+        image: ghcr.io/andrewmccall/sproozi@sha256:72963b704a30606a27fa9554849c4d90f1e0c3bf66ba1803b82e6593329603cc
         name: certificates
         resources:
           limits:

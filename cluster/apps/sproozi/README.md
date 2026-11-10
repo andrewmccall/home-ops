@@ -13,7 +13,7 @@ access (decided 2026-11-10).
 
 | File | Source |
 | --- | --- |
-| `install.yaml` | `install/install.yaml` from the v0.2.4 Kubernetes release archive, unchanged |
+| `install.yaml` | `install/install.yaml` from the v0.2.5 Kubernetes release archive, unchanged |
 | `certificates.yaml` | `self-managed-ca/certificates.yaml` from the same archive, unchanged |
 | `../../crds/sproozi/crds.yaml` | `crds.yaml` from the same archive, unchanged |
 | `kustomization.yaml` | Patches for this cluster, described below |
@@ -81,7 +81,7 @@ archive, and replace the three vendored files. Read the release notes'
 AgentRuns and stop running ones while the old controller still runs.
 
 ```sh
-VERSION=0.2.4
+VERSION=0.2.5
 curl -fsSLO "https://github.com/andrewmccall/sproozi/releases/download/v$VERSION/sproozi_${VERSION}_kubernetes.tar.gz"
 curl -fsSLO "https://github.com/andrewmccall/sproozi/releases/download/v$VERSION/checksums.txt"
 grep "sproozi_${VERSION}_kubernetes.tar.gz" checksums.txt | shasum -a 256 -c -

@@ -1,5 +1,5 @@
-# Vendored from andrewmccall/sproozi v0.2.4 sproozi_0.2.4_kubernetes.tar.gz (crds.yaml).
-# Source: https://github.com/andrewmccall/sproozi/releases/download/v0.2.4/sproozi_0.2.4_kubernetes.tar.gz
+# Vendored from andrewmccall/sproozi v0.2.5 sproozi_0.2.5_kubernetes.tar.gz (crds.yaml).
+# Source: https://github.com/andrewmccall/sproozi/releases/download/v0.2.5/sproozi_0.2.5_kubernetes.tar.gz
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
