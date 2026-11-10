@@ -68,3 +68,22 @@ spec:
     provider: sops
     secretRef:
       name: sops-age
+---
+# The game's public entry point (its Cloudflare tunnel and public DNS), configured in
+# the survival repo, not here.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ashes-tunnel
+  namespace: flux-system
+spec:
+  interval: 10m0s
+  path: ./kubernetes/overlays/tunnel
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: survival
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
