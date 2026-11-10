@@ -36,11 +36,26 @@ spec:
         seccompProfile:
           type: RuntimeDefault
       # The entrypoint chowns everything under /opt/couchdb and exits if it cannot,
-      # so the settings are copied into a writable local.d rather than mounted there.
+      # so the settings are written into a writable local.d rather than mounted there.
+      # LiveSync deletes and recreates the database when a vault is initialised or
+      # rebuilt, which takes a server admin and wipes per-database permissions, so
+      # the apps' user is a server admin, defined here on every start. CouchDB
+      # hashes the password when it loads the file.
       initContainers:
         - name: config
           image: &image couchdb:3.5.2.1@sha256:5fc596110eac7f412173a7d9de14f70aa5d3e816790fb6e70642755d4a4cf464
-          command: [cp, /config/livesync.ini, /local.d/10-livesync.ini]
+          command:
+            - sh
+            - -c
+            - |
+              cp /config/livesync.ini /local.d/10-livesync.ini
+              printf '[admins]\nobsidian = %s\n' "$OBSIDIAN_PASSWORD" > /local.d/20-admins.ini
+          env:
+            - name: OBSIDIAN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: couchdb
+                  key: OBSIDIAN_PASSWORD
           volumeMounts:
             - name: config
               mountPath: /config

@@ -7,7 +7,8 @@ Hermes through an MCP server.
 | Piece | Where | What |
 |---|---|---|
 | CouchDB | `couchdb.yaml`, `livesync.ini` | The vault's database; LiveSync's required settings in `livesync.ini` |
-| Database and users | `setup.sh`, run by the `setup.yaml` Job | Database `vault`; users `obsidian` (the apps) and `mcp` (Hermes's server) |
+| Database | `setup.sh`, run by the `setup.yaml` Job | Database `vault` |
+| Users | `couchdb.yaml` (init container) | `obsidian` (the apps) is a CouchDB server admin: LiveSync deletes and recreates the database when it initialises or rebuilds a vault |
 | Hermes access | `mcp.yaml` | [obsidian-livesync-mcp](https://github.com/adambenhassen/obsidian-livesync-mcp): note tools over MCP |
 | Passwords | `secrets.sops.yaml` | `COUCHDB_PASSWORD` (admin), `OBSIDIAN_PASSWORD`, `MCP_PASSWORD` |
 
