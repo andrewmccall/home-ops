@@ -63,7 +63,7 @@ def main():
     container = pod['containers'][0]
     assert '@sha256:' in container['image'], 'Hermes image must be pinned'
     refs = {e['name']: e['valueFrom']['secretKeyRef']['key'] for e in container['env'] if 'valueFrom' in e}
-    assert refs == {key: key for key in ('OPENROUTER_API_KEY', 'API_SERVER_KEY', 'HOME_ASSISTANT_TOKEN')}
+    assert refs == {key: key for key in ('OPENROUTER_API_KEY', 'API_SERVER_KEY', 'HOME_ASSISTANT_TOKEN', 'SPROOZI_TASK_TOKEN')}
     assert sandbox['spec']['volumeClaimTemplates'][0]['spec']['storageClassName'] == 'longhorn'
     service = next(d for d in apps if d['kind'] == 'Service' and d['metadata']['name'] == 'hermes-api')
     assert service['spec']['selector'] == {'app.kubernetes.io/name': 'hermes'}
@@ -97,6 +97,23 @@ def main():
         }],
         'ports': [{'protocol': 'TCP', 'port': 8123}],
     } in policy['spec']['egress'], 'Hermes cannot reach the Home Assistant MCP server'
+    tasks_mcp = hermes_config['mcp_servers']['sproozi-tasks']
+    assert tasks_mcp['url'] == 'https://sproozi-tasks.sproozi-system.svc:8443/mcp'
+    assert tasks_mcp['headers']['Authorization'] == 'Bearer $${SPROOZI_TASK_TOKEN}', 'Task credential reference must survive Flux substitution'
+    task_mcp = {'namespaceSelector': {'matchLabels': {'kubernetes.io/metadata.name': 'sproozi-system'}},
+                'podSelector': {'matchLabels': {'app.kubernetes.io/component': 'task-mcp'}}}
+    assert {'to': [task_mcp], 'ports': [{'protocol': 'TCP', 'port': 8443}]} in policy['spec']['egress'], 'Hermes cannot reach the Sproozi task service'
+    tasks = next(d for d in apps if d['kind'] == 'Deployment' and d['metadata']['name'] == 'sproozi-tasks')
+    assert tasks['spec']['template']['metadata']['labels']['app.kubernetes.io/component'] == 'task-mcp'
+    tasks_policy = next(d for d in apps if d['kind'] == 'NetworkPolicy' and d['metadata']['name'] == 'sproozi-tasks')
+    assert tasks_policy['spec']['ingress'] == [{'from': [{
+        'namespaceSelector': {'matchLabels': {'kubernetes.io/metadata.name': 'hermes'}},
+        'podSelector': {'matchLabels': {'app.kubernetes.io/name': 'hermes'}}}],
+        'ports': [{'protocol': 'TCP', 'port': 8443}]}], 'Only Hermes may call the Sproozi task service'
+    tasks_config = next(d for d in apps if d['kind'] == 'ConfigMap' and d['metadata']['name'].startswith('sproozi-tasks-'))
+    for workflow in json.loads(tasks_config['data']['tasks.json'])['workflows'].values():
+        assert any(d['kind'] == 'AgentTemplate' and d['metadata']['name'] == workflow['template'] for d in apps), f'{workflow["template"]}: no AgentTemplate'
+    print('PASS: Hermes reaches only the Sproozi task service, whose workflows name existing templates')
     app_kustomization = next(d for d in rendered['base'] if d['kind'] == 'Kustomization' and d['metadata']['name'] == 'apps')
     assert {'name': 'agent-sandbox'} in app_kustomization['spec']['dependsOn']
     print('PASS: Hermes CRD schema, credential references, persistent storage and controller ordering')

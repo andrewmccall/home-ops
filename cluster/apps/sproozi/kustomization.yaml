@@ -3,6 +3,15 @@ kind: Kustomization
 resources:
   - install.yaml
   - certificates.yaml
+  - sre.yaml
+  - tasks.yaml
+  - task-tls.sops.yaml
+  - task-token.sops.yaml
+configMapGenerator:
+  - name: sproozi-tasks
+    namespace: sproozi-system
+    files:
+      - tasks.json
 patches:
   # The gateway refuses to start a capability whose credentials are missing.
   # Enable each one here once its credential Secret exists.
@@ -27,3 +36,13 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/args/1
         value: --dns=sproozi-gateway.sproozi-system.svc.cluster.andrewmccall.com
+      # The gateway inspects these upstreams, so its certificate must name them.
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --dns=api.anthropic.com
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --dns=github.com
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --dns=api.github.com

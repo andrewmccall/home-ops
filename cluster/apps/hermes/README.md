@@ -204,8 +204,24 @@ The API has no route (Ingress or HTTPRoute). NetworkPolicy permits the Home Assi
 denies other incoming pod traffic. Use a localhost port-forward for laptop access.
 The dashboard and native messaging channels are not configured yet.
 The pod has no Kubernetes service-account token, host mounts or container socket.
-Egress permits cluster DNS, Home Assistant on port 8123, and public IPv4 HTTPS,
+Egress permits cluster DNS, Home Assistant on port 8123, the Sproozi task service on 8443, and public IPv4 HTTPS,
 excluding other private and link-local networks. This allows OpenRouter and upstream runtime downloads; it is not an
 OpenRouter-only hostname allowlist. Agent Sandbox manages pod and volume lifecycle.
 This cluster uses its normal container runtime, with no gVisor/Kata RuntimeClass.
 The upstream image bootstraps as root and drops Hermes services to UID 10000.
+
+## Sproozi runs
+
+Hermes starts Sproozi's `triage` and `fix` runs through the `sproozi-tasks` MCP
+server; see `../sproozi/README.md` for what each run may do. Hermes holds only the
+task service's bearer token (`SPROOZI_TASK_TOKEN`); the model and GitHub
+credentials stay in Sproozi's gateway. The init container builds
+`/etc/hermes-ca/ca-bundle.pem` from the image's public roots plus
+`sproozi-tasks-ca.crt`, and `SSL_CERT_FILE` points every client at it.
+The `api_server` platform (Ada voice) still sees only the Home Assistant tools.
+
+Check the connection after a pod restart:
+
+```sh
+kubectl -n hermes exec hermes -c hermes -- hermes mcp test sproozi-tasks
+```

@@ -34,6 +34,36 @@ Patches:
 Each patch tests the release's original value first, so a new release that changes
 it fails to render instead of being silently overwritten.
 
+## SRE workflows for Hermes
+
+Hermes starts runs through the **task service** (`tasks.yaml`), an MCP server at
+`https://sproozi-tasks.sproozi-system.svc:8443/mcp`. `tasks.json` maps each workflow
+name to a fixed template and capabilities; Hermes supplies only the task text, so
+it cannot choose an image, model, policy or credential.
+
+| Workflow | Template / runtime | Model | Can do |
+| --- | --- | --- | --- |
+| `triage` | `sre-triage` / `claude-haiku` | `claude-haiku-5-5` | Read pods, logs, events, services, Deployments, ReplicaSets, StatefulSets; 15 min; 2 at once |
+| `fix` | `sre-fix` / `claude-sonnet` | `claude-sonnet-5-5` | The same reads, plus one PR against `andrewmccall/home-ops` `main`; 45 min; 1 at once |
+
+Both are in `sre.yaml`. Runs use the release's `sproozi-native` image (Claude Code,
+git, gh, kubectl). A run never holds a credential: the gateway adds the Anthropic
+key and the GitHub App token to requests it allows. Budgets cap tokens only; set a
+spending limit on the gateway's Anthropic workspace as the money ceiling.
+
+Policy gaps to know when reading a triage: Sproozi's Kubernetes read covers only
+the resources above, so triage cannot see Secrets, ConfigMaps, nodes, DaemonSets,
+PVCs or Flux objects. Its namespace list has no wildcard; **add new namespaces to
+both policies in `sre.yaml`** (at most 32).
+
+The task service's TLS certificate is signed by a private CA made for it whose
+key was discarded; Hermes trusts `../hermes/sproozi-tasks-ca.crt`. The certificate
+expires on 2029-11-09. To replace it, make a new CA and certificate for
+`sproozi-tasks.sproozi-system.svc`, store the certificate and key with
+`scripts/sops-set-secret.py` in `task-tls.sops.yaml` (`tls.crt`, `tls.key`), and
+replace the CA file. The bearer token is in `task-token.sops.yaml` and, as
+`SPROOZI_TASK_TOKEN`, in Hermes's Secret; rotate both together.
+
 ## Upgrading
 
 Download the new release's Kubernetes archive and `checksums.txt`, check the

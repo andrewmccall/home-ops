@@ -1,0 +1,14 @@
+{
+  "namespace": "sproozi-system",
+  "principal": "hermes",
+  "workflows": {
+    "triage": {
+      "template": "sre-triage",
+      "capabilities": ["model.inference", "kubernetes.read"]
+    },
+    "fix": {
+      "template": "sre-fix",
+      "capabilities": ["model.inference", "kubernetes.read", "github.pull_request"]
+    }
+  }
+}

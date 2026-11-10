@@ -11,5 +11,8 @@ configMapGenerator:
   - name: hermes-config
     files:
       - config.yaml
+  - name: hermes-trust
+    files:
+      - sproozi-tasks-ca.crt
 generatorOptions:
   disableNameSuffixHash: true

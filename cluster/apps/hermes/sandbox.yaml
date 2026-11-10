@@ -26,12 +26,20 @@ spec:
               workspace = pathlib.Path('/opt/data/workspace')
               workspace.mkdir(exist_ok=True)
               os.chown(workspace, 10000, 10000)
+              # The image's public roots plus the private CA of the Sproozi task service.
+              bundle = open('/etc/ssl/certs/ca-certificates.crt').read() + open('/etc/hermes-trust/sproozi-tasks-ca.crt').read()
+              pathlib.Path('/etc/hermes-ca/ca-bundle.pem').write_text(bundle)
           volumeMounts:
             - name: data
               mountPath: /opt/data
             - name: config
               mountPath: /etc/hermes
               readOnly: true
+            - name: trust
+              mountPath: /etc/hermes-trust
+              readOnly: true
+            - name: ca-bundle
+              mountPath: /etc/hermes-ca
       containers:
         - name: hermes
           image: *image
@@ -55,6 +63,15 @@ spec:
                 secretKeyRef:
                   name: hermes-agent-api-keys
                   key: HOME_ASSISTANT_TOKEN
+            - name: SPROOZI_TASK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hermes-agent-api-keys
+                  key: SPROOZI_TASK_TOKEN
+            - name: SSL_CERT_FILE
+              value: /etc/hermes-ca/ca-bundle.pem
+            - name: REQUESTS_CA_BUNDLE
+              value: /etc/hermes-ca/ca-bundle.pem
           ports:
             - name: api
               containerPort: 8642
@@ -78,10 +95,19 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /opt/data
+            - name: ca-bundle
+              mountPath: /etc/hermes-ca
+              readOnly: true
       volumes:
         - name: config
           configMap:
             name: hermes-config
+        - name: trust
+          configMap:
+            name: hermes-trust
+        - name: ca-bundle
+          emptyDir:
+            sizeLimit: 4Mi
   volumeClaimTemplates:
     - metadata:
         name: data

@@ -14,6 +14,14 @@ mcp_servers:
       Authorization: "Bearer $${HOME_ASSISTANT_TOKEN}"
     timeout: 20
     connect_timeout: 15
+  # Starts Sproozi triage and fix runs (cluster/apps/sproozi/tasks.json).
+  sproozi-tasks:
+    url: https://sproozi-tasks.sproozi-system.svc:8443/mcp
+    strict_redirect_headers: true
+    headers:
+      Authorization: "Bearer $${SPROOZI_TASK_TOKEN}"
+    timeout: 40
+    connect_timeout: 15
 platforms:
   api_server:
     enabled: true

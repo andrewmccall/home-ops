@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+    name: sproozi-task-token
+    namespace: sproozi-system
+stringData:
+    token: ENC[AES256_GCM,data:03eln7mN3rk7sndy3dUAfvixI/O0BFFbxL/OR27YSBDyyibMPq0ZQvLOWLK/vLFDKGuCEMysS3G5X5yUF1N4WA==,iv:BQAjQrO8V4f3zMby42ktCe29e9g23OdGb/Uk3iilbMA=,tag:HwBYDeOgVr8jmtPAIhTDnw==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBEek1RZzhtL0JLRVZNekhn
+            QlkxcmtnL0JBM2E1a3JCTWlMa1IzZFZld0dNCi9aZFFpS0g1bDFYcUVGOER3ZGR5
+            OFVjRjY5b1E3ZFo1WU5WYk5JQ2U0QlkKLS0tIFh2dU01UjNtUkV3RS9jWUIyQ0tE
+            MVJsVkVYZGFOZUxVaVdBNzF0VlgvVHMKg5Z/ihpd6xFckQ1i7Vsd8cOH84HXEQqN
+            c+IEGyZhT2XPfOZZ46RYS/vqvh+dx537LhYVkq/1fUhHnvjDqrzwUQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-10T15:57:47Z"
+    mac: ENC[AES256_GCM,data:bh9AwFI2Qm68Wym1c3+IdF/XLCGBOOjSrNCgpaD1jmIcYHtnSenBNOpAYJNmjqTaXvU0s7Co51ipU1/ya4NwyOJJo389ByMZWbrtanYWsGYxZSJXvGcIhqTj23YNCkocm+4ffW78x5jRSkieZCYSgqks05ABnpD5y27tni4FQ6M=,iv:y7JAsDH+dCt00l7POQsIpgExZk5QV3QaRpZzm+c3UDE=,tag:PxULSFRdIy0wKR65eewmXA==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0
