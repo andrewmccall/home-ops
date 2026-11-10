@@ -1,0 +1,162 @@
+# Vendored from andrewmccall/sproozi v0.2.4 sproozi_0.2.4_kubernetes.tar.gz (self-managed-ca/certificates.yaml).
+# Source: https://github.com/andrewmccall/sproozi/releases/download/v0.2.4/sproozi_0.2.4_kubernetes.tar.gz
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/component: certificates
+    app.kubernetes.io/name: sproozi
+  name: sproozi-certificates
+  namespace: sproozi-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/component: certificates
+    app.kubernetes.io/name: sproozi
+  name: sproozi-certificates-trust
+  namespace: sproozi-agents
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/component: certificates
+    app.kubernetes.io/name: sproozi
+  name: sproozi-certificates
+  namespace: sproozi-system
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - sproozi-certificate-authority
+  - sproozi-gateway-tls
+  resources:
+  - secrets
+  verbs:
+  - get
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/component: certificates
+    app.kubernetes.io/name: sproozi
+  name: sproozi-certificates-trust
+  namespace: sproozi-agents
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sproozi-certificates-trust
+subjects:
+- kind: ServiceAccount
+  name: sproozi-certificates
+  namespace: sproozi-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/component: certificates
+    app.kubernetes.io/name: sproozi
+  name: sproozi-certificates
+  namespace: sproozi-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sproozi-certificates
+subjects:
+- kind: ServiceAccount
+  name: sproozi-certificates
+  namespace: sproozi-system
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/component: certificates
+    app.kubernetes.io/name: sproozi
+  name: sproozi-certificate-authority
+  namespace: sproozi-system
+type: Opaque
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/component: certificates
+    app.kubernetes.io/name: sproozi
+  name: sproozi-gateway-tls
+  namespace: sproozi-system
+type: Opaque
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: certificates
+    app.kubernetes.io/name: sproozi
+  name: sproozi-certificates
+  namespace: sproozi-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: certificates
+      app.kubernetes.io/name: sproozi
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: certificates
+        app.kubernetes.io/name: sproozi
+    spec:
+      containers:
+      - args:
+        - --dns=sproozi-gateway.sproozi-system.svc
+        - --dns=sproozi-gateway.sproozi-system.svc.cluster.local
+        - --dns=kubernetes.default.svc
+        command:
+        - /certificates
+        image: ghcr.io/andrewmccall/sproozi@sha256:a7bd217c216e72bf296ec8aeb701706dab7425fddea5d5aa4e3e3447d566115f
+        name: certificates
+        resources:
+          limits:
+            cpu: 200m
+            memory: 64Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts:
+        - mountPath: /var/run/sproozi-certificates
+          name: scratch
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: sproozi-certificates
+      volumes:
+      - emptyDir:
+          medium: Memory
+          sizeLimit: 4Mi
+        name: scratch

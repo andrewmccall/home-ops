@@ -1,0 +1,29 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - install.yaml
+  - certificates.yaml
+patches:
+  # The gateway refuses to start a capability whose credentials are missing.
+  # Enable each one here once its credential Secret exists.
+  - target:
+      kind: Deployment
+      name: sproozi-gateway
+    patch: |
+      - op: test
+        path: /spec/template/spec/containers/0/env/0/name
+        value: SPROOZI_ENABLED_CAPABILITIES
+      - op: replace
+        path: /spec/template/spec/containers/0/env/0/value
+        value: kubernetes.read
+  # This cluster's DNS domain is cluster.andrewmccall.com, not cluster.local.
+  - target:
+      kind: Deployment
+      name: sproozi-certificates
+    patch: |
+      - op: test
+        path: /spec/template/spec/containers/0/args/1
+        value: --dns=sproozi-gateway.sproozi-system.svc.cluster.local
+      - op: replace
+        path: /spec/template/spec/containers/0/args/1
+        value: --dns=sproozi-gateway.sproozi-system.svc.cluster.andrewmccall.com

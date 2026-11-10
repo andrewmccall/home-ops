@@ -1,0 +1,992 @@
+# Vendored from andrewmccall/sproozi v0.2.4 sproozi_0.2.4_kubernetes.tar.gz (install/install.yaml).
+# Source: https://github.com/andrewmccall/sproozi/releases/download/v0.2.4/sproozi_0.2.4_kubernetes.tar.gz
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+  name: sproozi-agents
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+    control-plane: controller-manager
+  name: sproozi-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-controller-manager
+  namespace: sproozi-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sproozi-shared-gateway
+  namespace: sproozi-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: controller-sandbox-writer
+  namespace: sproozi-agents
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - create
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - serviceaccounts
+  verbs:
+  - create
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumeclaims
+  verbs:
+  - create
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - create
+  - update
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-leader-election-role
+  namespace: sproozi-system
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+- apiGroups:
+  - ""
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sproozi-shared-gateway-budget
+  namespace: sproozi-system
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - budgetledgers
+  verbs:
+  - get
+  - list
+  - create
+  - update
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sproozi-shared-gateway-credentials
+  namespace: sproozi-system
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - model-gateway-chatgpt
+  resources:
+  - secrets
+  verbs:
+  - get
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agentpolicy-admin-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentpolicies
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agentpolicy-editor-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentpolicies
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agentpolicy-viewer-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentpolicies
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agentrun-admin-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruns
+  verbs:
+  - '*'
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruns/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agentrun-editor-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruns
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruns/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agentrun-viewer-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruns
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruns/status
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agentruntime-admin-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruntimes
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agentruntime-editor-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruntimes
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agentruntime-viewer-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruntimes
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agenttemplate-admin-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agenttemplates
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agenttemplate-editor-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agenttemplates
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-agenttemplate-viewer-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agenttemplates
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-budgetledger-admin-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - budgetledgers
+  verbs:
+  - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-budgetledger-editor-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - budgetledgers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-budgetledger-viewer-role
+rules:
+- apiGroups:
+  - sproozi.com
+  resources:
+  - budgetledgers
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-controller-manager-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - serviceaccounts
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - networkpolicies
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentpolicies
+  - agentruntimes
+  - agenttemplates
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruns
+  verbs:
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruns/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruns/status
+  verbs:
+  - get
+  - patch
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: sproozi-shared-gateway
+rules:
+- apiGroups:
+  - authentication.k8s.io
+  resources:
+  - tokenreviews
+  verbs:
+  - create
+- apiGroups:
+  - sproozi.com
+  resources:
+  - agentruns
+  - agentpolicies
+  - agenttemplates
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - serviceaccounts
+  - pods
+  - pods/log
+  - events
+  - services
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - replicasets
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: controller-sandbox-writer
+  namespace: sproozi-agents
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: controller-sandbox-writer
+subjects:
+- kind: ServiceAccount
+  name: sproozi-controller-manager
+  namespace: sproozi-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-leader-election-rolebinding
+  namespace: sproozi-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sproozi-leader-election-role
+subjects:
+- kind: ServiceAccount
+  name: sproozi-controller-manager
+  namespace: sproozi-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sproozi-shared-gateway-budget
+  namespace: sproozi-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sproozi-shared-gateway-budget
+subjects:
+- kind: ServiceAccount
+  name: sproozi-shared-gateway
+  namespace: sproozi-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sproozi-shared-gateway-credentials
+  namespace: sproozi-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sproozi-shared-gateway-credentials
+subjects:
+- kind: ServiceAccount
+  name: sproozi-shared-gateway
+  namespace: sproozi-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-controller-manager-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: sproozi-controller-manager-role
+subjects:
+- kind: ServiceAccount
+  name: sproozi-controller-manager
+  namespace: sproozi-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sproozi-shared-gateway
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: sproozi-shared-gateway
+subjects:
+- kind: ServiceAccount
+  name: sproozi-shared-gateway
+  namespace: sproozi-system
+---
+apiVersion: v1
+data:
+  profiles.json: '{}'
+kind: ConfigMap
+metadata:
+  name: sproozi-egress-gateway-profiles
+  namespace: sproozi-system
+---
+apiVersion: v1
+data:
+  servers.json: '{"servers":{}}'
+kind: ConfigMap
+metadata:
+  name: sproozi-mcp-servers
+  namespace: sproozi-system
+---
+apiVersion: v1
+data:
+  pricing.json: |
+    {
+      "models": {
+        "gpt-6.1-sol": {
+          "inputMicrosPerMillionTokens": 2000000,
+          "cachedInputMicrosPerMillionTokens": 100000,
+          "outputMicrosPerMillionTokens": 10000000
+        },
+        "gpt-5.3-codex": {
+          "inputMicrosPerMillionTokens": 1750000,
+          "cachedInputMicrosPerMillionTokens": 175000,
+          "outputMicrosPerMillionTokens": 14000000
+        },
+        "claude-sonnet-4-5-20250929": {
+          "inputMicrosPerMillionTokens": 3000000,
+          "cachedInputMicrosPerMillionTokens": 300000,
+          "outputMicrosPerMillionTokens": 15000000,
+          "cacheWrite5mMicrosPerMillionTokens": 3750000
+        }
+      }
+    }
+kind: ConfigMap
+metadata:
+  name: sproozi-model-gateway-pricing
+  namespace: sproozi-system
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: shared-gateway
+    app.kubernetes.io/name: sproozi
+  name: sproozi-gateway
+  namespace: sproozi-system
+spec:
+  ports:
+  - name: proxy
+    port: 8443
+    protocol: TCP
+    targetPort: 8443
+  selector:
+    app.kubernetes.io/component: shared-gateway
+    app.kubernetes.io/name: sproozi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+    control-plane: controller-manager
+  name: sproozi-controller-manager
+  namespace: sproozi-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: sproozi
+      control-plane: controller-manager
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        app.kubernetes.io/name: sproozi
+        control-plane: controller-manager
+    spec:
+      containers:
+      - args:
+        - --leader-elect
+        - --health-probe-bind-address=:8081
+        command:
+        - /manager
+        image: ghcr.io/andrewmccall/sproozi@sha256:a7bd217c216e72bf296ec8aeb701706dab7425fddea5d5aa4e3e3447d566115f
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        ports:
+        - containerPort: 8081
+          name: health
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 64Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+        volumeMounts: []
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: sproozi-controller-manager
+      terminationGracePeriodSeconds: 10
+      volumes: []
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: shared-gateway
+    app.kubernetes.io/name: sproozi
+  name: sproozi-gateway
+  namespace: sproozi-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: shared-gateway
+      app.kubernetes.io/name: sproozi
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: shared-gateway
+        app.kubernetes.io/name: sproozi
+    spec:
+      containers:
+      - command:
+        - /gateway
+        env:
+        - name: SPROOZI_ENABLED_CAPABILITIES
+          value: kubernetes.read,model.inference,github.pull_request,packages.install,network.egress
+        - name: SPROOZI_GATEWAY_CERT_FILE
+          value: /var/run/sproozi-gateway/tls.crt
+        - name: SPROOZI_GATEWAY_KEY_FILE
+          value: /var/run/sproozi-gateway/tls.key
+        - name: SPROOZI_GATEWAY_HOST
+          value: sproozi-gateway.sproozi-system.svc
+        - name: AGENT_NAMESPACE
+          value: sproozi-agents
+        - name: BUDGET_NAMESPACE
+          value: sproozi-system
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: openai-api-key
+              name: model-gateway-credentials
+              optional: true
+        - name: MODEL_AUTH_MODE
+          valueFrom:
+            configMapKeyRef:
+              key: mode
+              name: model-gateway-auth
+              optional: true
+        - name: ANTHROPIC_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: anthropic-api-key
+              name: model-gateway-credentials
+              optional: true
+        - name: OPENAI_SIGN_IN_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: openai-sign-in-token
+              name: model-gateway-credentials
+              optional: true
+        - name: ANTHROPIC_SIGN_IN_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: anthropic-sign-in-token
+              name: model-gateway-credentials
+              optional: true
+        - name: COPILOT_SIGN_IN_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: copilot-sign-in-token
+              name: model-gateway-credentials
+              optional: true
+        - name: GITHUB_APP_ID
+          valueFrom:
+            secretKeyRef:
+              key: app-id
+              name: capability-proxy-github-app
+              optional: true
+        - name: GITHUB_APP_INSTALLATION_ID
+          valueFrom:
+            secretKeyRef:
+              key: installation-id
+              name: capability-proxy-github-app
+              optional: true
+        - name: GITHUB_APP_PRIVATE_KEY_PATH
+          value: /var/run/secrets/sproozi/github-app/private-key.pem
+        - name: EGRESS_PROFILES_PATH
+          value: /etc/sproozi/egress/profiles.json
+        - name: MODEL_PRICING_PATH
+          value: /etc/sproozi/model/pricing.json
+        - name: MCP_SERVERS_PATH
+          value: /etc/sproozi/mcp/servers.json
+        - name: SPROOZI_GATEWAY_MAX_CONNECTIONS
+          value: "2048"
+        - name: SPROOZI_GATEWAY_MEMORY_LIMIT
+          valueFrom:
+            resourceFieldRef:
+              containerName: shared-gateway
+              resource: limits.memory
+        image: ghcr.io/andrewmccall/sproozi@sha256:a7bd217c216e72bf296ec8aeb701706dab7425fddea5d5aa4e3e3447d566115f
+        name: shared-gateway
+        ports:
+        - containerPort: 8443
+          name: proxy
+          protocol: TCP
+        - containerPort: 8081
+          name: health
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /readyz
+            port: health
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: "2"
+            memory: 2Gi
+          requests:
+            cpu: 25m
+            memory: 128Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 65532
+          runAsNonRoot: true
+          runAsUser: 65532
+        volumeMounts:
+        - mountPath: /var/run/sproozi-gateway
+          name: gateway-tls
+          readOnly: true
+        - mountPath: /var/run/secrets/sproozi/github-app
+          name: github-app
+          readOnly: true
+        - mountPath: /etc/sproozi/egress
+          name: profiles
+          readOnly: true
+        - mountPath: /etc/sproozi/model
+          name: model-pricing
+          readOnly: true
+        - mountPath: /etc/sproozi/mcp
+          name: mcp-servers
+          readOnly: true
+      securityContext:
+        runAsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: sproozi-shared-gateway
+      terminationGracePeriodSeconds: 45
+      volumes:
+      - name: gateway-tls
+        secret:
+          secretName: sproozi-gateway-tls
+      - name: github-app
+        secret:
+          items:
+          - key: private-key.pem
+            path: private-key.pem
+          optional: true
+          secretName: capability-proxy-github-app
+      - configMap:
+          items:
+          - key: profiles.json
+            path: profiles.json
+          name: sproozi-egress-gateway-profiles
+        name: profiles
+      - configMap:
+          items:
+          - key: pricing.json
+            path: pricing.json
+          name: sproozi-model-gateway-pricing
+        name: model-pricing
+      - configMap:
+          items:
+          - key: servers.json
+            path: servers.json
+          name: sproozi-mcp-servers
+        name: mcp-servers
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sproozi-sandbox-default-deny
+  namespace: sproozi-agents
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-allow-agent-traffic
+  namespace: sproozi-system
+spec:
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: sproozi-agents
+    ports:
+    - port: 8443
+      protocol: TCP
+  podSelector:
+    matchExpressions:
+    - key: app.kubernetes.io/component
+      operator: In
+      values:
+      - shared-gateway
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  labels:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: sproozi
+  name: sproozi-default-deny-ingress
+  namespace: sproozi-system
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress

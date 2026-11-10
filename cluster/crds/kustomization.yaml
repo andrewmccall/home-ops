@@ -5,3 +5,4 @@ resources:
   - agent-sandbox
   - system-upgrade-controller
   - envoy-gateway
+  - sproozi
