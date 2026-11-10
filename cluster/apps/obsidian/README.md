@@ -50,6 +50,27 @@ Deletions are soft (LiveSync marks a note deleted) and Longhorn's daily snapshot
 cover `couchdb-data`, so an unwanted edit can be undone: in Obsidian from the
 note's history, or by restoring the volume.
 
+## Agents and folders
+
+CouchDB permissions are per database, so inside one vault a folder is not a
+boundary: any CouchDB user can read every note. Agents never get CouchDB access,
+only a view of the files, and the view is what limits them.
+
+Lay the vault out so agents can be given part of it later:
+
+| Folder | For |
+|---|---|
+| your own folders | Notes only you and Hermes see |
+| `Shared/` | Notes meant for agents |
+| `Agents/<name>/` | Each agent's own workspace |
+
+- **Hermes** sees the whole vault.
+- **Another agent** (a Hermes subagent with its own pod, a Sproozi run) gets a mount
+  of only its folder: a `subPath` of the vault volume, which the kernel enforces.
+  Telling an agent to stay in a folder is a convention, not a guard.
+- **A hard wall** (even compromised sync code cannot read your notes) needs a
+  separate vault: its own CouchDB database. Obsidian cannot link across vaults.
+
 ## Notes
 
 - Changing `livesync.ini` needs a restart (an init container copies it in): `kubectl -n obsidian rollout restart deploy/couchdb`.
