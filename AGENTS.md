@@ -14,6 +14,9 @@ Cluster setup and DNS domain: `cluster/README.md`.
   `cluster/apps/networking/README.md`: routes attach to the `internal` or `external` Gateway,
   `external` (public) also needs a namespace label, and pods are reachable from the LAN unless
   a NetworkPolicy closes them.
+- **Logins.** Before giving an app a login, or changing users, groups or who may use an app,
+  read `cluster/apps/authentik/README.md`: Authentik is the single OIDC login, configured by
+  blueprints in git; users live only in Authentik.
 - **Monitoring.** Before adding a dashboard (here or from another repo), alert rule, scrape
   target or log query, or touching Grafana, Prometheus, Alertmanager, Loki or Vector, read
   `cluster/apps/monitoring/README.md`. To monitor an app (its logs, metrics, OTLP traces,

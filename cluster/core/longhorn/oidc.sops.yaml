@@ -1,0 +1,29 @@
+# The Longhorn UI's OIDC client secret for the Envoy SecurityPolicy; the same value is in
+# apps/authentik/secrets.sops.yaml.
+apiVersion: v1
+kind: Secret
+metadata:
+    name: longhorn-oidc
+    namespace: longhorn
+stringData:
+    client-secret: ENC[AES256_GCM,data:A4se29Y+1D3VcLDRLLdz+8a5GiGFMu+HD+6i/vPMLRcf+cv24sgMiR7Tn3SlA0OnqYSjL0lc2O1LP7KdMsnuDw==,iv:ZIdSm78KuPix/GK1vMWnVPjifEJ0iF8vQWRJwy0CWDQ=,tag:n17N+dNXzF4YgYu1bFk0rA==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBjbkpIazZVTDIxdDFjL3N1
+            QmJUeEIwUzM0MDRMMFJ3L2VkTFZ5SW9iSkE4ClBBNm5TNkFuYmo1N21MQzYxLy9O
+            U1hEdy82Z0tXM2hCUi9nMW5NcGZ3TTQKLS0tIFdSaEoxZThFcWpQbjU1N1lieFYv
+            bjVxVjAxZzEwaVpkcUlrS3U0eUhTRW8K9nMP4SbWmFAz7ZqdJ7vCfvBoFujBHrl2
+            nSjlYGF3+0lEqY1xYODzeXVb4PnsELxFEL1o9n9w+MOC6bHpLShGpQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-10T16:20:50Z"
+    mac: ENC[AES256_GCM,data:lvcFYktwMaFeeJC+zgMDBIwBmUY8w7XzVFnExUMHNA6agOgKAcALtaaZI3s5/DAp890dOKy8pRjpbOqgUEaC2IZvQhVSwcR+U2rv8QZ5oVXl5xXLLd2peSCHTIJ3iK7iF6RL1V50iWE2565Q7vkHqQGVW886Rc87bRlMnNfFZf0=,iv:lr1q88UZwrCjMuioAmbo/CnKdgFvVYVqZBnFGX5fuWY=,tag:8CvjbwDC5gBYrjBuC42SDw==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0

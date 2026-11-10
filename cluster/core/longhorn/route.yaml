@@ -1,7 +1,5 @@
 ---
-# The Longhorn UI on the LAN-only Gateway. It has no login of its own: until the
-# Gateway's OIDC login is in place, anyone on the LAN who knows the host can manage
-# storage. See cluster/apps/networking/README.md.
+# The Longhorn UI on the LAN-only Gateway, behind an Authentik login (securitypolicy.yaml).
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:

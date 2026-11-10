@@ -22,9 +22,31 @@ spec:
     env:
       VAR_BLOCKY_URL: "http://blocky.networking.svc.${CLUSTER_DOMAIN}:4000"
     adminPassword: ${GRAFANA_ADMIN_PASSWORD}
+    # GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET for the Authentik login.
+    envFromSecret: grafana-oidc
     grafana.ini:
       analytics:
         check_for_updates: false
+      server:
+        root_url: https://grafana.${DOMAIN}
+      # Log in with Authentik (apps/authentik); a user is created on first login and
+      # their role follows Authentik groups on every login: admins -> Grafana server admin, the rest
+      # Viewer. The local admin login stays as the way in when Authentik is down.
+      auth.generic_oauth:
+        enabled: true
+        name: Authentik
+        client_id: grafana
+        scopes: openid profile email
+        auth_url: https://auth.${DOMAIN}/application/o/authorize/
+        token_url: https://auth.${DOMAIN}/application/o/token/
+        api_url: https://auth.${DOMAIN}/application/o/userinfo/
+        signout_redirect_url: https://auth.${DOMAIN}/application/o/grafana/end-session/
+        use_pkce: true
+        allow_sign_up: true
+        role_attribute_path: contains(groups, 'admins') && 'GrafanaAdmin' || 'Viewer'
+        role_attribute_strict: true
+        allow_assign_grafana_admin: true
+        skip_org_role_sync: false
       # The sidecar writes each folder's dashboards under /tmp/dashboards/<folder>.
       dashboards:
         default_home_dashboard_path: /tmp/dashboards/Home/home.json

@@ -1,0 +1,28 @@
+# Grafana's OIDC client secret; the same value is in apps/authentik/secrets.sops.yaml.
+apiVersion: v1
+kind: Secret
+metadata:
+    name: grafana-oidc
+    namespace: monitoring
+stringData:
+    GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: ENC[AES256_GCM,data:DY0NntXv4Ji2DTHQLH+WMRlKJU0xzc12bR6paVzsomg8qi1t20QvnZLI7GDB5pXQZzSQwgqD83xjKuohaO6Bfw==,iv:qaCnrSFlxZoYrV2bsrbXvsM8OLgMFP0x8yKSy7EtKlA=,tag:0CjlCyGCslSV4lYJfms/0A==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBhRUloc3hKUlljWnNRazNR
+            dEhuM3dTejZOWnc3MXFkZC8wbnZ0d2FvNFVBCmY1QkQzMU5PNFhFZHVabENUNnRw
+            aHRGTWo5KzkyaUIwd2xWL1ZKci9SenMKLS0tIFBZSFY0RU1xMWZSNmFUZWhkazlt
+            QUlQUHE4Z1ZkMDh1WDExWGlkeUhHaFUK7AFsIql82art59HFqrFsc7ip0Apj7z8w
+            Mgho9bCL8no3P/zEzM5ZLDRmhPTYhWzFd8s+6Ko9lyD9qlpsJfaDyA==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-10T16:20:50Z"
+    mac: ENC[AES256_GCM,data:BAwRrplxdOjdqjc1lBxLC+pLq8wbVCgr3Xk7NTBJ5Fk/hsbAFSRupKtx09Yv3zUJTKcPquDENCEWQoz0Ya1zMxGlrQ6ASjVbOy7zhSnkbW6fVkl2a/u9+P3OdG5hPzCK8hS6YU7m6dyQSu4OUU5xMikw/5KoBTZksm6mju4eMao=,iv:OrkInwo7++kKXYpQGCCg07kWMAu6BkHFfgfRcvD6+Xw=,tag:PZoHlxjhxMPW4QoANnSDww==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0
