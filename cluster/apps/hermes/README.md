@@ -108,18 +108,6 @@ kubectl -n openclaw-operator-system wait --for=delete helmrelease/openclaw-opera
 kubectl -n openclaw get pods,pvc
 ```
 
-If Home Assistant previously received manual Deployment patches for the bridge,
-Helm can preserve those fields after the chart stops rendering them. Once the new
-Helm manifest is installed, remove those stale overrides with:
-
-```sh
-python3 scripts/cleanup-ha-openclaw-proxy.py
-kubectl -n house rollout status deployment/home-assistant --timeout=180s
-```
-
-The helper checks the current Helm manifest first and removes only the OpenClaw
-hostname alias, proxy CA mounts, CA merge init container and CA environment override.
-
 ## Home Assistant voice
 
 Home Assistant's `OPENAI_BASE_URL` points its OpenAI SDK client at
