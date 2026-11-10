@@ -3,6 +3,8 @@ kind: Kustomization
 resources:
   - networkpolicy.yaml
   - namespace.yaml
+  - code-servers-oidc.sops.yaml
+  - code-servers-securitypolicy.yaml
   - home-assistant
   - zigbee2mqtt
   - esp-home

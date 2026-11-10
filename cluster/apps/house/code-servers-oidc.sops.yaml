@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+    name: code-servers-oidc
+    namespace: house
+stringData:
+    client-secret: ENC[AES256_GCM,data:VSwQQKKf9cD6lixXe1cWr7rM0TQFc+LQ7PCqoesXXiKVAx24ruS0J5RjW8mea3QlSCv02XZl330xxtxxEJ+LWw==,iv:md9JNk7JmV7Bzefhyx0xnkHhzbrzEiYH/ZkVcNzQJ74=,tag:26v8yWaLmZPnN/+/WRb2bA==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBJTXoveDVHUVRmVmpFWHpx
+            cDNiZUFleGdrc1NWbVNtT2lEbGJqOFhyWkNZCkZIZk1KMklZL3pTN216cjNjeE9T
+            YjhYWmYyUzJGOEEwNkFMR21WQ1NaTWsKLS0tIHZUQmM4clVWamVrTWtqQ3g0aXI1
+            TVYvVVNBMzZCbXNVbWhPYXFFekRFM3MKbrho32caNHWr4sQTv0PZBtM0fSSQZddW
+            4YcfNsYqMhzfqrS4WNhWN3G3YxY9nIEbhbgc7LuJzzLBgB5dGmM+qA==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-10T20:24:12Z"
+    mac: ENC[AES256_GCM,data:CpMX9dV4h2CJfyp5llFMKniE4UTU4uPfAOdb1/HiBulADcvglDIfoeDOdBXaXDf8V8Q8i82bCOjQN/uUbbS84uW0invsKtMfK0dc9kGDfqfM1wlIXVjPTl+FS2Ua8HhBZ5gmfS5aAOhQQlapuS8xi6XlG1cNcHCrnDK6o/DY+GY=,iv:cCatHzDz4kmYZPa4+lsTG5fJPiWeBAroL2eBqCW0z70=,tag:fPTkPtFHcR4EevNtMBtCOA==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0

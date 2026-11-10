@@ -18,7 +18,7 @@ login leaves the house.
 
 | Group | Gets |
 |---|---|
-| `admins` | Authentik superuser, Grafana server admin, the Longhorn UI |
+| `admins` | Authentik superuser, Grafana server admin, the Longhorn UI, the code-servers |
 | `household` | Grafana Viewer |
 
 A user in neither group cannot open any app. Add a person in the Authentik admin UI
@@ -30,11 +30,13 @@ A user in neither group cannot open any app. Add a person in the Authentik admin
 |---|---|---|
 | Grafana | Its own OIDC login (`auth.generic_oauth` in `monitoring/grafana/helmrelease.yaml`); role from the `groups` claim on every login. The local `admin` login stays as the way in when Authentik is down. | `monitoring/grafana/oidc.sops.yaml` |
 | Longhorn UI | No login of its own: an Envoy `SecurityPolicy` (`core/longhorn/securitypolicy.yaml`) logs in before the route. | `core/longhorn/oidc.sops.yaml` |
+| Home Assistant and ESPHome code-servers | The same, one client for both hosts (`house/code-servers-securitypolicy.yaml`); admins only. | `house/code-servers-oidc.sops.yaml` |
 
 ### Adding an app
 
 1. Generate a client secret and add it to `secrets.sops.yaml` and to a Secret beside the
-   app (`scripts/sops-set-secret.py`).
+   app (`scripts/sops-set-secret.py`). Restart the Authentik worker afterwards: it reads
+   the secrets as environment variables at start.
 2. Add an `oauth2provider`, an `application` and a `policybinding` per allowed group to
    `blueprints.yaml`, copying an existing entry. The redirect URI must match exactly.
 3. Point the app at the issuer `https://auth.${DOMAIN}/application/o/<slug>/`. An app with

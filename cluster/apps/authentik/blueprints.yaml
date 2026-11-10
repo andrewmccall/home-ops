@@ -85,3 +85,34 @@ entries:
       group: !Find [authentik_core.group, [name, admins]]
     attrs:
       order: 0
+
+  # The Home Assistant and ESPHome code-servers: no login of their own, so the
+  # Envoy Gateway logs in first (apps/house/code-servers-securitypolicy.yaml).
+  # One client for both hosts. Admins only.
+  - model: authentik_providers_oauth2.oauth2provider
+    id: code-servers-provider
+    identifiers:
+      name: Code servers
+    attrs:
+      <<: *oidc
+      client_id: code-servers
+      client_secret: !Env CODE_SERVERS_CLIENT_SECRET
+      redirect_uris:
+        - matching_mode: strict
+          url: https://home-assistant-code.${DOMAIN}/oauth2/callback
+        - matching_mode: strict
+          url: https://esphome-code.${DOMAIN}/oauth2/callback
+  - model: authentik_core.application
+    id: code-servers
+    identifiers:
+      slug: code-servers
+    attrs:
+      name: Code servers
+      provider: !KeyOf code-servers-provider
+      meta_launch_url: https://home-assistant-code.${DOMAIN}
+  - model: authentik_policies.policybinding
+    identifiers:
+      target: !KeyOf code-servers
+      group: !Find [authentik_core.group, [name, admins]]
+    attrs:
+      order: 0

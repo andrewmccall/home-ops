@@ -1,0 +1,42 @@
+---
+# The Home Assistant and ESPHome code-servers can edit configuration and run a
+# terminal, and have no login of their own, so the internal Gateway asks Authentik
+# first (the `code-servers` application in apps/authentik/blueprints.yaml; admins
+# only). Both share one OIDC client.
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: home-assistant-code
+  namespace: house
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: home-assistant-code
+  oidc:
+    provider:
+      issuer: https://auth.${DOMAIN}/application/o/code-servers/
+    clientID: code-servers
+    clientSecret:
+      name: code-servers-oidc
+    redirectURL: https://home-assistant-code.${DOMAIN}/oauth2/callback
+    logoutPath: /oauth2/logout
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: esphome-code
+  namespace: house
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: esphome-code
+  oidc:
+    provider:
+      issuer: https://auth.${DOMAIN}/application/o/code-servers/
+    clientID: code-servers
+    clientSecret:
+      name: code-servers-oidc
+    redirectURL: https://esphome-code.${DOMAIN}/oauth2/callback
+    logoutPath: /oauth2/logout
