@@ -1,0 +1,54 @@
+---
+# The monitoring pipeline itself, so an upgrade that silently breaks logs or
+# scraping is noticed. The chart already alerts on Prometheus, Alertmanager
+# (AlertmanagerFailedToSendAlerts) and down targets (TargetDown); a broken
+# notification channel can only be caught from outside, by a dead man's switch
+# fed from the Watchdog alert.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: monitoring-pipeline-alerts
+  namespace: monitoring
+spec:
+  groups:
+    - name: logs
+      rules:
+        # Nothing reaching Loki is how the Vector 0.61 upgrade went unnoticed for a week.
+        - alert: LogsNotReachingLoki
+          expr: |
+            sum(rate(vector_component_sent_events_total{job="monitoring/vector-agent", component_id="loki_kubernetes"}[15m])) == 0
+            or absent(vector_component_sent_events_total{job="monitoring/vector-agent", component_id="loki_kubernetes"})
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Pod logs are not reaching Loki"
+            description: "The Vector agent has sent no pod logs for 15 minutes. kubectl -n monitoring logs ds/vector-agent"
+
+        - alert: VectorSinkErrors
+          expr: sum by (component_id) (rate(vector_component_errors_total{job="monitoring/vector-agent"}[15m])) > 0
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Vector {{ $labels.component_id }} keeps failing"
+            description: "Errors for 30 minutes. kubectl -n monitoring logs ds/vector-agent"
+
+        - alert: LokiDroppingLogs
+          expr: sum by (reason) (rate(loki_discarded_samples_total[15m])) > 0
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Loki is discarding logs ({{ $labels.reason }})"
+            description: "Loki has rejected log lines for 30 minutes. rate_limited means the ingestion limit is too low for the current volume."
+
+    - name: scraping
+      rules:
+        - alert: ZigbeeMetricsMissing
+          expr: absent(up{job="mqtt-exporter"} == 1)
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "mqtt-exporter is not being scraped, so Zigbee alerts cannot fire"

@@ -25,6 +25,9 @@ spec:
     grafana.ini:
       analytics:
         check_for_updates: false
+      # The sidecar writes each folder's dashboards under /tmp/dashboards/<folder>.
+      dashboards:
+        default_home_dashboard_path: /tmp/dashboards/Home/home.json
       # Still on the persistent volume from earlier installs; Grafana 12 refuses Angular plugins.
       plugins:
         disable_plugins: grafana-piechart-panel,grafana-worldmap-panel,natel-discrete-panel

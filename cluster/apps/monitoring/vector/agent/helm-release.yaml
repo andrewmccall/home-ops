@@ -41,6 +41,9 @@ spec:
           journal_directory: /var/log/journal
         kubernetes_logs:
           type: kubernetes_logs
+          # Loki logs each rejected write, which Vector would ship back to Loki: a loop
+          # that filled the ingestion limit. Read these two with kubectl logs instead.
+          extra_label_selector: "app.kubernetes.io/name!=loki,app.kubernetes.io/name!=vector"
         vector_metrics:
           type: internal_metrics
       sinks:

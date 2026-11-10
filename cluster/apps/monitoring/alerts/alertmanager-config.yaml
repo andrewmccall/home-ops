@@ -12,12 +12,25 @@ spec:
     repeatInterval: 4h
     receiver: telegram
     routes:
+      # Watchdog always fires: it proves the alert pipeline works and belongs to a
+      # dead man's switch, not a chat. Info alerts only feed inhibition and dashboards.
+      - matchers:
+          - name: alertname
+            value: Watchdog|InfoInhibitor
+            matchType: "=~"
+        receiver: blackhole
+      - matchers:
+          - name: severity
+            value: info|none
+            matchType: "=~"
+        receiver: blackhole
       - matchers:
           - name: severity
             value: critical
         receiver: telegram-critical
         repeatInterval: 1h
   receivers:
+    - name: blackhole
     - name: telegram
       telegramConfigs:
         - apiURL: https://api.telegram.org

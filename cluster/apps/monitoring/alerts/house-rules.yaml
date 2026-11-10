@@ -1,0 +1,115 @@
+---
+# The house: Home Assistant (its prometheus integration), Zigbee (mqtt-exporter,
+# independent of Home Assistant) and the workloads they run on.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: house-alerts
+  namespace: monitoring
+spec:
+  groups:
+    - name: house-workloads
+      rules:
+        - alert: HouseWorkloadDown
+          expr: |
+            kube_deployment_status_replicas_available{namespace=~"house|databases"}
+              < kube_deployment_spec_replicas{namespace=~"house|databases"}
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.namespace }}/{{ $labels.deployment }} is down"
+            description: "Fewer ready replicas than wanted for 10 minutes. kubectl -n {{ $labels.namespace }} describe deploy {{ $labels.deployment }}"
+
+        - alert: HouseStatefulSetDown
+          expr: |
+            kube_statefulset_status_replicas_ready{namespace=~"house|databases"}
+              < kube_statefulset_replicas{namespace=~"house|databases"}
+          for: 10m
+          labels:
+            severity: critical
+          annotations:
+            summary: "{{ $labels.namespace }}/{{ $labels.statefulset }} is down"
+
+    - name: home-assistant
+      rules:
+        - alert: HomeAssistantDown
+          expr: up{job="home-assistant-app"} == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Home Assistant is not answering"
+            description: "Prometheus cannot scrape /api/prometheus. Check the pod and its logs; a 401 means the Prometheus token was revoked (scripts/configure-prometheus-ha-token.py)."
+
+        - alert: HomeAssistantMetricsMissing
+          expr: absent(up{job="home-assistant-app"})
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Home Assistant is not being scraped, so its alerts cannot fire"
+            description: "The house/home-assistant ServiceMonitor or its Service is missing."
+
+        - alert: HeatingZoneUnavailable
+          expr: homeassistant_entity_available{domain="climate", entity=~"climate\\.wiser_.*"} == 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Heating: {{ $labels.friendly_name }} is unavailable"
+            description: "Home Assistant has lost this Wiser zone. If every zone is out, the Wiser hub or its integration is down."
+
+        - alert: VoiceSatelliteOffline
+          expr: homeassistant_entity_available{domain="assist_satellite"} == 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.friendly_name }} is offline"
+            description: "The voice satellite has not been connected to Home Assistant for 10 minutes."
+
+    - name: zigbee
+      rules:
+        - alert: ZigbeeBridgeOffline
+          expr: mqtt_state{topic="zigbee2mqtt_bridge_state"} == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Zigbee2MQTT bridge is offline"
+            description: "No Zigbee device can be controlled. Check the zigbee2mqtt pod and the USB coordinator."
+
+        # The bridge reports online but nothing arrives: a stuck coordinator, or the
+        # exporter has lost MQTT.
+        - alert: ZigbeeSilent
+          expr: sum(increase(mqtt_message_total{topic=~"zigbee2mqtt_.*"}[1h])) == 0 or absent(mqtt_message_total)
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "No Zigbee messages for over an hour"
+            description: "Neither devices nor the bridge have published to MQTT. Check zigbee2mqtt, mosquitto and monitoring/mqtt-exporter."
+
+        # Bulbs and lamp groups are left out: being switched off at the wall is normal.
+        # Mains devices are offline after 10 minutes unseen, battery ones after 25 hours.
+        - alert: ZigbeeDeviceOffline
+          expr: |
+            mqtt_zigbee_availability{
+              topic!~"(?i)zigbee2mqtt_.*(light|lamp|bedside).*",
+              topic!~"zigbee2mqtt_(Office Windows|Steve Bedroom|Ben All)"
+            } == 0
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Zigbee device {{ $labels.topic | reReplaceAll \"^zigbee2mqtt_\" \"\" }} is offline"
+            description: "Zigbee2MQTT has not heard from it. Check its battery or power, or re-pair it."
+
+        - alert: ZigbeeBatteryLow
+          expr: mqtt_battery{topic=~"zigbee2mqtt_.*"} < 15
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Zigbee device {{ $labels.topic | reReplaceAll \"^zigbee2mqtt_\" \"\" }} battery at {{ $value }}%"
