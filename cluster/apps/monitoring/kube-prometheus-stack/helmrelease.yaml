@@ -55,8 +55,8 @@ spec:
               - *host-alert-manager
             secretName: alert-manager-tls
       alertmanagerSpec:
-        # Without this the operator adds namespace="monitoring" to the telegram-alerts
-        # route, so alerts from house, flux-system and every other namespace went nowhere.
+        # Without this the operator scopes an AlertmanagerConfig's route to its own
+        # namespace, so a receiver in monitoring would miss house, flux-system and the rest.
         alertmanagerConfigMatcherStrategy:
           type: None
         # Silences and the notification log only; they are a few KB.

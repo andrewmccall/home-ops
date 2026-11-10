@@ -69,28 +69,23 @@ Prometheus selects every ServiceMonitor, PodMonitor and PrometheusRule in the
 cluster, without label selectors. An app or an external repo adds scraping and
 alerts by shipping those resources next to its workloads.
 
-Alertmanager routes every alert, from any namespace, through
-`alerts/alertmanager-config.yaml`:
+Alertmanager has **no notification receiver**: the Telegram one never had a real
+token and was removed. Alerts show on the Home dashboard and in Alertmanager. To add
+a channel, put an AlertmanagerConfig in `alerts/` (any namespace's alerts reach it,
+because `alertmanagerConfigMatcherStrategy: None` is set in
+`kube-prometheus-stack/`) with its credentials in a SOPS secret, and send
+`Watchdog` to a dead man's switch so a broken channel is noticed.
 
-| `severity` | Goes to |
+| `severity` | Meaning |
 |---|---|
-| `critical` | Telegram, repeated hourly |
-| `warning` | Telegram, repeated every 4 h |
-| `info`, `none`, `Watchdog` | Nowhere (inhibition and dashboards only) |
+| `critical` | Something people rely on is down |
+| `warning` | Needs attention; blocks the Monday k3s upgrade (`cluster/core/system-upgrade/`) |
+| `info`, `none` | Inhibition and dashboards only |
 
-Give every new rule a `severity` and a `summary` annotation; the Telegram message
-is built from `summary` and `description`. Before adding a rule, check that the
-chart's defaults lack it (`kubectl get prometheusrule -n monitoring`): node, pod,
-volume, target, Prometheus and Alertmanager failures are already covered.
-
-`alertmanagerConfigMatcherStrategy: None` in `kube-prometheus-stack/` is what lets
-one AlertmanagerConfig route other namespaces' alerts. The operator default scopes
-it to `monitoring` alone, which silently dropped every house alert.
-
-Telegram delivery is broken until the bot token placeholder in
-`alerts/alertmanager-config.yaml` is replaced with a SOPS secret.
-`AlertmanagerFailedToSendAlerts` cannot reach you through a broken channel, so
-the planned fix is a dead man's switch fed from `Watchdog`.
+Give every new rule a `severity` and a `summary` annotation, and a `description`
+when the fix is not obvious. Before adding a rule, check that the chart's defaults
+lack it (`kubectl get prometheusrule -n monitoring`): node, pod, volume, target,
+Prometheus and Alertmanager failures are already covered.
 
 ## Logs
 

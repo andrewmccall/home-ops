@@ -421,7 +421,7 @@
       "id": 7,
       "type": "table",
       "title": "Alerts firing",
-      "description": "Everything Alertmanager would notify about. Telegram delivery is not configured yet.",
+      "description": "Warning and critical alerts firing now. No notification channel is configured, so this dashboard and Alertmanager are where they show.",
       "datasource": {
         "type": "prometheus",
         "uid": "PBFA97CFB590B2093"
