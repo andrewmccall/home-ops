@@ -91,6 +91,16 @@ class AlertDecisionsTest(unittest.TestCase):
     def test_only_resolved_alerts_produce_no_payload(self):
         self.assertIsNone(self.send(alert(status='resolved')))
 
+    def test_root_run_hands_files_back_to_the_directory_owner(self):
+        directory = Path(os.environ['SRE_ALERTS_STATE']).parent
+        directory.mkdir(parents=True, exist_ok=True)
+        owner = directory.stat()
+        changed = []
+        with patch.object(sre.os, 'geteuid', return_value=0), patch.object(sre.os, 'getegid', return_value=0), \
+                patch.object(sre.os, 'chown', side_effect=lambda path, uid, gid: changed.append((Path(path).suffix, uid, gid))):
+            self.decide('A/b/c', 'ignore')
+        self.assertEqual(sorted(changed), [('', owner.st_uid, owner.st_gid), ('.lock', owner.st_uid, owner.st_gid)])
+
     def test_key_falls_back_when_no_object_label(self):
         self.assertEqual(sre.alert_key({'alertname': 'TargetDown', 'namespace': 'monitoring'}), 'TargetDown/monitoring/-')
 

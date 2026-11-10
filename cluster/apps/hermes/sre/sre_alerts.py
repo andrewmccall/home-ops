@@ -80,6 +80,12 @@ class State:
     def save(self):
         with tempfile.NamedTemporaryFile('w', dir=self.path.parent, delete=False) as handle:
             json.dump(self.data, handle, indent=2, sort_keys=True)
+        # Keep the file owned by the directory's owner (the hermes user), so a
+        # run as root (kubectl exec) cannot lock Hermes out of its decisions.
+        owner = self.path.parent.stat()
+        if (os.geteuid(), os.getegid()) != (owner.st_uid, owner.st_gid) and os.geteuid() == 0:
+            for path in (handle.name, self.lock.name):
+                os.chown(path, owner.st_uid, owner.st_gid)
         os.replace(handle.name, self.path)
 
 

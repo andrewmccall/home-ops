@@ -75,6 +75,9 @@ def main(data=Path('/opt/data'), seed=Path('/etc/hermes-seed'), managed=Path('/e
     workspace.mkdir(exist_ok=True)
     if chown:
         os.chown(workspace, UID, GID)
+        # Alert decisions: Hermes must own them even if a root command wrote them.
+        for path in (data / 'sre').glob('*'):
+            os.chown(path, UID, GID)
 
     # The image's public roots plus the private CA of the Sproozi task service.
     bundle.write_text(system_roots.read_text() + (trust / 'sproozi-tasks-ca.crt').read_text())
