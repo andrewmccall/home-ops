@@ -13,7 +13,7 @@ access (decided 2026-11-10).
 
 | File | Source |
 | --- | --- |
-| `install.yaml` | `install/install.yaml` from the v0.2.5 Kubernetes release archive, unchanged |
+| `install.yaml` | `install/install.yaml` from the v0.2.6 Kubernetes release archive, unchanged |
 | `certificates.yaml` | `self-managed-ca/certificates.yaml` from the same archive, unchanged |
 | `../../crds/sproozi/crds.yaml` | `crds.yaml` from the same archive, unchanged |
 | `kustomization.yaml` | Patches for this cluster, described below |
@@ -52,11 +52,10 @@ it cannot choose an image, model, policy or credential.
 | `fix` | `sre-fix` / `claude-sonnet` | `claude-sonnet-5-5` | The same reads, plus one PR against `andrewmccall/home-ops` `main`; 45 min; 1 at once |
 
 Both are in `sre.yaml`. Runs use the release's `sproozi-native` image (Claude Code,
-git, gh, kubectl). Sproozi returns a run's answer only from a `sproozi.run-result/v1`
-envelope in the termination file, which its Claude Code example does not write, so
-each runtime ends with a short script that wraps Claude's final `result` (cut to
-3,584 bytes and marked truncated if longer) and fails the run when Claude reports
-an error. A run never holds a credential: the gateway adds the Anthropic
+git, gh, kubectl). Each runtime sets the gateway proxy and git identity, then runs
+Sproozi's `claude-launch.py` from the run contract (Sproozi ADR 0054): one
+`claude --print`, whose final answer becomes the run result (cut to 3,584 bytes and
+marked truncated if longer); a Claude error fails the run with no result. A run never holds a credential: the gateway adds the Anthropic
 key and the GitHub App token to requests it allows. Budgets cap tokens only; set a
 spending limit on the gateway's Anthropic workspace as the money ceiling.
 
@@ -81,7 +80,7 @@ archive, and replace the three vendored files. Read the release notes'
 AgentRuns and stop running ones while the old controller still runs.
 
 ```sh
-VERSION=0.2.5
+VERSION=0.2.6
 curl -fsSLO "https://github.com/andrewmccall/sproozi/releases/download/v$VERSION/sproozi_${VERSION}_kubernetes.tar.gz"
 curl -fsSLO "https://github.com/andrewmccall/sproozi/releases/download/v$VERSION/checksums.txt"
 grep "sproozi_${VERSION}_kubernetes.tar.gz" checksums.txt | shasum -a 256 -c -
