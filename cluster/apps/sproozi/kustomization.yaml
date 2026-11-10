@@ -7,17 +7,24 @@ resources:
   - tasks.yaml
   - task-tls.sops.yaml
   - task-token.sops.yaml
-  - model-gateway-credentials.sops.yaml
+  - claude-login.yaml
   - capability-proxy-github-app.sops.yaml
 configMapGenerator:
+  # The SRE runs use Claude Code's own sign-in (a Claude subscription, in the
+  # sproozi-login-claude-code-default claim), which the gateway forwards. It
+  # holds no Anthropic key or token, or it would use that instead (README).
+  - name: model-gateway-auth
+    namespace: sproozi-system
+    literals:
+      - mode=workload
   - name: sproozi-tasks
     namespace: sproozi-system
     files:
       - tasks.json
 patches:
   # The gateway refuses to start a capability whose credentials are missing.
-  # Enabled: Kubernetes reads, Anthropic (model-gateway-credentials) and PRs
-  # through the GitHub App (capability-proxy-github-app).
+  # Enabled: Kubernetes reads, model calls with Claude Code's own sign-in
+  # (workload mode) and PRs through the GitHub App (capability-proxy-github-app).
   - target:
       kind: Deployment
       name: sproozi-gateway
@@ -43,6 +50,9 @@ patches:
       - op: add
         path: /spec/template/spec/containers/0/args/-
         value: --dns=api.anthropic.com
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --dns=platform.claude.com
       - op: add
         path: /spec/template/spec/containers/0/args/-
         value: --dns=github.com

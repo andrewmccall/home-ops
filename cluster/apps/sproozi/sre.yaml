@@ -12,6 +12,11 @@ spec:
     trustBundleConfigMap:
       key: ca-bundle.pem
       name: sproozi-sandbox-trust
+    # Claude Code's own login (Claude subscription) in the shared claim
+    # sproozi-login-claude-code-default; claude-launch.py keeps it in step.
+    signIn:
+      claims:
+        storageClassName: longhorn
   ephemeralWorkspace:
     sizeLimit: 2Gi
   gatewayEndpoint: https://sproozi-gateway.sproozi-system.svc:8443
@@ -78,6 +83,11 @@ spec:
     trustBundleConfigMap:
       key: ca-bundle.pem
       name: sproozi-sandbox-trust
+    # Claude Code's own login (Claude subscription) in the shared claim
+    # sproozi-login-claude-code-default; claude-launch.py keeps it in step.
+    signIn:
+      claims:
+        storageClassName: longhorn
   ephemeralWorkspace:
     sizeLimit: 4Gi
   gatewayEndpoint: https://sproozi-gateway.sproozi-system.svc:8443

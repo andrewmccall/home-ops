@@ -30,11 +30,13 @@ Patches:
   `cluster.local`, which this cluster does not use.
 - `SPROOZI_ENABLED_CAPABILITIES` is `kubernetes.read,model.inference,github.pull_request`
   (the release also enables package installs and egress, which nothing here uses).
-  The gateway refuses to start a capability without its credential:
-  `model-gateway-credentials.sops.yaml` (`anthropic-api-key`) and
+  The gateway refuses to start a capability without its credential. Model calls
+  use the runs' own Claude sign-in (Claude subscription, below); pull requests use
   `capability-proxy-github-app.sops.yaml` (`app-id`, `installation-id`,
-  `private-key.pem` of the `drew-pull-request-agent` App, installed only on home-ops).
-  Set them with `scripts/sops-set-secret.py`.
+  `private-key.pem` of the `drew-pull-request-agent` App, installed only on home-ops),
+  set with `scripts/sops-set-secret.py`.
+- The certificate also names `platform.claude.com`, where the gateway forwards
+  Claude Code's sign-in and token refresh in workload mode.
 
 Each patch tests the release's original value first, so a new release that changes
 it fails to render instead of being silently overwritten.
@@ -55,14 +57,55 @@ Both are in `sre.yaml`. Runs use the release's `sproozi-native` image (Claude Co
 git, gh, kubectl). Each runtime sets the gateway proxy and git identity, then runs
 Sproozi's `claude-launch.py` from the run contract (Sproozi ADR 0054): one
 `claude --print`, whose final answer becomes the run result (cut to 3,584 bytes and
-marked truncated if longer); a Claude error fails the run with no result. A run never holds a credential: the gateway adds the Anthropic
-key and the GitHub App token to requests it allows. Budgets cap tokens only; set a
-spending limit on the gateway's Anthropic workspace as the money ceiling.
+marked truncated if longer); a Claude error fails the run with no result. A run
+holds only its own Claude login; the gateway adds the GitHub App token to requests
+it allows. Budgets cap tokens only; the Claude plan's usage limits are the ceiling.
 
 Policy gaps to know when reading a triage: Sproozi's Kubernetes read covers only
 the resources above, so triage cannot see Secrets, ConfigMaps, nodes, DaemonSets,
 PVCs or Flux objects. Its namespace list has no wildcard; **add new namespaces to
 both policies in `sre.yaml`** (at most 32).
+
+### Claude subscription
+
+The runs use Claude Code's own sign-in to Andrew's Claude plan, not an API key:
+the gateway runs in workload mode (`model-gateway-auth`, generated in
+`kustomization.yaml`) and holds no Anthropic key or token, so it forwards the
+run's own credential and still inspects and counts every call. Runs count
+against the plan's usage limits. Hermes is unaffected: it has its own API key and
+does not use this gateway.
+
+The login lives in the claim `sproozi-login-claude-code-default` in
+`sproozi-agents` (Longhorn), which Sproozi creates and never deletes. Every
+runtime here mounts it; `claude-launch.py` copies `.credentials.json` into the
+run's fresh home and writes refreshes back, so a refreshed token reaches the next
+run. A run can read its own login.
+
+Sign in, or sign in again after the login expires or is revoked:
+
+```sh
+run=$(kubectl create -o jsonpath='{.metadata.name}' -f - <<'RUN'
+apiVersion: sproozi.com/v1alpha1
+kind: AgentRun
+metadata:
+  generateName: claude-login-
+  namespace: sproozi-system
+spec:
+  templateRef: {name: claude-login}
+  capabilities: [model.inference]
+  task: Wait for an operator sign-in.
+RUN
+)
+kubectl wait -n sproozi-agents pod -l sproozi.com/agentrun=$run --for=condition=Ready --timeout=180s
+pod=$(kubectl get pods -n sproozi-agents -l sproozi.com/agentrun=$run -o name)
+kubectl exec -it -n sproozi-agents "$pod" -c agent -- python3 /etc/sproozi/contract/claude-launch.py --login
+```
+
+In Claude Code run `/login`, choose the Claude account, open the link on your own
+machine, paste the code back, then `/exit`. Delete the AgentRun afterwards
+(`kubectl delete agentrun -n sproozi-system $run`); it ends by itself after 30
+minutes. `claude-login.yaml` holds its runtime, policy (model calls only) and
+template.
 
 The task service's TLS certificate is signed by a private CA made for it whose
 key was discarded; Hermes trusts `../hermes/sproozi-tasks-ca.crt`. The certificate

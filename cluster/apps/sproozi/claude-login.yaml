@@ -1,0 +1,94 @@
+# One-time (or re-) sign-in of the SRE runs' Claude login (README "Claude
+# subscription"). An AgentRun from this template waits; you exec into it and run
+# `claude-launch.py --login`, which writes the login to the same claim the SRE
+# runtimes mount. It can only reach the gateway's model and sign-in routes.
+# Flux substitutes ${...} only; $(...) reaches the shell unchanged.
+apiVersion: sproozi.com/v1alpha1
+kind: AgentRuntime
+metadata:
+  name: claude-login
+  namespace: sproozi-system
+spec:
+  clientConfig:
+    harness: claude-code
+    trustBundleConfigMap:
+      key: ca-bundle.pem
+      name: sproozi-sandbox-trust
+    signIn:
+      claims:
+        storageClassName: longhorn
+  ephemeralWorkspace:
+    sizeLimit: 256Mi
+  gatewayEndpoint: https://sproozi-gateway.sproozi-system.svc:8443
+  workloadContainers: [agent]
+  podTemplate:
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        fsGroup: 65532
+        runAsNonRoot: true
+        runAsUser: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: agent
+          image: ghcr.io/andrewmccall/sproozi-native:0.2.6@sha256:d19f3284ee0660c0ceb582bda2e5095b1e486695df51b631fcbb6a84992d386a
+          command: [/bin/sh, -ec]
+          args:
+            - |
+              echo "Waiting 30 minutes for: kubectl exec -it -n sproozi-agents $(hostname) -c agent -- python3 /etc/sproozi/contract/claude-launch.py --login"
+              sleep 1800
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1Gi
+              ephemeral-storage: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+---
+apiVersion: sproozi.com/v1alpha1
+kind: AgentPolicy
+metadata:
+  name: claude-login
+  namespace: sproozi-system
+spec:
+  allowedCapabilities: [model.inference]
+  # Required by the schema; kubernetes.read is not an allowed capability here.
+  kubernetesRead:
+    namespaces: [sproozi-system]
+    resources: [pods]
+  githubPullRequest:
+    repositories: []
+    allowedBaseBranches: []
+  egressProfiles: []
+  budgets:
+    model.inference:
+      maxUnits: 50000
+      maxCostMicros: 0
+  resourceBounds:
+    max:
+      cpu: '1'
+      memory: 1Gi
+      ephemeral-storage: 512Mi
+  maxExecutionDuration: 35m
+  maxActiveRuns: 1
+  retentionTTL: 24h
+---
+apiVersion: sproozi.com/v1alpha1
+kind: AgentTemplate
+metadata:
+  name: claude-login
+  namespace: sproozi-system
+spec:
+  runtimeRef:
+    name: claude-login
+  policyRef:
+    name: claude-login
+  egressProfiles: []
+  instructions: Wait while an operator signs the shared Claude login in with claude-launch.py --login.
