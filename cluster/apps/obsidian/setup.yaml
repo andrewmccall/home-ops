@@ -1,0 +1,38 @@
+---
+# Runs setup.sh once per change (Flux replaces the Job when it changes).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: couchdb-setup
+  namespace: obsidian
+  annotations:
+    kustomize.toolkit.fluxcd.io/force: enabled
+spec:
+  backoffLimit: 10
+  template:
+    spec:
+      restartPolicy: OnFailure
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: setup
+          image: curlimages/curl:8.23.0@sha256:3fb7e13e5d179a845c97d78204f3f1064d1907037f26a3ebf91710571151fd93
+          command: [sh, /setup/setup.sh]
+          envFrom:
+            - secretRef:
+                name: couchdb
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: setup
+              mountPath: /setup
+      volumes:
+        - name: setup
+          configMap:
+            name: couchdb-setup

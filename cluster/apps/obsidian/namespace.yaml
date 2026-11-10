@@ -1,0 +1,6 @@
+---
+# The shared Obsidian vault: CouchDB for Self-hosted LiveSync. See README.md.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: obsidian
