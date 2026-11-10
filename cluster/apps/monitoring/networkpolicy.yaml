@@ -1,0 +1,47 @@
+---
+# Pod addresses are routed to the LAN (Calico BGP), so without policies every
+# device on the network could reach Prometheus, Alertmanager, Loki and the rest
+# directly, round the Gateway. Here pods accept traffic only from this namespace,
+# from the Envoy Gateways (the routed UIs), and OTLP from apps in any namespace.
+# The kubelet's probes and the API server's webhook calls come from the node, which
+# Calico always allows. See cluster/apps/networking/README.md.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default
+  namespace: monitoring
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: networking
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/managed-by: envoy-gateway
+              app.kubernetes.io/component: proxy
+---
+# Apps anywhere in the cluster send OTLP (APPS.md); from the LAN it comes through the
+# Gateway (otel.${DOMAIN}).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: otel-collector-otlp
+  namespace: monitoring
+spec:
+  podSelector:
+    matchLabels:
+      app: otel-collector
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector: {}
+      ports:
+        - protocol: TCP
+          port: 4317
+        - protocol: TCP
+          port: 4318

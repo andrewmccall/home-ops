@@ -1,0 +1,75 @@
+---
+# Pod addresses are routed to the LAN (Calico BGP), so without policies every
+# device on the network could reach Home Assistant, the code-servers, ESPHome and
+# zigbee2mqtt directly, round the Gateway. Pods here accept traffic from this
+# namespace, the Envoy Gateways, Prometheus (metrics) and Hermes (Assist over MCP).
+# The kubelet's probes come from the node, which Calico always allows.
+# See cluster/apps/networking/README.md.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default
+  namespace: house
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {}
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: networking
+          podSelector:
+            matchLabels:
+              app.kubernetes.io/managed-by: envoy-gateway
+              app.kubernetes.io/component: proxy
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: home-assistant
+  namespace: house
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: home-assistant
+      app.kubernetes.io/controller: home-assistant
+  policyTypes: [Ingress]
+  ingress:
+    # Prometheus scrapes /api/prometheus; Hermes calls Assist over MCP.
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: hermes
+      ports:
+        - protocol: TCP
+          port: 8123
+    # Replies to Home Assistant's SSDP and mDNS discovery arrive as new UDP from the
+    # LAN devices it asked.
+    - from:
+        - ipBlock:
+            cidr: ${LAN_CIDR}
+      ports:
+        - protocol: UDP
+---
+# Players pull audio from Music Assistant directly (streams on 8097/8098, Sendspin on
+# 8927, Spotify Connect on librespot's own port), at the pod address the scoped mDNS
+# relay advertises, so the LAN may reach it on any port.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: music-assistant
+  namespace: house
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: music-assistant
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: ${LAN_CIDR}

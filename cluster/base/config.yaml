@@ -8,6 +8,9 @@ data:
   K8S_CLUSTER_CIDR: 10.42.0.0/16
   K8S_SERVICE_CIDR: 10.43.0.0/16
   ROUTER_IP: 10.0.0.1
+  # The home network (one subnet, no VLANs); NetworkPolicies use it for the few
+  # pods the LAN may reach directly.
+  LAN_CIDR: 10.0.0.0/23
   # The Envoy Gateways (apps/networking/envoy-gateway); Calico advertises them over BGP.
   INTERNAL_GATEWAY_IP: 10.44.0.20
   EXTERNAL_GATEWAY_IP: 10.44.0.21
