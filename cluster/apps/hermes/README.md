@@ -12,6 +12,11 @@ The controller and CRD are vendored from Agent Sandbox v1.0.7. Hermes uses
 Hermes stores its home and workspace on a 20 GiB Longhorn volume. An init container
 copies the Git-managed `config.yaml` into that volume on every pod start. Edit the
 source config here, then recreate the pod after reconciliation to apply changes.
+The assistant is **Ada**: `SOUL.md` is Hermes's identity and style prompt, copied
+in with `config.yaml` on every start and used by every platform (voice, Telegram,
+CLI, alert runs). Edit it here, not in the pod. On Telegram the bot's display name
+and picture are set in @BotFather (`/setname`, `/setuserpic`).
+
 The model is Anthropic's `claude-sonnet-5-5` (`config.yaml`), with a dedicated API
 key. After changing the model, rerun `scripts/configure-ha-hermes.py` so Ada asks
 for it too: Hermes's API serves the model a request names.

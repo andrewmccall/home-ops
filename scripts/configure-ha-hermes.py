@@ -64,16 +64,16 @@ def configure(payload):
             time.sleep(1)
         assert flow.get('type') == 'form', 'Conversation integration did not finish loading.'
         path = '/api/config/config_entries/subentries/flow/' + flow['flow_id']
-        initial = {key: options[key] for key in ('prompt', 'llm_hass_api') if key in options}
-        initial['recommended'] = False
-        flow = request(path, initial)
-        assert flow.get('step_id') == 'additional', 'Unexpected conversation configuration step.'
-        additional = {key: options[key] for key in ('max_tokens', 'top_p', 'temperature', 'store_responses') if key in options}
-        additional['chat_model'] = payload['model']
-        flow = request(path, additional)
-        assert flow.get('step_id') == 'model', 'Model options were rejected.'
-        allowed = {field['name'] for field in flow['data_schema']}
-        finish(request(path, {key: value for key, value in options.items() if key in allowed}))
+        # Answer each form step with the fields it asks for, keeping existing values;
+        # only the model changes. Home Assistant has moved fields between steps.
+        wanted = {**options, 'recommended': False, 'chat_model': payload['model']}
+        for _ in range(5):
+            if flow.get('type') != 'form':
+                break
+            assert not flow.get('errors'), f'Conversation options were rejected: {flow["errors"]}'
+            fields = {field['name'] for field in flow['data_schema']}
+            flow = request(path, {key: value for key, value in wanted.items() if key in fields})
+        finish(flow)
         print('Updated the conversation model; retained the existing prompt and exposed-entity API selection.')
 
     pipeline_data = json.loads((storage / 'assist_pipeline.pipelines').read_text())['data']

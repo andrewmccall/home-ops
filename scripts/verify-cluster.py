@@ -80,6 +80,7 @@ def main():
                 assert target in ha_values['controllers'][controller]['containers'], f'{volume}: unknown container {target}'
     config_map = next(d for d in apps if d['kind'] == 'ConfigMap' and d['metadata']['name'] == 'hermes-config')
     hermes_config = yaml.safe_load(config_map['data']['config.yaml'])
+    assert config_map['data']['SOUL.md'].startswith('You are Ada'), "Hermes's identity file must name Ada"
     assert hermes_config['platform_toolsets']['api_server'] == ['home_assistant']
     mcp = hermes_config['mcp_servers']['home_assistant']
     assert mcp['url'] == 'http://home-assistant-app.house.svc:8123/api/mcp'

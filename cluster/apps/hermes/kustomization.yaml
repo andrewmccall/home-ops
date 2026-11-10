@@ -11,6 +11,7 @@ configMapGenerator:
   - name: hermes-config
     files:
       - config.yaml
+      - SOUL.md
   - name: hermes-trust
     files:
       - sproozi-tasks-ca.crt

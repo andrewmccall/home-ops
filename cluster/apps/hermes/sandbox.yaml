@@ -21,8 +21,10 @@ spec:
           args:
             - |
               import os, pathlib, shutil
-              shutil.copyfile('/etc/hermes/config.yaml', '/opt/data/config.yaml')
-              os.chown('/opt/data/config.yaml', 10000, 10000)
+              # config.yaml and SOUL.md (Ada's identity) are owned by Git.
+              for name in ('config.yaml', 'SOUL.md'):
+                  shutil.copyfile(f'/etc/hermes/{name}', f'/opt/data/{name}')
+                  os.chown(f'/opt/data/{name}', 10000, 10000)
               workspace = pathlib.Path('/opt/data/workspace')
               workspace.mkdir(exist_ok=True)
               os.chown(workspace, 10000, 10000)
