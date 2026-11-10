@@ -19,7 +19,8 @@ the Home dashboard and in Alertmanager.
 ## What comes for free
 
 **Logs.** Vector ships every container's stdout/stderr to Loki with the labels
-`namespace`, `pod`, `container`, `app` (`app.kubernetes.io/name`), `instance` and `node`.
+`namespace`, `pod`, `container`, `app` (`app.kubernetes.io/name`), `instance`, `node` and
+`stream` (`stdout`/`stderr`). The line is exactly what the container wrote.
 Log JSON and it can be filtered by field:
 
 ```logql

@@ -100,8 +100,11 @@ Prometheus and Alertmanager failures are already covered.
 ## Logs
 
 LogQL labels on pod logs: `namespace`, `pod`, `container`, `app`
-(`app.kubernetes.io/name`), `instance`, `node`, `source="kubernetes"`. Host
-journal logs carry `source="journal"`, `node` and `unit`. Loki's and Vector's own
+(`app.kubernetes.io/name`), `instance`, `node`, `stream` (`stdout`/`stderr`),
+`source="kubernetes"`. Host journal logs carry `source="journal"`, `node` and `unit`.
+Each line is exactly what the container wrote, so `| json` parses an app's own JSON
+fields. Vector's metadata stays out of the line: it was 95% of the bytes and tripped
+Loki's rate limit. Loki's and Vector's own
 logs stay out of Loki: Loki logs every rejected write, and shipping that back
 formed a loop that filled the ingestion limit. Use `kubectl logs` for them.
 
