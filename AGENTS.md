@@ -9,5 +9,8 @@ Cluster setup and DNS domain: `cluster/README.md`.
 - **Postgres.** The CloudNativePG operator and its CRDs come from the HelmRelease in
   `cluster/core/cloudnative-pg/`. Read its README before upgrading the operator: each upgrade
   restarts every Postgres instance, and downgrades are unsupported.
+- **Monitoring.** Before adding a dashboard (here or from another repo), alert rule, scrape
+  target or log query, or touching Grafana, Prometheus, Alertmanager, Loki or Vector, read
+  `cluster/apps/monitoring/README.md`.
 - **Check before committing.** `python scripts/verify-releases.py --base origin/main` renders every
   HelmRelease and fails on errors Flux would hit; CI runs it as `validate`.

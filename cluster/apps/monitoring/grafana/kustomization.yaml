@@ -4,17 +4,20 @@ kind: Kustomization
 resources:
   - config-pvc.yaml
   - helmrelease.yaml
-# Dashboards kept in the repo; the Grafana sidecar loads them into the folder
-# named by grafana_folder. Flux substitution is off because Grafana and PromQL use $.
+# Dashboards kept in this repo; see ../README.md#dashboards. The Grafana sidecar loads
+# every ConfigMap labelled grafana_dashboard into the folder named by grafana_folder.
+# Flux substitution is off because Grafana and PromQL use $ themselves.
 generatorOptions:
   disableNameSuffixHash: true
   labels:
     grafana_dashboard: "1"
   annotations:
-    grafana_folder: Home
     kustomize.toolkit.fluxcd.io/substitute: disabled
 configMapGenerator:
-  - name: grafana-dashboard-home
+  - name: grafana-dashboards-home
     namespace: monitoring
+    options:
+      annotations:
+        grafana_folder: Home
     files:
-      - dashboards/home.json
+      - dashboards/home/home.json

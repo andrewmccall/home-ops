@@ -104,9 +104,11 @@ Pushes to `main` here and on andrewmccall/survival trigger Flux through GitHub w
 polling remains the fallback. Setup, verification and token rotation:
 [Flux GitHub webhooks](cluster/core/flux-system/webhook/README.md).
 
-Check the live monitoring stack with `python3 scripts/verify-monitoring.py`: Grafana
-datasources, plugins and dashboards, scrape targets, Loki logs from every namespace,
-and Alertmanager delivery. It is read-only and needs `kubectl` access to the cluster.
+Monitoring (dashboards, alerts, logs, and adding them from another repo):
+[monitoring guide](cluster/apps/monitoring/README.md). Check the live stack with
+`python3 scripts/verify-monitoring.py`: Grafana datasources, plugins and dashboards,
+scrape targets, Loki logs from every namespace, and Alertmanager delivery. It is
+read-only and needs `kubectl` access to the cluster.
 
 System requirements - 
 sops, age, yq, 

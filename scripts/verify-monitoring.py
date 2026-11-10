@@ -22,7 +22,8 @@ ROOT = Path(__file__).resolve().parents[1]
 PROMETHEUS = '/api/v1/namespaces/monitoring/services/http:kube-prometheus-stack-prometheus:9090/proxy'
 LOKI = '/api/v1/namespaces/monitoring/services/http:loki-gateway:80/proxy'
 REQUIRED_JOBS = ('flux-system/helm-controller', 'flux-system/kustomize-controller', 'flux-system/source-controller',
-                 'flux-system/notification-controller', 'longhorn-backend', 'monitoring/loki', 'monitoring/vector-agent')
+                 'flux-system/notification-controller', 'longhorn-backend', 'monitoring/loki', 'monitoring/vector-agent',
+                 'home-assistant-app', 'mqtt-exporter')
 
 
 def kubectl(*args):
