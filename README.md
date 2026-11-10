@@ -67,22 +67,27 @@ Once the ansible config is created the server can be started, on boot the server
 * Setup any hardware additional hardware that is required. 
 
 ## :gear: Hardware
-Here is a list of what runs on my network. 
 
-In the Rack!
-1U DSL Modems x2 on custom printed 1U brackets. 
-1U Unify USG and 12V meanwell PSU in custom bracket and enclosure. 
-1U Patch Panel. 
-1U TPLink Switch.
-4U betelguese home server.   
+**Network**
+- One fibre WAN line into a UniFi Cloud Gateway Max (`Home`, 10.0.0.1),
+  which also peers BGP with the cluster for pod and service addresses.
+- Nothing is reachable from the internet directly: no port forwards, UPnP off. Public
+  hosts come in through Cloudflare tunnels to the cluster's `external` Gateway
+  (`cluster/apps/networking/`).
+- UniFi access points (U6 Mesh and others) for Wi-Fi.
 
-Elsewhere on the network: 
+**Cluster**
+- `vecna` (10.0.0.250): the single k3s node, 12 cores, 32 GB, Ubuntu 24.04. Longhorn
+  storage on an SSD and a bulk HDD (`cluster/core/longhorn/README.md`).
 
-| Host             | Device                  | Storage                  | Purpose                                      |
-|------------------|-------------------------|--------------------------|----------------------------------------------|
-| betelgeuse.local | Raspberrt Pi 4          | 64GB SD                  | k8s master, octoprint                        |
-|                  | Raspberry Pi Zero 2     | 64GB SD                  | Smart mirror                                 |
-|                  | Raspberry Pi Zero       | 16GB SDe                 | Gamer beds in boys rooms                     |
+**Rack**: patch panel and TP-Link switch.
+
+**Elsewhere on the network**
+
+| Device              | Storage | Purpose                  |
+|---------------------|---------|--------------------------|
+| Raspberry Pi Zero 2 | 64GB SD | Smart mirror             |
+| Raspberry Pi Zero   | 16GB SD | Gamer beds in boys rooms |
 
 ## Adding new harders
 
