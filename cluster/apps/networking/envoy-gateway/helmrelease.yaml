@@ -18,6 +18,12 @@ spec:
         name: envoyproxy
         namespace: flux-system
   values:
+    # The chart defaults to cluster.local, so the proxies looked for their control plane
+    # at envoy-gateway.networking.svc.cluster.local and never got configuration.
+    # certgen writes this domain into the control-plane certificates and does not
+    # overwrite them: after changing it, delete the envoy, envoy-gateway, envoy-oidc-hmac
+    # and envoy-rate-limit Secrets so the next upgrade regenerates them.
+    kubernetesClusterDomain: ${CLUSTER_DOMAIN}
     # Envoy Gateway's CRDs come from cluster/crds/envoy-gateway, the Gateway API ones
     # from k3s.
     crds:
