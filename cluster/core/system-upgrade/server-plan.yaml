@@ -4,12 +4,13 @@
 # merge automatically, minor releases wait for a person (check Calico supports the
 # new Kubernetes minor first).
 #
-# Timing: merged any day, the upgrade only starts overnight Sunday into Monday,
-# 01:00-04:00 London, when nobody is using the house, and 13 hours after Renovate's
-# Sunday-morning automerges (renovate.json5), so anything those broke has alerted. The prepare step then refuses to upgrade unless
-# nodes are Ready, every Flux Kustomization and HelmRelease is Ready, and no
-# warning or critical alert is firing (house device alerts aside). A refusal leaves
-# the node untouched, and the job retries during the window.
+# Timing (cluster/README.md#updates-and-maintenance-windows): merged any day, the
+# upgrade only starts overnight Sunday into Monday, 01:00-04:00 London, a day after
+# the Sunday 00:00-06:00 automerge of images Renovate cannot date, so anything those
+# broke has alerted. The prepare step then refuses to upgrade unless nodes are
+# Ready, every Flux Kustomization and HelmRelease is Ready, and no warning or
+# critical alert is firing (house device alerts aside). A refusal leaves the node
+# untouched, and the job retries during the window.
 apiVersion: upgrade.cattle.io/v1
 kind: Plan
 metadata:

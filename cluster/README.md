@@ -39,6 +39,43 @@ kubectl label node --all k3s-upgrade=true
 The CloudNativePG operator is a Flux HelmRelease in `core/cloudnative-pg/`; no manual
 install is needed. Its README has the runbook for adopting a hand-installed operator.
 
+## Updates and maintenance windows
+
+Renovate opens and automerges dependency PRs; Flux applies a merge within minutes.
+All times are Europe/London.
+
+| What | When it lands | Why |
+|---|---|---|
+| Most updates (Helm charts, GitHub releases, Ansible collections, most Docker Hub images) | Nightly, 00:00-06:00, once the release is **7 days old** | The cooldown gives a compromised release time to be caught and pulled. No PR exists before then; the Renovate Dashboard issue lists what is waiting. |
+| Images Renovate cannot date (see below) | **Sunday 00:00-06:00** (Saturday night), any age | No release date means no cooldown, so they are batched where Sunday shows any breakage before the k3s upgrade. |
+| k3s patch releases | **Monday 01:00-04:00** (Sunday night), only if the cluster is healthy | A day after the image batch. The upgrade job first checks that nodes, every Flux Kustomization and HelmRelease are Ready and no warning or critical alert is firing (house device alerts aside), and otherwise does nothing. |
+| k3s minor releases (e.g. 1.37 to 1.38) | When a person merges the PR | Check that Calico supports the new Kubernetes minor first (`ansible/roles/calico/defaults/main.yml`). Then it lands in the next Monday window. |
+| Our own images and charts, Minecraft Bedrock | Bedrock at any time, ours nightly, no cooldown | We publish ours. Bedrock clients update themselves and cannot join an older server. |
+| Longhorn and CloudNativePG minors, any major | When a person merges the PR | Each needs its own care; see the comments in `renovate.json5`. |
+
+Renovate gets release dates only from Docker Hub's tag API, and only for repositories
+under its 1,000-tag anonymous paging limit. Home Assistant, ESPHome and code-server
+(nightly dev builds put them over), Music Assistant, the UniFi webhook (ghcr.io only)
+and agent-sandbox (registry.k8s.io) are undated, so they use the Sunday batch. When
+adding an image, prefer the project's own Docker Hub repository; a ghcr.io-only image
+goes in the Sunday list in `renovate.json5`.
+
+The policy lives in the comments of `renovate.json5`, and the k3s window and health
+check in `cluster/core/system-upgrade/server-plan.yaml`.
+
+### Watching or holding a k3s upgrade
+
+```bash
+kubectl -n system-upgrade get plan k3s-server    # target version and status message
+kubectl -n system-upgrade get jobs               # one job per attempt
+kubectl -n system-upgrade logs job/<name> -c prepare   # "NOT UPGRADING: ..." names the problem
+```
+
+The health check reads live alerts, so a firing warning holds the upgrade until
+it clears. To skip a week on purpose, leave the Renovate PR unmerged; once it is
+merged, set `version` in `server-plan.yaml` back to the running version
+(`kubectl get nodes` shows it).
+
 ## Cluster DNS domain
 
 This k3s cluster uses `cluster.andrewmccall.com`. CoreDNS's `kubernetes` zone and

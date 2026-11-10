@@ -16,6 +16,10 @@
   // no registry timestamp are held until an exception below says otherwise.
   "minimumReleaseAge": "7 days",
   "internalChecksFilter": "strict",
+  // Automerges land overnight only (00:00-05:59 London), so a restart never hits
+  // someone using the house. Six hours because the hosted app runs every few hours.
+  // Maintenance windows: cluster/README.md#updates-and-maintenance-windows.
+  "automergeSchedule": ["* 0-5 * * *"],
   "suppressNotifications": ["prIgnoreNotification"],
   "kubernetes": {
     "managerFilePatterns": ["/cluster/.+\\.ya?ml$/"],
@@ -123,10 +127,13 @@
     // and rollback apply as for any image; worlds a newer server has opened may not
     // load on the older one, so a rollback is a stopgap. Mojang's API is the source
     // and has no timestamps, so no cooldown.
+    // Not held to the overnight window either: until the server catches up, updated
+    // clients cannot join.
     {
       "matchDatasources": ["custom.minecraft-bedrock"],
       "automerge": true,
-      "minimumReleaseAge": null
+      "minimumReleaseAge": null,
+      "automergeSchedule": ["at any time"]
     },
     // Pinning the digest of a tag already in use adds no new code, and registries
     // other than Docker Hub give pins no date, which would hold them forever.
@@ -135,9 +142,10 @@
       "minimumReleaseAge": null
     },
     // Images Renovate cannot date, so the 7-day cooldown cannot be enforced: they
-    // automerge only on Sunday morning instead, well before the 01:00 Monday k3s
-    // upgrade window (cluster/core/system-upgrade/server-plan.yaml), whose health check then
-    // refuses to upgrade if any of them broke something.
+    // automerge only early on Sunday (00:00-05:59, Saturday night) instead. That
+    // leaves Sunday to notice a breakage before the 01:00 Monday k3s upgrade
+    // (cluster/core/system-upgrade/server-plan.yaml), whose health check refuses to
+    // run if one of them broke something.
     // - ghcr.io / registry.k8s.io only: Music Assistant, the UniFi webhook, agent-sandbox.
     // - Docker Hub, but over its 1,000-tag anonymous paging limit, so Renovate falls
     //   back to undated tags: Home Assistant, ESPHome, code-server. Remove these three
@@ -153,7 +161,7 @@
         "codercom/code-server"
       ],
       "minimumReleaseAgeBehaviour": "timestamp-optional",
-      "automergeSchedule": ["* 0-11 * * 0"]
+      "automergeSchedule": ["* 0-5 * * 0"]
     },
     // Our own images and charts: we published them, so the cooldown protects nothing.
     {

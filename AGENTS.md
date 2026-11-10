@@ -12,9 +12,9 @@ Cluster setup and DNS domain: `cluster/README.md`.
 - **Monitoring.** Before adding a dashboard (here or from another repo), alert rule, scrape
   target or log query, or touching Grafana, Prometheus, Alertmanager, Loki or Vector, read
   `cluster/apps/monitoring/README.md`.
-- **Dependency updates.** Before adding an image or changing how something updates, read the
-  comments in `renovate.json5`: a 7-day release cooldown, Sunday-morning automerge for images
-  Renovate cannot date, and k3s upgrades in a gated 01:00 Monday window
-  (`cluster/core/system-upgrade/server-plan.yaml`). Prefer an image's Docker Hub source.
+- **Dependency updates.** Before adding an image or changing when or how something updates,
+  read `cluster/README.md#updates-and-maintenance-windows`: a 7-day release cooldown, nightly
+  automerges, a Sunday batch for images Renovate cannot date, and gated k3s upgrades at 01:00
+  on Monday. Prefer an image's Docker Hub source.
 - **Check before committing.** `python scripts/verify-releases.py --base origin/main` renders every
   HelmRelease and fails on errors Flux would hit; CI runs it as `validate`.
