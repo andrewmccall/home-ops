@@ -23,6 +23,8 @@ entries:
       name: Grafana
     attrs: &oidc
       client_type: confidential
+      # Empty unless set: a blueprint-made provider then refuses every login.
+      grant_types: [authorization_code, refresh_token]
       client_id: grafana
       client_secret: !Env GRAFANA_CLIENT_SECRET
       authorization_flow: !Find [authentik_flows.flow, [slug, default-provider-authorization-implicit-consent]]
