@@ -43,6 +43,10 @@ A user in neither group cannot open any app. Add a person in the Authentik admin
    no login of its own gets a `SecurityPolicy` with `oidc` targeting its HTTPRoute
    (redirect `https://<host>/oauth2/callback`); Envoy then needs a secret with key
    `client-secret` in the route's namespace.
+4. After the first deploy, restart the Authentik worker (step 1), then check the policy:
+   `kubectl get securitypolicy -A`. If it reports "failed fetching openid-configuration
+   ... 404", Envoy looked the application up before the blueprint created it and keeps
+   that result: `kubectl -n networking rollout restart deploy/envoy-gateway`.
 
 On a new install the blueprint can fail its first run, before Authentik's default flows
 exist; the worker retries it. `kubectl -n authentik exec deploy/authentik-worker -- ak
