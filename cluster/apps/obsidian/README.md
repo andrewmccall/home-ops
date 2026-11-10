@@ -17,9 +17,11 @@ the VPN when away. Nothing is public.
 
 ## Vault settings
 
-- **File identity: Unicode NFC**, LiveSync's default for a new vault. The bridge
-  is configured to match (`pathNormalizationVersion: 1`); a device on Legacy
-  identity would see duplicated or missing notes.
+- **File identity: Legacy** (`pathNormalizationVersion: 0` in the vault's settings
+  and in `bridge/config.sops.yaml`). The first device set it; every device and the
+  bridge must match, and the bridge refuses to sync when they differ ("different
+  path identity versions"). Moving to NFC means a coordinated rebuild of every
+  device, then the bridge's config.
 - **End-to-end encryption and path obfuscation: off.** The database and Hermes's
   plain copy sit on the same disk, so encryption would protect nothing here, and
   the bridge would need the passphrase. Turning either on later means rebuilding
@@ -42,7 +44,7 @@ The first device creates the vault; the rest copy its settings with a Setup URI.
 
 Hermes sees the vault at `/opt/data/workspace/vault` (`hermes/sandbox.yaml`), read
 and write, and works on it with its own file and terminal tools: search, bulk edits,
-scripts. A change there reaches every device through the bridge within seconds, and
+scripts. `OBSIDIAN_VAULT_PATH` points Hermes's bundled `obsidian` skill there. A change there reaches every device through the bridge within seconds, and
 a change on a device reaches the files the same way. Telegram and the CLI have
 those tools; Ada's voice and the alert webhook do not.
 

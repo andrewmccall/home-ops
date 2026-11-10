@@ -1,10 +1,11 @@
 apiVersion: v1
 kind: Secret
+type: Opaque
 metadata:
     name: livesync-bridge
     namespace: hermes
 stringData:
-    config.json: ENC[AES256_GCM,data:ZZLcQUwoNRaWaAltV5fjfuNh4w1816KEUn0zpPJXrtNiS4SPEcMvnJOuTw7aLrFEpae75Vdp1cBVWkXetqEoyORCB18V7YptJMEBoGGPzObTPZZ2azmDJxLldoj4iKEd9SNnnnxxhsfcADse3v7eWs98695tXVDOAYhgiu9CHiVIY1lkYXu97fimIVjPTkz8E9eMjLxElyFn+OJWF/GyY0tDsJ72bnh5JMKtp4tSkg/dCwYN3tDD+e/tTYxMzPpP+zrtbm5VIGBq3gQCEEtKXlt5ZAzmTAyzWbhEvd2+E7gSAFkMFyaTgnLknNHTZazAabMsDxwWKE/FwAnC8XzijoZEU+p98Bs68EPKLvoeOy3cQUVaeQVzKvnfInweeM981fC0OmppnbAqwdilbDQ1D8s/jXUHhox6Ny3is3wYFrjFmM/n30hoAE8mFkwLGxbi5P5YvbNm8c70UpVQn+Q08s8rteDSVjrgdUeaJNSfZt/6wGo6tzaRqW/K8hzH9V9qPV7E0pKQZF2zTjxd0PUY4yO5fjcgqVS/ApMzQk5wkiDLII5CvDhWwMTzIfix34Y/bZbsZmkWyCXje2uhzs6bXklROd/nepN2oBo7ehoeGhjUyBfk3XM+4DJhzVSwGw6rIZ4eM5JNH/XsjO0tsTPBJsxZ+bQ6fnbjN9zjzGtBgzIz3wzvIm0JJNl65T3izliZrYOStzsBKDHdAFjw3r7rJsPGj/FUyzhprbYLDTREeSY15Iym9XF74+ybl2BW3gM3dzOc6c29h2Z4DWP4a8qJ6BjQLTjUt0hAIR9xr4mYcBiWvC8a6sxJjd2zoltr+q5KYeMYlQe1XGKkTcvSW2LSxvYJrio8wagz1h4+qp88P3JdSN2+qGOM4COs/vfA1bSlXH1Cea1lyoOFITobCrplzCk8GjLqRm/L4g==,iv:7FA9cRDklcPI7h3JeOKBWajDbxVPXxZ7ufyZRv9epF8=,tag:049ISaBW8q8kgnlzMXWCgw==,type:str]
+    config.json: ENC[AES256_GCM,data:ncEF5WHvHVfu0qZNIirspfx685kn4DKomulNrTKSUmfBmYXMTslUD/xyunDPrMfwJ2ue5SkjwuHJ+UV9Y+lG6chkySILLwbaJikH0g2LwV9RXGaoe54vJHGJ4g0euSpkw1Sk42mAaPczXWE6dJ0xJiw3+ICacAtSJpVxI23ob+Fdco99Y9PlbtM9hNVKSX9YCBIJKOQdIpDf9/Oh24IyX3sFtsdBi7UFZvEAMgHXb2Sga3wCgE/HoXXpStOuAVJHCnm7yLtoJsTio1deLPmIeJ3W6nZr8x2XgOzpsF9tS9h0IzrkYPmB4vH6AC8QQp0Cq/3gSA0M8gIyu4Le2xYRxQwypFlkemgXrGvB8/z5ljGaAliC6cwKQEbAkwaHcsGrcHodfTS0Knqc39Xmh828waeaQVoLkAuyqBs6Z5sEofRbmOAZ2cBcVo/y3/KI/TR7q1cgAgWKv13ycLvRDEGSa+w64Tr9HYqiumoQO18s+6766d+anWNXDCNVHurg1yCwfYyaIgKvJ1/AXBh+XLhXx5SZ3GumWIjNj8FAVVPEgWYK64riUdtLFIop2ADqvBw3dvMrpEOGj+jy6ATLD5Re1SfmPWOhyE72misgJbxdYKpk920l0IfZmnE/x9ASBWlUG2v/LTKnMeqbPy8uTYmfwKHImuNkkaSx6+pqeSQbEWdmE0fGE5kEWogafInokAet0d734WSGsDzBLFMRJnawTXhVuEyPxUyWDE6ZkSgTEToq4rcoKfwWCTI0vMsqVmjDz/dQxmEQeW2oh4HBBniRMxf2DeuV4SKybkUrVCelhCKNpQQcScOvI9TIVPVB11sLjrLLaP/5pzKHYb6iGGX2qeH7fzXIgCa8uQYDy4zaqA604GNdCpEk2Bx9ROi3DTTAyby2W0KwAcfF3yhf2Vo1ZxQY68HKe4SPtFq1GNq5RqKlGsYhWayfmIwLbmEfQS7zfA==,iv:zigHn3peZ09yq0Z3yFwpJqtW4vP6tMSc/SWHTIc+a2k=,tag:Wnx6DdeochNHakm29+SxoA==,type:str]
 sops:
     kms: []
     gcp_kms: []
@@ -14,14 +15,14 @@ sops:
         - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
           enc: |
             -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBOaUw1aHhaUjBDZnpsZ0Yx
-            THFtWjA3cW5aeHFqeEFYVVpRZ25pVlFyMmpZCkhoTG1XQk9Ta1B5Q0JFdktlbnVu
-            aUw4TzBSN0JUdktLaDlaOG1PWHhJdWsKLS0tIDN0bURWZkQ1Y3hoc29mRHdROE1L
-            QkRzYk5weDd3L241aVYycDFGR2RrazAKPBdI1DuQWTjN4slQ69klxMKB6zbAAISe
-            bGD06N+TBCCDc/dRBws85a62xDVNZC/9SpPYCjvGceugsIBv9AXncQ==
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB3aFBzZ3llaFhrQTczaUt5
+            cFk0MlJMNncxRk81dmRNV0xoWjVDN0tWYWpNCkhJSU5RRWlwOXJOMlp2UGZ6Z1VH
+            UE1xaTJUeGZBZCtDNThWM0N4YXkyY2MKLS0tIG5aWjZZbXlKRTZXMXJQbHFSc0xI
+            aDF2Ykhpamh4bWpaU1E5MHp5M24rQ2sKuURK0Kz6yj278hLjwOhJE4MoCp+Y4BYQ
+            ZUQPjH2MZG1TQlJCbDiR64cJqNTBW1XN/Om2a7JILNakjMcLWFixRQ==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-11-10T18:08:24Z"
-    mac: ENC[AES256_GCM,data:BByEM9rt787BX5Dv1CKVt6CXeJzZKCetMCM1rti8Pg5bMbyEWhaaD1RJHeeBBfX73sB43aBUT+oOD787yhoGn8/ZG/SRA9RnFkokVxiJBD07JYQsPXisH2SyylN12UEO6pkdvHPLR8T2tIqzDV8iWE3AQUqRybWE5FPimf+qve8=,iv:XZ6QSp5FRvP3H7XMcJW3As3y4XHktIp4itjlyoT6vDE=,tag:K/SzNB1NRHyK60Glg959sg==,type:str]
+    lastmodified: "2026-11-10T19:20:42Z"
+    mac: ENC[AES256_GCM,data:mOAXladrwDMEO5ho5MeaZhNyBtvxFEyJxp54km43EIxhs6AAxYHFF1bfEMduA7EaoxlBOfSNMIP8+NPxi2uoUEqVo8tSnFtjUjJLQ6UcAC4+xcyAQcfl47wj16g9bpRu35SYunjfdn4/FUTlDehxaAwCMq8sjrryFfgDkKeZ/Tc=,iv:PoZWd+Y88v68fAVEcoHYR2cX3BzCQ2qnP34RD704KMM=,tag:q/nxQCrLnosX1Qy7HQ+nqw==,type:str]
     pgp: []
     encrypted_regex: ^(data|stringData)$
     version: 3.9.0

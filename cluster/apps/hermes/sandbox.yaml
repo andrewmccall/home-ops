@@ -51,6 +51,9 @@ spec:
                 secretKeyRef:
                   name: hermes-agent-api-keys
                   key: API_SERVER_KEY
+            # Hermes's bundled obsidian skill finds the vault here (cluster/apps/obsidian).
+            - name: OBSIDIAN_VAULT_PATH
+              value: /opt/data/workspace/vault
             - name: HOME_ASSISTANT_TOKEN
               valueFrom:
                 secretKeyRef:
