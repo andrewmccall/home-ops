@@ -46,6 +46,16 @@ spec:
           extra_label_selector: "app.kubernetes.io/name!=loki,app.kubernetes.io/name!=vector"
         vector_metrics:
           type: internal_metrics
+      transforms:
+        # The GitHub Actions runners' own INFO chatter ("[WORKER ... INFO ...]", about
+        # 40 MB per CI job): the job output itself is in GitHub. Their warnings and
+        # errors, and every other container's lines, still reach Loki.
+        kubernetes_without_ci_runner_info:
+          type: filter
+          inputs:
+            - kubernetes_logs
+          condition: |-
+            !(.kubernetes.pod_namespace == "ashes-ci" && .kubernetes.container_name == "runner" && match(to_string(.message) ?? "", r'^\[(WORKER|RUNNER) [^\]]* INFO '))
       sinks:
         # Straight to Loki: one node has no use for an aggregator hop.
         loki_journal:
@@ -68,7 +78,7 @@ spec:
         loki_kubernetes:
           type: loki
           inputs:
-            - kubernetes_logs
+            - kubernetes_without_ci_runner_info
           endpoint: http://loki-gateway.monitoring.svc
           # The line is the container's own output. JSON encoding wrapped it in Vector's
           # metadata (labels, annotations, image), 95% of each line and already in the
