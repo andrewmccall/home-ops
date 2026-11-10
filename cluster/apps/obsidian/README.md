@@ -52,5 +52,5 @@ note's history, or by restoring the volume.
 
 ## Notes
 
-- Changing `livesync.ini` needs a restart: `kubectl -n obsidian rollout restart deploy/couchdb`.
+- Changing `livesync.ini` needs a restart (an init container copies it in): `kubectl -n obsidian rollout restart deploy/couchdb`.
 - `setup.sh` is safe to re-run; Flux replaces the Job when it or the Secret changes.

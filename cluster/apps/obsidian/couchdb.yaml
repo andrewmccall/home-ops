@@ -35,9 +35,21 @@ spec:
         fsGroup: 5984
         seccompProfile:
           type: RuntimeDefault
+      # The entrypoint chowns everything under /opt/couchdb and exits if it cannot,
+      # so the settings are copied into a writable local.d rather than mounted there.
+      initContainers:
+        - name: config
+          image: &image couchdb:3.5.2.1@sha256:5fc596110eac7f412173a7d9de14f70aa5d3e816790fb6e70642755d4a4cf464
+          command: [cp, /config/livesync.ini, /local.d/10-livesync.ini]
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+            - name: local-d
+              mountPath: /local.d
       containers:
         - name: couchdb
-          image: couchdb:3.5.2.1@sha256:5fc596110eac7f412173a7d9de14f70aa5d3e816790fb6e70642755d4a4cf464
+          image: *image
           envFrom:
             - secretRef:
                 name: couchdb
@@ -66,10 +78,8 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /opt/couchdb/data
-            - name: config
-              mountPath: /opt/couchdb/etc/local.d/10-livesync.ini
-              subPath: livesync.ini
-              readOnly: true
+            - name: local-d
+              mountPath: /opt/couchdb/etc/local.d
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -77,6 +87,10 @@ spec:
         - name: config
           configMap:
             name: couchdb-config
+        # Also holds docker.ini, where the entrypoint writes the admin from the Secret.
+        - name: local-d
+          emptyDir:
+            sizeLimit: 1Mi
 ---
 apiVersion: v1
 kind: Service
