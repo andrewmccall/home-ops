@@ -1,0 +1,22 @@
+---
+# Authentik's only store (it no longer uses Redis). The operator creates the secret
+# authentik-db-app with the password. The image follows the operator's default.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: authentik-db
+  namespace: authentik
+spec:
+  instances: 1
+  storage:
+    size: 5Gi
+  bootstrap:
+    initdb:
+      database: authentik
+      owner: authentik
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 1Gi

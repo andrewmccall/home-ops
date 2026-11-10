@@ -1,0 +1,19 @@
+---
+# LAN only. Logins work with the internet down: the record is on the home gateway
+# (external-dns-unifi) and nothing in a login leaves the house.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  parentRefs:
+    - name: internal
+      namespace: networking
+      sectionName: https
+  hostnames:
+    - auth.${DOMAIN}
+  rules:
+    - backendRefs:
+        - name: authentik-server
+          port: 80

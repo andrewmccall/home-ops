@@ -122,6 +122,11 @@
       "matchPackageNames": ["/system-upgrade-controller/"],
       "groupName": "system-upgrade-controller"
     },
+    // Authentik's chart and image move together.
+    {
+      "matchPackageNames": ["/authentik/"],
+      "groupName": "authentik"
+    },
     // Envoy Gateway's chart and its CRD source (cluster/crds/envoy-gateway) move together.
     {
       "matchPackageNames": ["/envoyproxy/gateway/"],

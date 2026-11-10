@@ -1,0 +1,6 @@
+---
+# Authentik, the single login for the cluster's apps. See README.md.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: authentik
