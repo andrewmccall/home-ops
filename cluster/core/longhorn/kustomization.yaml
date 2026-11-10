@@ -4,5 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - helmrelease.yaml
+  - networkpolicy.yaml
+  - route.yaml
   - recurring-jobs.yaml
   - storageclass-hdd.yaml
