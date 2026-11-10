@@ -107,6 +107,16 @@ spec:
           gnetId: 16888
           revision: 14
           datasource: [{name: DS_PROMETHEUS, value: Prometheus}]
+        # Envoy Gateway's own dashboards, at the chart's version
+        # (apps/networking/envoy-gateway); bump the tag with the chart.
+        envoy-proxy:
+          url: https://raw.githubusercontent.com/envoyproxy/gateway/v1.10.0/charts/gateway-addons-helm/dashboards/envoy-proxy-global.json
+        envoy-clusters:
+          url: https://raw.githubusercontent.com/envoyproxy/gateway/v1.10.0/charts/gateway-addons-helm/dashboards/envoy-clusters.json
+        envoy-gateway:
+          url: https://raw.githubusercontent.com/envoyproxy/gateway/v1.10.0/charts/gateway-addons-helm/dashboards/envoy-gateway-global.json
+        envoy-resources:
+          url: https://raw.githubusercontent.com/envoyproxy/gateway/v1.10.0/charts/gateway-addons-helm/dashboards/resources-monitor.gen.json
         cert-manager:
           gnetId: 20842
           revision: 3

@@ -23,7 +23,7 @@ PROMETHEUS = '/api/v1/namespaces/monitoring/services/http:kube-prometheus-stack-
 LOKI = '/api/v1/namespaces/monitoring/services/http:loki-gateway:80/proxy'
 REQUIRED_JOBS = ('flux-system/helm-controller', 'flux-system/kustomize-controller', 'flux-system/source-controller',
                  'flux-system/notification-controller', 'longhorn-backend', 'monitoring/loki', 'monitoring/vector-agent',
-                 'home-assistant-app', 'mqtt-exporter')
+                 'home-assistant-app', 'mqtt-exporter', 'networking/envoy-proxy', 'envoy-gateway')
 
 
 def kubectl(*args):
