@@ -53,6 +53,26 @@ patches:
       - op: add
         path: /spec/template/spec/containers/0/args/-
         value: --dns=platform.claude.com
+      # Workload mode serves every provider's signed-in hosts, so the gateway
+      # refuses to start unless its certificate names OpenAI's and Copilot's too.
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --dns=api.openai.com
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --dns=chatgpt.com
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --dns=auth.openai.com
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --dns=api.individual.githubcopilot.com
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --dns=api.business.githubcopilot.com
+      - op: add
+        path: /spec/template/spec/containers/0/args/-
+        value: --dns=api.enterprise.githubcopilot.com
       - op: add
         path: /spec/template/spec/containers/0/args/-
         value: --dns=github.com
