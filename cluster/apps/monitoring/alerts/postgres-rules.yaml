@@ -1,0 +1,69 @@
+---
+# Any CloudNativePG database in any namespace (scraped by
+# core/cloudnative-pg/postgres-podmonitor.yaml). Labels: namespace and pod name the
+# instance, e.g. game-db-1 in ashes-prod.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: postgres-alerts
+  namespace: monitoring
+spec:
+  groups:
+    - name: postgres
+      rules:
+        - alert: PostgresDown
+          expr: cnpg_collector_up == 0
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Postgres {{ $labels.namespace }}/{{ $labels.pod }} is not answering"
+            description: "The instance's own exporter cannot reach Postgres. kubectl cnpg status -n {{ $labels.namespace }}, or the pod's logs."
+
+        - alert: PostgresMetricsMissing
+          expr: absent(cnpg_collector_up)
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "No Postgres instance is being scraped, so Postgres alerts cannot fire"
+
+        - alert: PostgresConnectionsHigh
+          expr: |
+            sum by (namespace, pod) (cnpg_backends_total)
+              / on (namespace, pod) cnpg_pg_settings_setting{name="max_connections"} > 0.8
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Postgres {{ $labels.namespace }}/{{ $labels.pod }} is using {{ $value | humanizePercentage }} of max_connections"
+            description: "New connections will be refused at 100%. Look for a connection leak or raise max_connections."
+
+        # Postgres stops accepting writes at about 2.1 billion; autovacuum normally keeps
+        # this far below. Climbing past a billion means vacuum is not keeping up.
+        - alert: PostgresTransactionIDAgeHigh
+          expr: cnpg_pg_database_xid_age > 1e9
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Postgres {{ $labels.namespace }}/{{ $labels.pod }} database {{ $labels.datname }} is at {{ $value | humanize }} transaction IDs"
+            description: "Vacuum is not keeping up; at about 2.1 billion Postgres stops accepting writes. Check long-running transactions and autovacuum."
+
+        - alert: PostgresWALArchivingFailing
+          expr: increase(cnpg_pg_stat_archiver_failed_count[1h]) > 0
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Postgres {{ $labels.namespace }}/{{ $labels.pod }} is failing to archive WAL"
+            description: "Point-in-time recovery depends on it, and unarchived WAL fills the volume."
+
+        - alert: PostgresMetricsCollectionErrors
+          expr: cnpg_collector_last_collection_error == 1
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Postgres {{ $labels.namespace }}/{{ $labels.pod }} metrics queries are failing"
+            description: "Some Postgres metrics, and the alerts on them, are stale. See the instance's logs."

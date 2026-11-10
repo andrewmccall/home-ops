@@ -76,6 +76,8 @@ kind: Service
 metadata:
   name: otel-collector
   namespace: monitoring
+  labels:
+    app: otel-collector
 spec:
   type: ClusterIP
   ports:
@@ -155,3 +157,22 @@ spec:
         - name: config
           configMap:
             name: otel-collector-config
+---
+# Metrics apps send over OTLP come out of the collector's prometheus exporter (:8889,
+# prefixed otel_); without this they reached nothing. The exporter also carries the
+# collector's own metrics (receiver prometheus above).
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: otel-collector
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app: otel-collector
+  endpoints:
+    - port: metrics
+      interval: 60s
+      # Keep the job/instance the exporter sets from each app's service.name.
+      honorLabels: true
+

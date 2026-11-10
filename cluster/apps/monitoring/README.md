@@ -4,6 +4,9 @@ Prometheus, Alertmanager and Grafana (kube-prometheus-stack plus the Grafana cha
 Loki for logs, and a Vector agent that ships pod and journal logs to Loki. Check the
 live stack with `python3 scripts/verify-monitoring.py`.
 
+**Monitoring an app** (logs, metrics, traces, dashboards and alerts for something
+deployed from this or another repository): [APPS.md](APPS.md).
+
 | Piece | Where | Notes |
 |---|---|---|
 | Prometheus, Alertmanager, node and kube-state metrics | `kube-prometheus-stack/` | No Thanos; 30 days, 10 GB retention. |
@@ -12,7 +15,9 @@ live stack with `python3 scripts/verify-monitoring.py`.
 | Vector agent | `vector/agent/` | DaemonSet writing straight to Loki. Skips Loki's and its own pods. |
 | mqtt-exporter | `mqtt-exporter/` | Zigbee2MQTT device state from MQTT, independent of Home Assistant. |
 | Alert rules and routing | `alerts/` | |
-| Tempo, OpenTelemetry collector | `tempo/`, `otel-collector/` | Deployed, but nothing sends traces yet. |
+| OpenTelemetry collector, Tempo | `otel-collector/`, `tempo/` | OTLP in; traces to Tempo, metrics to Prometheus (`otel_`), logs to Loki ([APPS.md](APPS.md)). |
+| Postgres (CloudNativePG) | `cluster/core/cloudnative-pg/` | Every instance in any namespace is scraped; dashboard and `alerts/postgres-rules.yaml`. |
+| Envoy Gateway | `cluster/apps/networking/envoy-gateway/monitoring.yaml` | Proxy and controller metrics, per route; Envoy dashboards. |
 
 ## Dashboards
 

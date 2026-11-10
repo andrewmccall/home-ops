@@ -15,7 +15,8 @@ Cluster setup and DNS domain: `cluster/README.md`.
   label.
 - **Monitoring.** Before adding a dashboard (here or from another repo), alert rule, scrape
   target or log query, or touching Grafana, Prometheus, Alertmanager, Loki or Vector, read
-  `cluster/apps/monitoring/README.md`.
+  `cluster/apps/monitoring/README.md`. To monitor an app (its logs, metrics, OTLP traces,
+  Gateway traffic, Postgres), read `cluster/apps/monitoring/APPS.md`.
 - **Dependency updates.** Before adding an image or changing when or how something updates,
   read `cluster/README.md#updates-and-maintenance-windows`: a 7-day release cooldown, nightly
   automerges, a Sunday batch for images Renovate cannot date, and gated k3s upgrades at 01:00
