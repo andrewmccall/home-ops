@@ -13,3 +13,5 @@ resources:
   - ashes.yaml
   - infra-token.sops.yaml
   - infra.yaml
+  - public-token.sops.yaml
+  - public.yaml

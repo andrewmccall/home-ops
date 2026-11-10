@@ -4,6 +4,16 @@ resources:
 - gotk-components.yaml
 - gotk-sync.yaml
 patches:
+  # The Flux webhook (core/flux-system/webhook) is published on the `external` Gateway,
+  # which accepts routes only from namespaces labelled for it.
+  - target:
+      version: v1
+      kind: Namespace
+      name: flux-system
+    patch: |-
+      - op: add
+        path: /metadata/labels/home-ops.andrewmccall.com~1public-routes
+        value: "true"
   # Keep generated Flux manifests aligned with the k3s/CoreDNS cluster domain.
   - target:
       group: apps

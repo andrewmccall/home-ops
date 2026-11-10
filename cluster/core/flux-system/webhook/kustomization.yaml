@@ -1,7 +1,8 @@
 ---
-# Exposed publicly only through the cloudflared-infra tunnel; see README.md.
+# Exposed publicly through the public tunnel and the `external` Gateway (route.yaml).
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - github-webhook-token.sops.yaml
   - receiver.yaml
+  - route.yaml

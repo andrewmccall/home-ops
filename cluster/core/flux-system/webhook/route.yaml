@@ -1,0 +1,22 @@
+---
+# GitHub's push webhooks reach the Receivers through the public tunnel and the Envoy
+# Gateway `external`. Only /hook/ is routed; each Receiver also checks GitHub's HMAC
+# signature, and polling covers a missed delivery.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: webhook-receiver
+  namespace: flux-system
+spec:
+  parentRefs:
+    - name: external
+      namespace: networking
+      sectionName: https
+  hostnames:
+    - gh-webhook.${DOMAIN}
+  rules:
+    - matches:
+        - path: {type: PathPrefix, value: /hook/}
+      backendRefs:
+        - name: webhook-receiver
+          port: 80

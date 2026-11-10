@@ -13,6 +13,8 @@ data:
   # Envoy Gateway beside nginx during the migration; they take .20/.21 at cutover.
   INTERNAL_GATEWAY_IP: 10.44.0.22
   EXTERNAL_GATEWAY_IP: 10.44.0.23
+  # The Cloudflare tunnel public hosts come in through (cloudflared/public.yaml).
+  PUBLIC_TUNNEL_ID: 0a09b6f9-5b0b-4ad2-91f5-6773dc98e8b2
   COREDNS_IP: 10.44.0.2
   UNIFI_IP: 10.44.0.3
   MINECRAFT_IP: 10.44.10.44

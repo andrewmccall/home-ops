@@ -1,0 +1,137 @@
+---
+# The public tunnel: everything the internet reaches comes through here to the Envoy
+# Gateway `external`, which picks the backend by host and path. The tunnel itself knows
+# no hostnames: a route attached to `external` (from a namespace labelled
+# home-ops.andrewmccall.com/public-routes=true) is public, and external-dns-cloudflare
+# publishes its DNS record pointing at this tunnel. Locally managed, so these rules are
+# this ConfigMap, not dashboard settings; TUNNEL_TOKEN only authenticates the connector.
+# After changing them: kubectl -n networking rollout restart deploy/cloudflared-public
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cloudflared-public
+  namespace: networking
+data:
+  config.yaml: |
+    no-autoupdate: true
+    metrics: 0.0.0.0:2000
+    # TLS to Envoy is verified against the request's host (*.${DOMAIN} certificate).
+    originRequest:
+      matchSNItoHost: true
+    ingress:
+      - service: https://envoy-external.networking.svc.${CLUSTER_DOMAIN}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared-public
+  namespace: networking
+  labels:
+    app.kubernetes.io/name: cloudflared-public
+spec:
+  # Two connectors, so a restart or upgrade does not drop traffic.
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: cloudflared-public
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: cloudflared-public
+    spec:
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:2026.10.7@sha256:4955524aeaa379e154023d5a027c250f7b35041a2e7e950cf13f144bc9b9c5ba
+          args: ["tunnel", "--config", "/etc/cloudflared/config.yaml", "run"]
+          env:
+            - name: TUNNEL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cloudflared-public
+                  key: token
+          ports:
+            - name: metrics
+              containerPort: 2000
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: metrics
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: metrics
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: config
+              mountPath: /etc/cloudflared
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: cloudflared-public
+---
+# The tunnel may reach only DNS, the external Gateway's Envoy pods and Cloudflare's edge.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: cloudflared-public
+  namespace: networking
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: cloudflared-public
+  policyTypes: [Ingress, Egress]
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 2000
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # Service port 443 is the Envoy container's 10443.
+    - to:
+        - podSelector:
+            matchLabels:
+              gateway.envoyproxy.io/owning-gateway-name: external
+      ports:
+        - protocol: TCP
+          port: 10443
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+            except:
+              - 10.0.0.0/8
+              - 172.16.0.0/12
+              - 192.168.0.0/16
+              - 169.254.0.0/16
+      ports:
+        - protocol: TCP
+          port: 7844
+        - protocol: UDP
+          port: 7844
+        - protocol: TCP
+          port: 443

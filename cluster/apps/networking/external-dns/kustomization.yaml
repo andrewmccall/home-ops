@@ -4,3 +4,5 @@ kind: Kustomization
 resources:
   - external-dns-unifi-secret.sops.yaml
   - external-dns-unifi.yaml
+  - external-dns-cloudflare-secret.sops.yaml
+  - external-dns-cloudflare.yaml

@@ -1,0 +1,51 @@
+---
+# Public DNS: a proxied Cloudflare record, pointing at the public tunnel
+# (cloudflared/public.yaml), for every route attached to the Envoy Gateway `external`.
+# The routes name the hosts; this knows none. external-dns-unifi keeps the LAN records,
+# which point straight at the Gateway.
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: external-dns-cloudflare
+  namespace: networking
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: external-dns
+      version: 1.23.0
+      sourceRef:
+        kind: HelmRepository
+        name: external-dns
+        namespace: flux-system
+  values:
+    fullnameOverride: external-dns-cloudflare
+    provider:
+      name: cloudflare
+    env:
+      - name: CF_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: external-dns-cloudflare
+            key: api-token
+    sources: ["gateway-httproute", "gateway-grpcroute"]
+    domainFilters: ["${DOMAIN}"]
+    # Owns only the records it created (TXT owner public-tunnel); hand-made records in
+    # the zone are never touched.
+    policy: sync
+    txtOwnerId: public-tunnel
+    extraArgs:
+      # Only routes the `external` Gateway accepted.
+      - --gateway-name=external
+      - --gateway-namespace=networking
+      - --cloudflare-proxied
+      # The tunnel, not the Gateway's LAN address the routes report. Without
+      # --force-default-targets external-dns prefers the route's address.
+      - --default-targets=${PUBLIC_TUNNEL_ID}.cfargotunnel.com
+      - --force-default-targets
+    resources:
+      requests:
+        cpu: 10m
+        memory: 48Mi
+      limits:
+        memory: 128Mi

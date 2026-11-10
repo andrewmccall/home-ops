@@ -1,6 +1,8 @@
 ---
-# Two Gateways, as the two ingress-nginx classes were: `internal` for LAN-only hosts
-# and `external` for hosts the Cloudflare tunnel publishes. Routes in any namespace
+# Two Gateways: `internal` for LAN-only hosts, `external` for public ones. A route on
+# `external` is published through the public Cloudflare tunnel (cloudflared/public.yaml,
+# external-dns-cloudflare) and must come from a namespace labelled
+# home-ops.andrewmccall.com/public-routes=true. The LAN reaches both directly. Routes in any namespace
 # attach with parentRefs { name: internal|external, namespace: networking }.
 #
 # Migration (phase 1): the Gateways sit on spare addresses beside nginx (.20/.21)
@@ -123,9 +125,15 @@ spec:
         mode: Terminate
         certificateRefs:
           - name: ingress-tls
+      # Attaching here makes a route public (cloudflared/public.yaml and
+      # external-dns-cloudflare): only from namespaces labelled for it, so a stray
+      # parentRef cannot expose a service.
       allowedRoutes:
         namespaces:
-          from: All
+          from: Selector
+          selector:
+            matchLabels:
+              home-ops.andrewmccall.com/public-routes: "true"
     - name: http
       protocol: HTTP
       port: 80
