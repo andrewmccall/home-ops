@@ -101,7 +101,7 @@
       "automerge": false
     },
     // k3s: Ansible's k3s_release_version and the system-upgrade Plan in one PR. Patches
-    // merge automatically and are applied in the Plan's Sunday-night window; a new
+    // merge automatically and are applied in the Plan's 01:00 Monday window; a new
     // Kubernetes minor waits for a person, after checking Calico supports it.
     {
       "matchPackageNames": ["k3s-io/k3s"],
@@ -135,8 +135,8 @@
       "minimumReleaseAge": null
     },
     // Images Renovate cannot date, so the 7-day cooldown cannot be enforced: they
-    // automerge only on Sunday morning instead, nine hours before the k3s upgrade
-    // window (cluster/core/system-upgrade/server-plan.yaml), whose health check then
+    // automerge only on Sunday morning instead, well before the 01:00 Monday k3s
+    // upgrade window (cluster/core/system-upgrade/server-plan.yaml), whose health check then
     // refuses to upgrade if any of them broke something.
     // - ghcr.io / registry.k8s.io only: Music Assistant, the UniFi webhook, agent-sandbox.
     // - Docker Hub, but over its 1,000-tag anonymous paging limit, so Renovate falls
