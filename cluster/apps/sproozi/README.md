@@ -52,7 +52,11 @@ it cannot choose an image, model, policy or credential.
 | `fix` | `sre-fix` / `claude-sonnet` | `claude-sonnet-5-5` | The same reads, plus one PR against `andrewmccall/home-ops` `main`; 45 min; 1 at once |
 
 Both are in `sre.yaml`. Runs use the release's `sproozi-native` image (Claude Code,
-git, gh, kubectl). A run never holds a credential: the gateway adds the Anthropic
+git, gh, kubectl). Sproozi returns a run's answer only from a `sproozi.run-result/v1`
+envelope in the termination file, which its Claude Code example does not write, so
+each runtime ends with a short script that wraps Claude's final `result` (cut to
+3,584 bytes and marked truncated if longer) and fails the run when Claude reports
+an error. A run never holds a credential: the gateway adds the Anthropic
 key and the GitHub App token to requests it allows. Budgets cap tokens only; set a
 spending limit on the gateway's Anthropic workspace as the money ceiling.
 
