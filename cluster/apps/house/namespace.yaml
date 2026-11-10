@@ -3,3 +3,7 @@ apiVersion: v1
 kind: Namespace
 metadata:
   name: house
+  labels:
+    # Lets routes here attach to the `external` Gateway, which makes them public:
+    # Home Assistant (home-assistant/route.yaml). See apps/networking/README.md.
+    home-ops.andrewmccall.com/public-routes: "true"
