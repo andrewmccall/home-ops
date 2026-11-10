@@ -682,7 +682,8 @@ spec:
               targetLabel: kubernetes_node
     prometheus:
       prometheusSpec:
-        enableAdminAPI: true
+        # Off: it can delete all metrics, and Prometheus is reachable from the whole LAN.
+        enableAdminAPI: false
         ruleSelectorNilUsesHelmValues: false
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false

@@ -46,8 +46,8 @@ spec:
                 spec:
                   failureThreshold: 30
                   periodSeconds: 10
-            securityContext:
-              privileged: true
+            # Not privileged: the generic device plugin passes in only the USB coordinator
+            # (resources.limits home-ops/zigbee), so the container needs no other host access.
             resources:
               requests:
                 cpu: 20m

@@ -1,0 +1,27 @@
+---
+# MQTT carries Zigbee control and allows anonymous clients, and pod addresses are
+# routed to the LAN (Calico BGP), so without this any device on the network could
+# switch, pair or remove Zigbee devices. Only the house namespace (Home Assistant,
+# zigbee2mqtt) and monitoring (mqtt-exporter) may connect. The kubelet's probes come
+# from the node, which Calico always allows.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mosquitto
+  namespace: databases
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: mosquitto
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: house
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
+      ports:
+        - protocol: TCP
+          port: 1883
