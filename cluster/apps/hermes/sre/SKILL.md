@@ -57,5 +57,8 @@ ambiguous. Record the decision with the terminal before acting:
   Tell Andrew it has started, then `wait` and `status` until it finishes (up to
   45 minutes) and reply with the pull request URL or the reason there is none.
   The fix run opens a PR only; Andrew reviews and merges it.
+  If an earlier fix for this key finished without a PR and Andrew asks to try
+  again, run `decide '<key>' clear` first: repeating `fix` reprints the finished
+  attempt's fields, and Sproozi would return that attempt instead of a new run.
 
 `python3 /opt/data/scripts/sre_alerts.py list` shows every recorded decision.
