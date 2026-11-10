@@ -8,5 +8,9 @@ resources:
   - networkpolicy.yaml
   - route.yaml
   - securitypolicy.yaml
+  - backup-target.sops.yaml
+  - backup-crypt.sops.yaml
+  - backup-gateway.sops.yaml
+  - backup-crypt.yaml
   - recurring-jobs.yaml
   - storageclass-hdd.yaml

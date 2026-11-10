@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+    name: longhorn-backup-target
+    namespace: longhorn
+stringData:
+    AWS_ACCESS_KEY_ID: ENC[AES256_GCM,data:VPYPbHYhmx48uDl4cGDYK/G/8a09RJfa,iv:mXVW0b2et2QwWHBMPQh5p7riE/0xiZRdUq/ai0kk2SA=,tag:oS3EW4ajnDJmyot+4/huiA==,type:str]
+    AWS_SECRET_ACCESS_KEY: ENC[AES256_GCM,data:1yMSFqeOdKceA9ef+mTyXikXA3MB2FVhr0AShnceX8OsAe0cqmYabxB5isFQ+/7KY7MrceAm+blSKX7eKvcKoQ==,iv:kh3bNxYk4uqvVLJB5iT9EEyRG0dwXzVMd0++/S2K4Bc=,tag:ZTMolLRTmsOPdAHjlgwyFA==,type:str]
+    AWS_ENDPOINTS: ENC[AES256_GCM,data:hVIwU8QmQ3fL2SJlNHQ6O36jtN6915dqCEp7Gh6Wdw/MpvonNQ==,iv:I0GbpJo7qTmsvzs9mjYonoRRB/LKwQMG9tOdUvqZ0LE=,tag:rTTLeGzgrTKalexQCWlkmw==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age16rj2w4scur86mjvs6eutq03cwlpygu3pywcedvl0rkh68vzv0dlqagqenq
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBLQng1M0l3bVR2RjBhZmdx
+            WFdrT1Q4b0kzNjBYN0tzWnlUZXVmN1VnT200Cnp2aUsydXJmTUFwN3FVbmt2c3ZY
+            OTV0U1lLYXQvQlROeFBmazJoalJTbXMKLS0tIDJzeXRraW9qMmErNWlkS0o0YzlH
+            enJCU1dyNlJ3ZDB6TlF6b3ROcmZXd3MKXvqf6wjOfUesn5xwUFhYATIZ5e7yVzsz
+            SugOMK5h3roRITHr/sDr5uSUhQMZJs7dFpeA7lXlrhV87gNJV2V2YQ==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-11-10T20:52:45Z"
+    mac: ENC[AES256_GCM,data:2ThBiLokuU1tH7gCpDy4PnRM8I3bEEVZdpMmLdTe6bOgu14AVPxWAKaAKe1NMkQl2qGGJ/u/j50bajuvwAiUzMpyBKf9DX/FgGbOZcRCv6rH1638DdS1pUUSkq4EF34+pnyEJ2f93OB/+drMB9ymZDnmWTqxzzIxfU51EAut+mk=,iv:APB9u+No59kPZKAsaR2vLC1Ln79GCO6ylM2ZSFTOHvQ=,tag:iFM5O0/6EOg9n45j+ApxhQ==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData)$
+    version: 3.9.0

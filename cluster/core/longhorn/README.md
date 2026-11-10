@@ -37,3 +37,57 @@ volume is recreated.
 - `bulk0` reserves 0 bytes; the 25 % floor is the margin.
 - `replica-soft-anti-affinity` stays `false`. The move script turns it on for the move (it needs
   two replicas on one node for a moment) and back off after.
+
+## Off-site backups
+
+Every night at 03:30 Longhorn backs up the volumes in the `default` group
+(`recurring-jobs.yaml`, `daily-backup`), keeps 14, and uploads only the blocks that
+changed. The backups go to the R2 bucket `vecna-backup` in Cloudflare's EU
+jurisdiction, encrypted before they leave vecna:
+
+```
+Longhorn ──S3──▶ backup-crypt (rclone serve s3 + crypt) ──S3──▶ R2 vecna-backup
+```
+
+- `backup-crypt.yaml`: the rclone gateway. Longhorn's target is `s3://longhorn@auto/`
+  at the gateway (`backup-gateway.sops.yaml`); the gateway encrypts contents and names
+  (rclone crypt) and writes to the bucket. Cloudflare only holds ciphertext.
+  `rclone serve s3` is experimental upstream, so a restore is tested after changes.
+- `backup-target.sops.yaml`: the R2 token (this bucket only) and endpoint.
+- `backup-crypt.sops.yaml`: the crypt passwords, rclone-obscured. **Without these and
+  the SOPS age key the backups cannot be read.** Keep the age key outside vecna.
+- Not backed up: `longhorn-hdd` volumes (`bulk-none`: the ashes map, rebuilt weekly from
+  OSM), Prometheus (`no-snapshots`), and the `snapshot-only` volumes below. Detached
+  volumes are skipped.
+
+### Restoring
+
+A volume, with vecna up: Longhorn UI > Backup > pick the backup > Restore, then point
+the workload's claim at the new volume (or restore in place over a detached volume).
+
+Everything, after losing vecna: rebuild the node and Flux (the SOPS age key is needed
+to decrypt this directory), let Longhorn and `backup-crypt` come up, and the backups
+reappear in the UI within `pollInterval` (5 minutes). Restore each volume before its
+app starts, or scale the app down first.
+
+Without the cluster, rclone alone reads the bucket: configure the `r2` and `crypt`
+remotes from the two Secrets (`rclone config` takes the obscured passwords as they are)
+and `rclone ls crypt:`.
+
+## Volumes labelled by hand
+
+Longhorn volume labels are not in git. These were changed on 2026-11-10; a recreated
+claim comes back in the `default` group and is backed up off-site until relabelled.
+
+| Namespace | Claim | Group | Why |
+| --- | --- | --- | --- |
+| monitoring | `storage-loki-0` | `snapshot-only` | Logs; 30 days, rebuildable |
+| monitoring | `storage-tempo-0` | `snapshot-only` | Traces |
+| house | `esp-home-cache` | `snapshot-only` | Build cache |
+| house | `home-assistant-whisper-data` | `snapshot-only` | Downloaded speech model |
+| house | `home-assistant-piper-data` | `snapshot-only` | Downloaded voice |
+
+```bash
+kubectl -n longhorn label volumes.longhorn.io <pv-name> \
+  recurring-job-group.longhorn.io/snapshot-only=enabled recurring-job-group.longhorn.io/default-
+```

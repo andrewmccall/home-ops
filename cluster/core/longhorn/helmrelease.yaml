@@ -25,6 +25,11 @@ spec:
     # breakage (volumes stuck attaching), fixed in 1.12.2. Keep the pre-1.12 behaviour.
     networkPolicies:
       restrictInternalTraffic: false
+    # Off-site backups through the encrypting gateway (backup-crypt.yaml); the bucket
+    # name is the gateway's, which maps to the R2 bucket.
+    defaultBackupStore:
+      backupTarget: s3://longhorn@auto/
+      backupTargetCredentialSecret: longhorn-backup-target
     defaultSettings:
       # Was 0, which left volumes on engines as old as v1.7.0 across upgrades. One at a
       # time live-upgrades each volume to the manager's engine after every upgrade.

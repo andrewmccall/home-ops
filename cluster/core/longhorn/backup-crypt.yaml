@@ -1,0 +1,156 @@
+---
+# The off-site backups' encryption: rclone serves an S3 API that Longhorn's backup
+# target uses (backup-gateway.sops.yaml), and encrypts every object, names included,
+# with rclone crypt before it reaches the R2 bucket in Cloudflare's EU jurisdiction.
+# Cloudflare only ever holds ciphertext. `rclone serve s3` is marked experimental;
+# README.md#off-site-backups has the restore test that proves it.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backup-crypt
+  namespace: longhorn
+  labels:
+    app.kubernetes.io/name: backup-crypt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backup-crypt
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: backup-crypt
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: rclone
+          image: rclone/rclone:1.75.2@sha256:2687085f718d3c628f7fdfb77c52a1d344332aed543110bb88088f2c70d43eb5
+          args:
+            - serve
+            - s3
+            - crypt:
+            - --addr=:8080
+            - --auth-key=$(GATEWAY_ACCESS_KEY_ID),$(GATEWAY_SECRET_ACCESS_KEY)
+            - --vfs-cache-mode=off
+          env:
+            - name: HOME
+              value: /tmp
+            # The R2 bucket. The token can only reach this bucket, so rclone must not
+            # try to check or create it.
+            - name: RCLONE_CONFIG_R2_TYPE
+              value: s3
+            - name: RCLONE_CONFIG_R2_PROVIDER
+              value: Cloudflare
+            - name: RCLONE_CONFIG_R2_REGION
+              value: auto
+            - name: RCLONE_CONFIG_R2_NO_CHECK_BUCKET
+              value: "true"
+            - name: RCLONE_CONFIG_R2_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: backup-target-r2
+                  key: R2_ENDPOINT
+            - name: RCLONE_CONFIG_R2_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: backup-target-r2
+                  key: AWS_ACCESS_KEY_ID
+            - name: RCLONE_CONFIG_R2_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: backup-target-r2
+                  key: AWS_SECRET_ACCESS_KEY
+            # Encryption over the bucket; the passwords are rclone-obscured.
+            - name: RCLONE_CONFIG_CRYPT_TYPE
+              value: crypt
+            - name: RCLONE_CONFIG_CRYPT_REMOTE
+              value: r2:vecna-backup
+            - name: RCLONE_CONFIG_CRYPT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: backup-crypt
+                  key: CRYPT_PASSWORD
+            - name: RCLONE_CONFIG_CRYPT_PASSWORD2
+              valueFrom:
+                secretKeyRef:
+                  name: backup-crypt
+                  key: CRYPT_PASSWORD2
+            # The keys Longhorn signs with (longhorn-backup-target).
+            - name: GATEWAY_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: longhorn-backup-target
+                  key: AWS_ACCESS_KEY_ID
+            - name: GATEWAY_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: longhorn-backup-target
+                  key: AWS_SECRET_ACCESS_KEY
+          ports:
+            - name: s3
+              containerPort: 8080
+          readinessProbe:
+            tcpSocket:
+              port: s3
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: s3
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backup-crypt
+  namespace: longhorn
+  labels:
+    app.kubernetes.io/name: backup-crypt
+spec:
+  selector:
+    app.kubernetes.io/name: backup-crypt
+  ports:
+    - name: s3
+      port: 8080
+      targetPort: s3
+---
+# Only Longhorn (this namespace) may use the gateway.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backup-crypt
+  namespace: longhorn
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: backup-crypt
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 8080

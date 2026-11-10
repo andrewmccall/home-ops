@@ -1,7 +1,7 @@
 ---
-# No backup target exists, so local snapshots are the only recovery point. They
-# undo a bad upgrade or a bad write but do not survive losing vecna's disk.
-# Volumes without recurring-job labels belong to the default group.
+# Local snapshots undo a bad upgrade or a bad write; the daily backup below copies
+# volumes off-site (README.md#off-site-backups). Volumes without recurring-job labels
+# belong to the default group; longhorn-hdd volumes (rebuildable data) are outside it.
 apiVersion: longhorn.io/v1beta2
 kind: RecurringJob
 metadata:
@@ -11,6 +11,24 @@ spec:
   task: snapshot
   cron: "0 3 * * *"
   retain: 7
+  concurrency: 2
+  groups:
+    - default
+    # Rebuildable data that still gets local snapshots but no off-site backup
+    # (labelled by hand; README.md#volumes-labelled-by-hand).
+    - snapshot-only
+---
+# Off-site, encrypted (backup-crypt.yaml), 14 days. Incremental: only blocks changed
+# since the last backup are uploaded. Detached volumes are skipped.
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: daily-backup
+  namespace: longhorn
+spec:
+  task: backup
+  cron: "30 3 * * *"
+  retain: 14
   concurrency: 2
   groups:
     - default
