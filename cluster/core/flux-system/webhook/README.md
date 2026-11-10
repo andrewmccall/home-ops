@@ -9,8 +9,9 @@ fallback: if a delivery is lost, the next interval picks the change up.
 
 ```
 GitHub push -> https://gh-webhook.andrewmccall.com/hook/<sha256>
-  -> Cloudflare tunnel "vecna-infra" (Deployment cloudflared-infra, networking)
-     routes only ^/hook/ on this hostname; anything else gets the tunnel's 404
+  -> Cloudflare -> the public tunnel (cloudflared-public, networking)
+  -> Envoy Gateway `external`, HTTPRoute webhook-receiver (route.yaml): only /hook/ on this
+     host; anything else gets a 404
   -> Service webhook-receiver:80 (notification-controller, port 9292)
   -> Receiver home-ops or survival
   -> annotates GitRepository flux-system or survival with "reconcile now"
@@ -30,34 +31,20 @@ GitHub push -> https://gh-webhook.andrewmccall.com/hook/<sha256>
   `X-Hub-Signature-256`); the Receiver rejects unsigned or wrongly signed requests and
   events other than `push` and `ping`. A valid request can only ask Flux to fetch now.
 - **Exposure.** The webhook-receiver port serves only Receiver hooks; Flux's event API is
-  the separate `notification-controller` Service and is not routed. The hostname rides the
-  infrastructure tunnel, not the game's (`cluster/apps/networking/cloudflared/`), and that
-  tunnel's pods may reach only this Service, DNS and Cloudflare. No Ingress or DNS record
-  is managed in git: the tunnel's public hostname owns the proxied Cloudflare record.
+  the separate `notification-controller` Service and is not routed. The route is on the
+  `external` Gateway, so external-dns-cloudflare publishes the proxied record; flux-system
+  carries the public-routes label for it (`cluster/apps/networking/README.md`).
 
-## Cloudflare tunnel hostname (one-time, dashboard)
+## Optional: allow only GitHub
 
-Needs the `vecna-infra` tunnel (`cluster/apps/networking/cloudflared/README.md`). Its routes
-live in Cloudflare Zero Trust, not in git. Under **Networks → Tunnels → vecna-infra →
-Public hostnames → Add a public hostname**:
-
-| Field | Value |
-|---|---|
-| Subdomain / Domain | `gh-webhook` / `andrewmccall.com` |
-| Path | `^/hook/` |
-| Service | `HTTP` `webhook-receiver.flux-system.svc.cluster.andrewmccall.com:80` |
-
-Add no other routes. The cluster DNS domain is `cluster.andrewmccall.com`, so a
-`.svc.cluster.local` address does not resolve here.
-
-Optional: Cloudflare WAF custom rule on the zone to block anything not from GitHub:
+A Cloudflare WAF custom rule on the zone to block anything not from GitHub:
 `(http.host eq "gh-webhook.andrewmccall.com" and not ip.src in {<gh api meta --jq '.hooks[]'>})`
 → Block. GitHub occasionally adds ranges; a stale list drops deliveries until polling
 catches up, so re-check it when deliveries fail with 403.
 
 ## Create or update the GitHub webhooks
 
-After Flux has applied the Receivers (and the tunnel hostname exists):
+After Flux has applied the Receivers and the route:
 
 ```sh
 kubectl -n flux-system get receiver   # both Ready, with a webhook path

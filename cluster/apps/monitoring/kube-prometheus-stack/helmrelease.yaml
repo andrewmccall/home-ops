@@ -172,6 +172,15 @@ spec:
           verbs:
           - list
           - watch
+        # Route status for GatewayRouteNotAccepted (alerts/monitoring-rules.yaml).
+        - apiGroups:
+          - gateway.networking.k8s.io
+          resources:
+          - httproutes
+          - grpcroutes
+          verbs:
+          - list
+          - watch
       customResourceState:
         enabled: true
         config:
@@ -605,6 +614,78 @@ spec:
                   - spec
                   - sourceRef
                   - name
+            # gatewayapi_route_accepted: one series per route and parent Gateway listener,
+            # 1 when that listener accepted the route, 0 when it refused it.
+            - groupVersionKind:
+                group: gateway.networking.k8s.io
+                version: v1
+                kind: HTTPRoute
+              metricNamePrefix: gatewayapi
+              commonLabels:
+                route_kind: HTTPRoute
+              labelsFromPath:
+                exported_namespace:
+                - metadata
+                - namespace
+                name:
+                - metadata
+                - name
+              metrics:
+              - name: route_accepted
+                help: Whether the parent Gateway listener accepted the route (1) or refused it (0).
+                each:
+                  type: Gauge
+                  gauge:
+                    path:
+                    - status
+                    - parents
+                    labelsFromPath:
+                      gateway:
+                      - parentRef
+                      - name
+                      section:
+                      - parentRef
+                      - sectionName
+                    valueFrom:
+                    - conditions
+                    - '[type=Accepted]'
+                    - status
+            # gatewayapi_route_accepted: one series per route and parent Gateway listener,
+            # 1 when that listener accepted the route, 0 when it refused it.
+            - groupVersionKind:
+                group: gateway.networking.k8s.io
+                version: v1
+                kind: GRPCRoute
+              metricNamePrefix: gatewayapi
+              commonLabels:
+                route_kind: GRPCRoute
+              labelsFromPath:
+                exported_namespace:
+                - metadata
+                - namespace
+                name:
+                - metadata
+                - name
+              metrics:
+              - name: route_accepted
+                help: Whether the parent Gateway listener accepted the route (1) or refused it (0).
+                each:
+                  type: Gauge
+                  gauge:
+                    path:
+                    - status
+                    - parents
+                    labelsFromPath:
+                      gateway:
+                      - parentRef
+                      - name
+                      section:
+                      - parentRef
+                      - sectionName
+                    valueFrom:
+                    - conditions
+                    - '[type=Accepted]'
+                    - status
       prometheus:
         monitor:
           relabelings:

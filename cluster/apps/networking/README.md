@@ -1,11 +1,56 @@
-# Home network discovery and routed pods
+# Networking: routes, DNS, the public tunnel and routed pods
 
-Public hostnames come in through two Cloudflare tunnels, one for the game and one for
-cluster endpoints: [cloudflared/README.md](cloudflared/README.md).
+Public hostnames come in through one Cloudflare tunnel to the `external` Gateway
+([cloudflared/README.md](cloudflared/README.md)); see "Making a service public" below.
 
 Calico peers with the home gateway at `10.0.0.1`. It advertises pod blocks from
 `10.42.0.0/16`, Service addresses from `10.43.0.0/16`, and external addresses from
 `10.44.0.0/16`. BGP supplies unicast routes; it does not forward mDNS discovery.
+
+## Routes, Gateways and DNS
+
+Services are reached through two Envoy Gateways in this namespace (`envoy-gateway/`), by
+HTTPRoutes (or GRPCRoutes) that sit next to each app, in this repo or another:
+
+| Gateway | Reached from | DNS |
+|---|---|---|
+| `internal` | The LAN only | `external-dns-unifi`: a LAN record pointing at the Gateway |
+| `external` | The LAN, and the internet through the public tunnel (`cloudflared/`) | Also `external-dns-cloudflare`: a proxied public record pointing at the tunnel |
+
+Both listen on 443 with the `*.andrewmccall.com` certificate (`networking/ingress-tls`) and
+redirect port 80 to HTTPS. A route attaches with:
+
+```yaml
+parentRefs:
+  - name: internal          # or external
+    namespace: networking
+    sectionName: https
+hostnames:
+  - my-app.${DOMAIN}
+```
+
+DNS records follow the routes: add, change or delete a route and its records follow within
+a minute. No tunnel or DNS setting needs editing.
+
+### Making a service public
+
+Attaching a route to `external` publishes it on the internet. As a guard, `external` only
+accepts routes from namespaces labelled for it, so both are needed:
+
+1. The namespace carries `home-ops.andrewmccall.com/public-routes: "true"`. Labelled now:
+   `house` (Home Assistant), `flux-system` (the GitHub webhook) and the game's namespaces
+   (labelled in their own repository).
+2. The route's `parentRefs` names the `external` Gateway.
+
+Without the label the route is refused, and nothing is published:
+
+```sh
+kubectl -n <namespace> get httproute <name> -o jsonpath='{.status.parents[*].conditions[?(@.type=="Accepted")]}'
+# "status":"False","reason":"NotAllowedByListeners" -> the namespace lacks the label
+```
+
+`GatewayRouteNotAccepted` alerts on any route a Gateway refuses. Before publishing,
+decide how the service authenticates: anything on `external` faces the whole internet.
 
 ## UniFi asymmetric pod TCP
 

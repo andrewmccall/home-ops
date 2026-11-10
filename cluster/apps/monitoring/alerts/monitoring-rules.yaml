@@ -52,3 +52,17 @@ spec:
             severity: warning
           annotations:
             summary: "mqtt-exporter is not being scraped, so Zigbee alerts cannot fire"
+
+    - name: gateways
+      rules:
+        # A refused route serves nothing and gets no DNS record, silently. On `external`
+        # the usual cause is a namespace without the public-routes label.
+        - alert: GatewayRouteNotAccepted
+          expr: gatewayapi_route_accepted == 0
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.route_kind }} {{ $labels.exported_namespace }}/{{ $labels.name }} refused by Gateway {{ $labels.gateway }}"
+            description: "kubectl -n {{ $labels.exported_namespace }} describe {{ $labels.route_kind | toLower }} {{ $labels.name }}. On external: is the namespace labelled home-ops.andrewmccall.com/public-routes=true? See cluster/apps/networking/README.md."
+
