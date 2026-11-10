@@ -48,8 +48,9 @@ spec:
           timeoutSeconds: 5
     extraArgs:
       - --ignore-ingress-tls-spec
-    # upsert-only and no txtPrefix match the TXT ownership records already in UniFi.
-    policy: upsert-only
+    # sync creates, updates and deletes records it owns (a-<host> TXT, no txtPrefix).
+    # Hand-made records without an owner TXT, e.g. internal/external, are left alone.
+    policy: sync
     sources: ["ingress", "service"]
     txtOwnerId: default
     domainFilters: ["${DOMAIN}"]
