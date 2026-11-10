@@ -54,8 +54,9 @@ spec:
             - journal_logs
           # Vector 0.61+ needs the scheme; a bare host:port fails with "client error (Connect)".
           endpoint: http://loki-gateway.monitoring.svc
+          # The line is the message alone; see loki_kubernetes.
           encoding:
-            codec: json
+            codec: text
           out_of_order_action: accept
           remove_timestamp: true
           labels:
@@ -69,12 +70,17 @@ spec:
           inputs:
             - kubernetes_logs
           endpoint: http://loki-gateway.monitoring.svc
+          # The line is the container's own output. JSON encoding wrapped it in Vector's
+          # metadata (labels, annotations, image), 95% of each line and already in the
+          # stream labels; that tripped Loki's rate limit and hid app JSON from `| json`.
           encoding:
-            codec: json
+            codec: text
           out_of_order_action: accept
           remove_timestamp: true
           labels:
             source: kubernetes
+            stream: >-
+              {{`{{ stream }}`}}
             node: >-
               {{`{{ kubernetes.pod_node_name }}`}}
             namespace: >-
