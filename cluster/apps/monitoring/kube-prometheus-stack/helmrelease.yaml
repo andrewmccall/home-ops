@@ -207,6 +207,14 @@ spec:
           verbs:
           - list
           - watch
+        # Off-site backup size and age for alerts/backup-rules.yaml.
+        - apiGroups:
+          - longhorn.io
+          resources:
+          - backupvolumes
+          verbs:
+          - list
+          - watch
         # Route status for GatewayRouteNotAccepted (alerts/monitoring-rules.yaml).
         - apiGroups:
           - gateway.networking.k8s.io
@@ -721,6 +729,40 @@ spec:
                     - conditions
                     - '[type=Accepted]'
                     - status
+            # Longhorn's off-site backups, one series per backed-up volume (alerts/backup-rules.yaml):
+            # longhorn_crs_backup_volume_stored_bytes, what the volume's backups hold in R2;
+            # longhorn_crs_backup_volume_last_backup_timestamp, Unix time of the newest backup.
+            - groupVersionKind:
+                group: longhorn.io
+                version: v1beta2
+                kind: BackupVolume
+              metricNamePrefix: longhorn_crs
+              labelsFromPath:
+                volume:
+                - spec
+                - volumeName
+                backup_volume:
+                - metadata
+                - name
+              metrics:
+              - name: backup_volume_stored_bytes
+                help: Bytes the volume's backups hold in the backup target.
+                each:
+                  type: Gauge
+                  gauge:
+                    path:
+                    - status
+                    - dataStored
+                    nilIsZero: true
+              - name: backup_volume_last_backup_timestamp
+                help: Unix time of the volume's newest backup.
+                each:
+                  type: Gauge
+                  gauge:
+                    path:
+                    - status
+                    - lastBackupAt
+                    nilIsZero: true
       prometheus:
         monitor:
           relabelings:

@@ -18,6 +18,7 @@ deployed from this or another repository): [APPS.md](APPS.md).
 | OpenTelemetry collector, Tempo | `otel-collector/`, `tempo/` | OTLP in; traces to Tempo, metrics to Prometheus (`otel_`), logs to Loki ([APPS.md](APPS.md)). |
 | Postgres (CloudNativePG) | `cluster/core/cloudnative-pg/` | Every instance in any namespace is scraped; dashboard and `alerts/postgres-rules.yaml`. |
 | Envoy Gateway | `cluster/apps/networking/envoy-gateway/monitoring.yaml` | Proxy and controller metrics, per route; Envoy dashboards. |
+| Off-site backups (Longhorn to R2) | `cluster/core/longhorn/` | `alerts/backup-rules.yaml`: target down, a missed nightly backup, the bucket over its 100 GB budget, retention not pruning. Size and age from kube-state-metrics on Longhorn's BackupVolume objects. |
 
 ## Dashboards
 

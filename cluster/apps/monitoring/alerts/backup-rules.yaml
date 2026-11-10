@@ -1,0 +1,57 @@
+---
+# Longhorn's off-site backups to R2 (cluster/core/longhorn/README.md#off-site-backups):
+# that they run, and that the bucket stays the size we pay for. The size and age come
+# from kube-state-metrics reading Longhorn's BackupVolume objects.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: backup-alerts
+  namespace: monitoring
+spec:
+  groups:
+    - name: backups
+      rules:
+        - alert: BackupTargetUnavailable
+          expr: max(longhorn_backup_target_status{condition="unavailable"}) == 1
+          for: 30m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Longhorn cannot reach the off-site backup bucket"
+            description: "Backups are not running. Check the R2 token in cluster/core/longhorn/backup-target.sops.yaml and `kubectl -n longhorn get backuptargets default -o yaml`."
+
+        # A volume that has been backed up before (so it is in the backup group) and
+        # still exists, with no new backup for a day and a half: the 03:30 job failed
+        # or skipped it (a detached volume is skipped).
+        - alert: BackupMissed
+          expr: |
+            (time() - longhorn_crs_backup_volume_last_backup_timestamp > 30 * 3600)
+              and on (volume) max by (volume) (longhorn_volume_actual_size_bytes)
+          for: 1h
+          labels:
+            severity: warning
+          annotations:
+            summary: "No off-site backup of {{ $labels.volume }} for over 30 hours"
+            description: "Check the volume's backups in the Longhorn UI and `kubectl -n longhorn get backups -l backup-volume={{ $labels.volume }}`."
+
+        # The budget check. About 45 GB is expected (14 incremental days of ~27 GB);
+        # R2 Standard is $0.015/GB-month after 10 GB free, so 100 GB is about $1.35/month.
+        # Growth past it means a big volume joined the backup group, retention is not
+        # pruning, or a deleted volume's backups are lying around (Longhorn keeps those).
+        - alert: BackupStorageAboveBudget
+          expr: sum(longhorn_crs_backup_volume_stored_bytes) > 100e9
+          for: 6h
+          labels:
+            severity: warning
+          annotations:
+            summary: "Off-site backups hold {{ $value | humanize1024 }}B, over the 100 GB budget"
+            description: "Find the largest with `sort_desc(longhorn_crs_backup_volume_stored_bytes)`. Remove a deleted volume's backups in Longhorn UI > Backup, or move a rebuildable volume to the snapshot-only group (cluster/core/longhorn/README.md)."
+
+        - alert: BackupRetentionNotPruning
+          expr: max by (backup_volume) (longhorn_backup_volume_backups_count) > 16
+          for: 6h
+          labels:
+            severity: warning
+          annotations:
+            summary: "{{ $labels.backup_volume }} has {{ $value }} backups; the job keeps 14"
+            description: "Old backups are not being deleted, so the bucket keeps growing. Check the daily-backup RecurringJob and Longhorn manager logs."

@@ -6,3 +6,4 @@ resources:
   - house-rules.yaml
   - monitoring-rules.yaml
   - postgres-rules.yaml
+  - backup-rules.yaml
