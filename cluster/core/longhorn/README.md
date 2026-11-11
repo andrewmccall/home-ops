@@ -5,11 +5,12 @@ vecna has two Longhorn disks, chosen by tag:
 | Disk | Path | Tag | Class | For |
 | --- | --- | --- | --- | --- |
 | `default-disk-…` | `/var/lib/longhorn/` (NVMe) | `ssd` | `longhorn` (default) | Everything with random I/O: Home Assistant, Zigbee2MQTT, Mosquitto, game databases, Minecraft |
-| `bulk0` | `/mnt/bulk0` (4 TB IronWolf, 5400 rpm) | `hdd` | `longhorn-hdd` | Large, rebuildable or append-mostly data |
+| `bulk0` | `/mnt/bulk0` (4 TB IronWolf, 5400 rpm) | `hdd` | `longhorn-hdd`, `longhorn-hdd-scratch` | Large, rebuildable or append-mostly data |
 
 The default class selects `ssd` (`persistence.defaultDiskSelector` in `helmrelease.yaml`), so a
 new volume never lands on the spinning disk by accident. `longhorn-hdd` has one replica, `Retain`,
-and sits outside the `daily-snapshot` group.
+and sits outside the `daily-snapshot` group. `longhorn-hdd-scratch` is the same but `Delete`: use it
+for job scratch claims (the Ashes map rebuild), whose volumes would otherwise outlive the job.
 
 ## Volumes moved to the hdd by hand
 
