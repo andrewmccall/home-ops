@@ -11,3 +11,4 @@ resources:
   - backup-target.sops.yaml
   - recurring-jobs.yaml
   - storageclass-hdd.yaml
+  - storageclass-scratch.yaml

@@ -1,0 +1,18 @@
+---
+# Scratch space for jobs on the SSD (e.g. the Ashes map rebuild's planetiler-tmp).
+# Delete, so the volume goes with its claim, and in the "scratch" group, which has no
+# recurring jobs: never snapshotted or backed up off-site.
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: longhorn-scratch
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+parameters:
+  numberOfReplicas: "1"
+  diskSelector: "ssd"
+  staleReplicaTimeout: "30"
+  fsType: "ext4"
+  recurringJobSelector: '[{"name":"scratch","isGroup":true}]'

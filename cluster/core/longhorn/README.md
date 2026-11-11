@@ -4,13 +4,15 @@ vecna has two Longhorn disks, chosen by tag:
 
 | Disk | Path | Tag | Class | For |
 | --- | --- | --- | --- | --- |
-| `default-disk-…` | `/var/lib/longhorn/` (NVMe) | `ssd` | `longhorn` (default) | Everything with random I/O: Home Assistant, Zigbee2MQTT, Mosquitto, game databases, Minecraft |
+| `default-disk-…` | `/var/lib/longhorn/` (NVMe) | `ssd` | `longhorn` (default), `longhorn-scratch` | Everything with random I/O: Home Assistant, Zigbee2MQTT, Mosquitto, game databases, Minecraft |
 | `bulk0` | `/mnt/bulk0` (4 TB IronWolf, 5400 rpm) | `hdd` | `longhorn-hdd`, `longhorn-hdd-scratch` | Large, rebuildable or append-mostly data |
 
 The default class selects `ssd` (`persistence.defaultDiskSelector` in `helmrelease.yaml`), so a
 new volume never lands on the spinning disk by accident. `longhorn-hdd` has one replica, `Retain`,
-and sits outside the `daily-snapshot` group. `longhorn-hdd-scratch` is the same but `Delete`: use it
-for job scratch claims (the Ashes map rebuild), whose volumes would otherwise outlive the job.
+and sits outside the `daily-snapshot` group. For job scratch claims (the Ashes map rebuild) use `longhorn-scratch` (SSD) or
+`longhorn-hdd-scratch`: both delete the volume with its claim and are never snapshotted
+or backed up. On `longhorn` a scratch volume still attached at 03:00/03:30 is
+snapshotted and sent off-site.
 
 ## Volumes moved to the hdd by hand
 
@@ -51,7 +53,7 @@ for that bucket only.
   customer-managed keys, and Longhorn cannot send the per-request keys of SSE-C, so
   client-side encryption would need a gateway in front of the bucket.
 - Not backed up: `longhorn-hdd` volumes (`bulk-none`: the ashes map, rebuilt weekly from
-  OSM), Prometheus (`no-snapshots`), and the `snapshot-only` volumes below. Detached
+  OSM), Prometheus (`no-snapshots`), the scratch classes, and the `snapshot-only` volumes below. Detached
   volumes are skipped.
 
 ### Restoring
