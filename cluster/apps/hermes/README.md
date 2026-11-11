@@ -82,46 +82,10 @@ python3 scripts/sops-set-secret.py --cluster-age-key \
 context; without it, configure your age identity as in the root README or set
 `SOPS_AGE_KEY_FILE`.
 
-## Retire OpenClaw without deleting its data
+## OpenClaw data
 
-The manifests in `../retained-data` keep the old namespaces and three PVCs. They
-disable Flux pruning of those objects. The old operator must finish deleting its
-instance **before** Flux removes the operator HelmRelease. Do this before publishing
-the migration, while the old operator is still running:
-
-```sh
-kubectl -n openclaw patch openclawinstance home-ops-openclaw --type=merge \
-  -p '{"spec":{"storage":{"persistence":{"orphan":true}}}}'
-
-# Keep the backing volumes even if a PVC is accidentally removed during cutover.
-for claim in home-ops-openclaw-data home-ops-openclaw-chromium-data whisper-stt-cache; do
-  volume=$(kubectl -n openclaw get pvc "$claim" -o jsonpath='{.spec.volumeName}')
-  kubectl patch pv "$volume" --type=merge \
-    -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
-  kubectl -n openclaw annotate pvc "$claim" \
-    kustomize.toolkit.fluxcd.io/prune=disabled --overwrite
-done
-kubectl annotate namespace openclaw openclaw-operator-system \
-  kustomize.toolkit.fluxcd.io/prune=disabled --overwrite
-
-kubectl -n openclaw delete openclawinstance home-ops-openclaw --wait=true --timeout=180s
-
-# The operator may delete its browser PVC even with persistence.orphan enabled.
-# Its backing PV was protected above; restore the claim against that same PV.
-if ! kubectl -n openclaw get pvc home-ops-openclaw-chromium-data >/dev/null 2>&1; then
-  kubectl patch pv pvc-5a0766f5-8e48-4286-b37e-096687da4cb1 --type=merge \
-    -p '{"spec":{"claimRef":null}}'
-  kubectl apply --server-side -k cluster/apps/retained-data
-fi
-kubectl -n openclaw get pvc
-```
-
-If instance deletion times out, inspect the operator and its finalizer before
-continuing. Do not remove the operator first or force namespace deletion.
-The retained PVC manifests pin the original PV identities, preventing empty
-replacement volumes. Old data is retained for a separate, explicit data cleanup. Old credentials are
-removed from desired state; revoke provider and channel credentials separately if
-they are no longer used elsewhere.
+OpenClaw's retained volumes and its `openclaw` and `openclaw-operator-system`
+namespaces were deleted on 2026-11-11. Nothing from OpenClaw is left to migrate.
 
 ## Reconcile and verify
 
@@ -139,17 +103,6 @@ flux reconcile kustomization agent-sandbox -n flux-system
 flux reconcile kustomization apps -n flux-system
 kubectl -n hermes get sandbox,pod,pvc
 kubectl -n hermes wait --for=condition=Ready pod/hermes --timeout=600s
-```
-
-Check the old namespaces after reconciliation. The legacy bridge was installed
-outside Flux's inventory in this cluster, so it needed explicit removal:
-
-```sh
-kubectl -n openclaw delete deployment/openclaw-bridge service/openclaw-bridge \
-  configmap/bridge-runtime-configmap secret/openclaw-bridge-secrets \
-  networkpolicy/home-ops-openclaw-allow-house-voice --ignore-not-found
-kubectl -n openclaw-operator-system wait --for=delete helmrelease/openclaw-operator --timeout=180s
-kubectl -n openclaw get pods,pvc
 ```
 
 ## Home Assistant voice

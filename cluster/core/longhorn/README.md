@@ -65,7 +65,7 @@ app down first. Keep the age key outside vecna.
 
 ## Volumes labelled by hand
 
-Longhorn volume labels are not in git. These were changed on 2026-11-10; a recreated
+Longhorn volume labels are not in git. These were changed on 2026-11-10 and 2026-11-11; a recreated
 claim comes back in the `default` group and is backed up off-site until relabelled.
 
 | Namespace | Claim | Group | Why |
@@ -75,6 +75,7 @@ claim comes back in the `default` group and is backed up off-site until relabell
 | house | `esp-home-cache` | `snapshot-only` | Build cache |
 | house | `home-assistant-whisper-data` | `snapshot-only` | Downloaded speech model |
 | house | `home-assistant-piper-data` | `snapshot-only` | Downloaded voice |
+| ashes-dev | `game-db-1` | `snapshot-only` | Dev database; only prod is backed up off-site |
 
 ```bash
 kubectl -n longhorn label volumes.longhorn.io <pv-name> \

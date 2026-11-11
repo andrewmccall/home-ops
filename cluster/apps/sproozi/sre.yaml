@@ -155,7 +155,7 @@ spec:
   kubernetesRead:
     namespaces: [agent-sandbox-system, ashes-ci, ashes-dev, ashes-map, ashes-prod, calico-system,
                  cnpg-system, databases, default, flux-system, games, hermes, house, kube-system,
-                 longhorn, monitoring, networking, openclaw, openclaw-operator-system,
+                 longhorn, monitoring, networking,
                  sproozi-system, system-upgrade, tigera-operator]
     resources: [pods, pods/log, events, services, deployments, replicasets, statefulsets]
   githubPullRequest:
@@ -187,7 +187,7 @@ spec:
   kubernetesRead:
     namespaces: [agent-sandbox-system, ashes-ci, ashes-dev, ashes-map, ashes-prod, calico-system,
                  cnpg-system, databases, default, flux-system, games, hermes, house, kube-system,
-                 longhorn, monitoring, networking, openclaw, openclaw-operator-system,
+                 longhorn, monitoring, networking,
                  sproozi-system, system-upgrade, tigera-operator]
     resources: [pods, pods/log, events, services, deployments, replicasets, statefulsets]
   githubPullRequest:
