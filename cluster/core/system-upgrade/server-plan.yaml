@@ -37,7 +37,7 @@ spec:
   serviceAccountName: system-upgrade
   prepare:
     # The upgrade image at the plan's version: Alpine with jq, wget and k3s kubectl.
-    image: rancher/k3s-upgrade
+    image: rancher/k3s-upgrade@sha256:69b48cf32cf51ed23ed86348fc913db1e00d1ddc00369ded18953dcad859a6e1
     command: ["/bin/sh", "-c"]
     args:
       - |
@@ -60,4 +60,4 @@ spec:
           [ -z "$firing" ] || fail "alerts firing: $firing"
           echo "Cluster is healthy; upgrading."
   upgrade:
-    image: rancher/k3s-upgrade
+    image: rancher/k3s-upgrade@sha256:69b48cf32cf51ed23ed86348fc913db1e00d1ddc00369ded18953dcad859a6e1
