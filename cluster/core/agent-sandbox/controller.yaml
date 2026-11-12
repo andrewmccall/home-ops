@@ -64,7 +64,7 @@ spec:
       serviceAccountName: agent-sandbox-controller
       containers:
       - name: agent-sandbox-controller
-        image: registry.k8s.io/agent-sandbox/agent-sandbox-controller:v1.0.10@sha256:594f4853913bca2b336d0267fe0978445f1aaa5837ed23797e48e745c8d6b610
+        image: registry.k8s.io/agent-sandbox/agent-sandbox-controller:v1.0.11@sha256:73cb162407cddf73f4cd063b02bdee2dac86aa342bbc40bd99a9f023e69b31ed
         args:
         - --leader-elect=true
         # Uncomment to serve metrics over HTTPS with a TLS profile.
