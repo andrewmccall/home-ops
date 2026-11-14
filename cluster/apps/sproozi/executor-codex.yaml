@@ -1,0 +1,481 @@
+# Remote executor (placement vecna-codex) for Andrew's own Codex sessions:
+# `sproozi run --remote` starts a task here from an approved repository, and
+# `sproozi move --remote` sends a local Codex session here (README "Remote
+# executors"). Adapted from the v0.2.6 example
+# examples/portable-workflows/kubernetes/{owner,runtime}.yaml, cli-access from
+# config/cli-access and cmd/session-profile/README.md. One executor per
+# namespace; its runs, registrations and stored profiles live here, never in
+# sproozi-system. Its configuration (executor-codex.json) and CA
+# (executor-codex-ca.crt) are immutable ConfigMaps made in kustomization.yaml.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sproozi-codex
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+---
+# Nothing calls the executor over the network: the CLI reaches it by
+# port-forward, which Calico admits from the node.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default
+  namespace: sproozi-codex
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sproozi-executor
+  namespace: sproozi-codex
+automountServiceAccountToken: true
+---
+# Registrations and stored profiles are ConfigMaps here. This also reaches the
+# executor's own configuration and sproozi-remote-executor, which is why both
+# are immutable.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sproozi-executor
+  namespace: sproozi-codex
+rules:
+  - apiGroups: [sproozi.com]
+    resources: [agenttemplates, agentpolicies, agentruntimes]
+    verbs: [get]
+  - apiGroups: [sproozi.com]
+    resources: [agentruns]
+    verbs: [get, create, patch]
+  - apiGroups: ['']
+    resources: [configmaps]
+    verbs: [get, create, update]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sproozi-executor
+  namespace: sproozi-codex
+subjects:
+  - kind: ServiceAccount
+    name: sproozi-executor
+    namespace: sproozi-codex
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sproozi-executor
+---
+# Run accounts (BudgetLedgers) live in the gateway's BUDGET_NAMESPACE.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sproozi-executor-codex-budget
+  namespace: sproozi-system
+rules:
+  - apiGroups: [sproozi.com]
+    resources: [budgetledgers]
+    verbs: [get, create, update]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sproozi-executor-codex-budget
+  namespace: sproozi-system
+subjects:
+  - kind: ServiceAccount
+    name: sproozi-executor
+    namespace: sproozi-codex
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sproozi-executor-codex-budget
+---
+# Sandbox Pods run in sproozi-agents; the executor stops them and execs the
+# checkpoint helper.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sproozi-executor-codex
+  namespace: sproozi-agents
+rules:
+  - apiGroups: ['']
+    resources: [pods]
+    verbs: [get, patch, delete]
+  - apiGroups: ['']
+    resources: [pods/exec]
+    verbs: [create]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sproozi-executor-codex
+  namespace: sproozi-agents
+subjects:
+  - kind: ServiceAccount
+    name: sproozi-executor
+    namespace: sproozi-codex
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sproozi-executor-codex
+---
+# TokenReview and SubjectAccessReview, to accept the CLI's sproozi-cli token.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: sproozi-executor-codex-auth-delegator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: sproozi-executor
+    namespace: sproozi-codex
+---
+# The gateway reads each managed run's registration in the run's namespace.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sproozi-shared-gateway-registry
+  namespace: sproozi-codex
+rules:
+  - apiGroups: ['']
+    resources: [configmaps]
+    verbs: [get]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sproozi-shared-gateway-registry
+  namespace: sproozi-codex
+subjects:
+  - kind: ServiceAccount
+    name: sproozi-shared-gateway
+    namespace: sproozi-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sproozi-shared-gateway-registry
+---
+# Journals and checkpoints of the sessions placed here. On longhorn, so it is
+# in the nightly off-site backup (cluster/core/longhorn/README.md).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sproozi-executor-state
+  namespace: sproozi-codex
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sproozi-executor
+  namespace: sproozi-codex
+  labels:
+    sproozi.com/remote-executor: "true"
+spec:
+  selector:
+    app.kubernetes.io/component: remote-executor
+  ports:
+    - name: https
+      port: 8443
+      targetPort: https
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sproozi-executor
+  namespace: sproozi-codex
+spec:
+  replicas: 1
+  # One executor per state directory: its owner lock refuses a second.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: remote-executor
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: sproozi
+        app.kubernetes.io/component: remote-executor
+    spec:
+      serviceAccountName: sproozi-executor
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        # The executor refuses a state directory that is not 0700. The default
+        # policy adds group rw to every file on each mount; this one only fixes
+        # the volume root, on the first mount.
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: executor
+          image: ghcr.io/andrewmccall/sproozi-native:0.2.6@sha256:d19f3284ee0660c0ceb582bda2e5095b1e486695df51b631fcbb6a84992d386a
+          command: [/usr/local/bin/session-profile]
+          args: [--config, /etc/sproozi-executor/profile.json]
+          ports:
+            - name: https
+              containerPort: 8443
+          readinessProbe:
+            tcpSocket:
+              port: https
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: '1'
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: config
+              mountPath: /etc/sproozi-executor
+              readOnly: true
+            - name: credentials
+              mountPath: /var/run/sproozi-executor
+              readOnly: true
+            - name: state
+              mountPath: /state
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: config
+          configMap:
+            name: sproozi-executor-profile
+        - name: credentials
+          secret:
+            secretName: sproozi-executor-credentials
+            defaultMode: 0440
+        - name: state
+          persistentVolumeClaim:
+            claimName: sproozi-executor-state
+        - name: tmp
+          emptyDir:
+            sizeLimit: 256Mi
+---
+# The CLI's identity here (v0.2.6 config/cli-access). Never in sproozi-system:
+# pods/portforward would reach the gateway and controller.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: sproozi-cli
+  namespace: sproozi-codex
+  labels:
+    app.kubernetes.io/name: sproozi
+    app.kubernetes.io/component: cli-access
+automountServiceAccountToken: false
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: sproozi-cli
+  namespace: sproozi-codex
+  labels:
+    app.kubernetes.io/name: sproozi
+    app.kubernetes.io/component: cli-access
+rules:
+  - apiGroups: ['']
+    resources: [services]
+    verbs: [list]
+  - apiGroups: [discovery.k8s.io]
+    resources: [endpointslices]
+    verbs: [list]
+  - apiGroups: ['']
+    resources: [pods/portforward]
+    verbs: [create]
+  - apiGroups: ['']
+    resources: [serviceaccounts/token]
+    resourceNames: [sproozi-cli]
+    verbs: [create]
+  - apiGroups: ['']
+    resources: [configmaps]
+    resourceNames: [sproozi-remote-executor]
+    verbs: [get]
+  # Checked by the executor with a SubjectAccessReview; no such API resource.
+  - apiGroups: [sproozi.com]
+    resources: [remoteexecutors]
+    resourceNames: [vecna-codex]
+    verbs: [use]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sproozi-cli
+  namespace: sproozi-codex
+  labels:
+    app.kubernetes.io/name: sproozi
+    app.kubernetes.io/component: cli-access
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: sproozi-cli
+subjects:
+  - kind: ServiceAccount
+    name: sproozi-cli
+    namespace: sproozi-codex
+---
+# Kubernetes fills this with a long-lived token for the sproozi-codex context.
+# Delete it to rotate; Flux recreates it.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sproozi-cli-token
+  namespace: sproozi-codex
+  labels:
+    app.kubernetes.io/name: sproozi
+    app.kubernetes.io/component: cli-access
+  annotations:
+    kubernetes.io/service-account.name: sproozi-cli
+type: kubernetes.io/service-account-token
+---
+# The managed contract: exactly agent + checkpoint, UID/GID 1000; the
+# controller sets both commands. Login: Codex's own ChatGPT sign-in, in the claim
+# sproozi-login-codex-default in sproozi-agents (the controller creates it).
+# No nativeSession: Codex uses its own default model.
+apiVersion: sproozi.com/v1alpha1
+kind: AgentRuntime
+metadata:
+  name: codex-session
+  namespace: sproozi-codex
+spec:
+  clientConfig:
+    harness: codex
+    trustBundleConfigMap:
+      key: ca-bundle.pem
+      name: sproozi-sandbox-trust
+    signIn:
+      claims:
+        storageClassName: longhorn
+  # Memory-backed: it counts against the agent container's memory limit.
+  ephemeralWorkspace:
+    sizeLimit: 2Gi
+  gatewayEndpoint: https://sproozi-gateway.sproozi-system.svc:8443
+  workloadContainers: [agent]
+  podTemplate:
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: agent
+          image: ghcr.io/andrewmccall/sproozi-native:0.2.6@sha256:d19f3284ee0660c0ceb582bda2e5095b1e486695df51b631fcbb6a84992d386a
+          resources:
+            requests:
+              cpu: 250m
+              memory: 1Gi
+              ephemeral-storage: 64Mi
+            limits:
+              cpu: '2'
+              memory: 6Gi
+              ephemeral-storage: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+        - name: checkpoint
+          image: ghcr.io/andrewmccall/sproozi-native:0.2.6@sha256:d19f3284ee0660c0ceb582bda2e5095b1e486695df51b631fcbb6a84992d386a
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+              ephemeral-storage: 64Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi
+              ephemeral-storage: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            seccompProfile:
+              type: RuntimeDefault
+---
+# Andrew's own sessions: generous token budgets, which the ChatGPT plan's usage
+# limits cap anyway. A run --remote task carries every allowance in
+# executor-codex.json, so this policy must allow and fit all three. A moved
+# session carries its own allowance (the local config.json's allowances).
+apiVersion: sproozi.com/v1alpha1
+kind: AgentPolicy
+metadata:
+  name: codex-session
+  namespace: sproozi-codex
+spec:
+  allowedCapabilities: [model.inference, github.pull_request, kubernetes.read]
+  # Same namespaces as sre.yaml (no wildcard; at most 32).
+  kubernetesRead:
+    namespaces: [agent-sandbox-system, ashes-ci, ashes-dev, ashes-map, ashes-prod, calico-system,
+                 cnpg-system, databases, default, flux-system, games, hermes, house, kube-system,
+                 longhorn, monitoring, networking,
+                 sproozi-claude, sproozi-codex, sproozi-system, system-upgrade, tigera-operator]
+    resources: [pods, pods/log, events, services, deployments, replicasets, statefulsets]
+  githubPullRequest:
+    repositories: [andrewmccall/home-ops, andrewmccall/sproozi]
+    allowedBaseBranches: [main]
+  egressProfiles: []
+  budgets:
+    model.inference:
+      maxUnits: 10000000
+      maxCostMicros: 0
+    github.pull_request:
+      maxUnits: 200
+      maxCostMicros: 0
+    kubernetes.read:
+      maxUnits: 5000
+      maxCostMicros: 0
+  resourceBounds:
+    max:
+      cpu: 2500m
+      memory: 7Gi
+      ephemeral-storage: 2Gi
+  # v0.2.6's CRD caps this at 1h, so a session placed here must end (or move
+  # back) within an hour of its start. Upstream is removing the cap (deadlines
+  # become optional for work a person starts); raise or remove this, and
+  # maxDuration in executor-codex.json, after upgrading.
+  maxExecutionDuration: 1h
+  maxActiveRuns: 3
+  retentionTTL: 168h
+---
+# instructions must be byte-identical to local.instructions in the local
+# config.json; executor-codex.json's instructionDigest is their SHA-256.
+apiVersion: sproozi.com/v1alpha1
+kind: AgentTemplate
+metadata:
+  name: codex-session
+  namespace: sproozi-codex
+  annotations:
+    sessions.sproozi.com/managed: "true"
+spec:
+  runtimeRef:
+    name: codex-session
+  policyRef:
+    name: codex-session
+  egressProfiles: []
+  instructions: "You are working in a Sproozi-managed workspace at /workspace/session/workspace. Network access goes through the Sproozi gateway, which allows only approved services. Work in the repository, keep changes focused and explain what you changed."

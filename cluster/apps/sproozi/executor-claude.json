@@ -1,0 +1,29 @@
+{
+  "harness": "claude-code",
+  "listen": "0.0.0.0:8443",
+  "certificateFile": "/var/run/sproozi-executor/tls.crt",
+  "keyFile": "/var/run/sproozi-executor/tls.key",
+  "principal": "owner",
+  "placementName": "vecna-claude",
+  "namespace": "sproozi-claude",
+  "budgetNamespace": "sproozi-system",
+  "templateName": "claude-session",
+  "directory": "/state/executor",
+  "instructionDigest": "c51d6a5fcaef8bc5f70ce55bc1b7c961cd9c13351695cf4a0dfad87b894c9bb6",
+  "allowances": {
+    "model.inference": {
+      "units": {"bounded": true, "value": 10000000},
+      "costMicros": {"bounded": false, "value": 0}
+    },
+    "github.pull_request": {
+      "units": {"bounded": true, "value": 200},
+      "costMicros": {"bounded": false, "value": 0}
+    },
+    "kubernetes.read": {
+      "units": {"bounded": true, "value": 5000},
+      "costMicros": {"bounded": false, "value": 0}
+    }
+  },
+  "maxDuration": "1h",
+  "maxCheckpointBytes": 33554432
+}
