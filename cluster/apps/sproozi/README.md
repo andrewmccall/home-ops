@@ -153,10 +153,11 @@ sandboxes themselves run in `sproozi-agents`, like every other run.
   installed only on home-ops: install it on `sproozi` too before using that
   repository.
 - **Logins.** Claude Code sessions use the same login claim as the SRE runs,
-  `sproozi-login-claude-code-default`, so they start signed in. Those runs use
-  UID 65532 and the sessions 1000; each Pod's `fsGroup` regroups the claim
-  when it mounts, so a session and an SRE run that overlap can lose access to
-  the other's refreshed login until their next start. Codex uses its own claim,
+  `sproozi-login-claude-code-default`, so they start signed in. Every runtime
+  that mounts it (the SRE runs, `claude-login.yaml` and the sessions) runs as
+  UID/GID 1000, the native image's own user: Kubernetes applies each Pod's
+  `fsGroup` to the claim when it mounts, so a different group would take the
+  login from the others. Keep them equal. Codex uses its own claim,
   `sproozi-login-codex-default`, created on first use.
 - **TLS.** Each executor's certificate (`executor-<harness>-credentials.sops.yaml`,
   `tls.crt` and `tls.key`, for `sproozi-executor.<namespace>.svc`) is signed by
