@@ -24,6 +24,5 @@
       "costMicros": {"bounded": false, "value": 0}
     }
   },
-  "maxDuration": "1h",
   "maxCheckpointBytes": 33554432
 }

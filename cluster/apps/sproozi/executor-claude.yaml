@@ -454,11 +454,9 @@ spec:
       cpu: 2500m
       memory: 7Gi
       ephemeral-storage: 2Gi
-  # v0.2.6's CRD caps this at 1h, so a session placed here must end (or move
-  # back) within an hour of its start. Upstream is removing the cap (deadlines
-  # become optional for work a person starts); raise or remove this, and
-  # maxDuration in executor-claude.json, after upgrading.
-  maxExecutionDuration: 1h
+  # No maxExecutionDuration: the owner starts these sessions, so the policy
+  # sets no deadline (Sproozi ADR 0056). executor-claude.json has no maxDuration
+  # either, so a session runs until it is stopped or meets its own deadline.
   maxActiveRuns: 3
   retentionTTL: 168h
 ---

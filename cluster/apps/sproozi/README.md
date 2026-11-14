@@ -138,11 +138,15 @@ sandboxes themselves run in `sproozi-agents`, like every other run.
   `instructions`, which must be byte-identical to `local.instructions` in the
   local `~/.sproozi/config.json`; change all three together.
   `maxCheckpointBytes` (32 MiB) must equal the local `local.maxCheckpointBytes`.
-- **Deadline.** v0.2.6 caps `maxExecutionDuration` at one hour, so the policies
-  and executors allow at most one hour from a session's start. The local
-  service gives a session 30 minutes (`maxDuration`); a move never extends it.
-  Upstream is removing the cap (deadlines become optional for work a person
-  starts); raise or remove both settings after upgrading.
+- **Deadline.** None. The executors set no `maxDuration` and their policies no
+  `maxExecutionDuration`, so a session you start runs until you stop it
+  (Sproozi ADR 0056). A session started on the laptop keeps the deadline it was
+  started with, and a move never extends it: start it with
+  `sproozi run --max-duration none`, or leave the local `maxDuration` unset.
+  Hermes's SRE runs are not affected; their own policies in `sre.yaml` keep 15
+  and 45 minutes. The Codex executor's work token is not used by Hermes yet.
+  When it is, set `workTokenMaxDuration` in `executor-codex.json` so its tasks
+  stay capped.
 - **Allowances.** A moved session keeps its own allowance from the local
   `config.json` (`model.inference`, 200,000 tokens now), which must be bounded
   and fit the executor's ceiling (10,000,000) and policy budget. A `run
