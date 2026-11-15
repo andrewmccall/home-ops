@@ -144,9 +144,9 @@ sandboxes themselves run in `sproozi-agents`, like every other run.
   started with, and a move never extends it: start it with
   `sproozi run --max-duration none`, or leave the local `maxDuration` unset.
   Hermes's SRE runs are not affected; their own policies in `sre.yaml` keep 15
-  and 45 minutes. The Codex executor's work token is not used by Hermes yet.
-  When it is, set `workTokenMaxDuration` in `executor-codex.json` so its tasks
-  stay capped.
+  and 45 minutes. Work submitted with the Codex executor's work token (not
+  used by Hermes yet) is capped at one hour by `workTokenMaxDuration` in
+  `executor-codex.json`, which the executor requires with `workTokenFile`.
 - **Allowances.** A moved session keeps its own allowance from the local
   `config.json` (`model.inference`, 200,000 tokens now), which must be bounded
   and fit the executor's ceiling (10,000,000) and policy budget. A `run

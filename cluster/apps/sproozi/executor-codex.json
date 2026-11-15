@@ -4,6 +4,7 @@
   "certificateFile": "/var/run/sproozi-executor/tls.crt",
   "keyFile": "/var/run/sproozi-executor/tls.key",
   "workTokenFile": "/var/run/sproozi-executor/work-token",
+  "workTokenMaxDuration": "1h",
   "principal": "owner",
   "placementName": "vecna-codex",
   "namespace": "sproozi-codex",
