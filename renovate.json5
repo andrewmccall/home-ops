@@ -1,238 +1,304 @@
 {
-  "extends": [
-    "config:best-practices",
-    ":disableRateLimiting",
-    "docker:enableMajor",
-    ":enablePreCommit",
+  extends: [
+    'config:best-practices',
+    ':disableRateLimiting',
+    'docker:enableMajor',
+    ':enablePreCommit',
   ],
-  "timezone": "Europe/London",
-  "semanticCommits": "enabled",
-  "separateMinorPatch": true,
-  "dependencyDashboard": true,
-  "dependencyDashboardTitle": "Renovate Dashboard",
-  // Supply-chain cooldown: a release must be 7 days old before Renovate proposes it,
-  // so a compromised release is likely caught and pulled first. strict means no PR
-  // at all until then (the Dependency Dashboard lists what is waiting). Releases with
-  // no registry timestamp are held until an exception below says otherwise.
-  "minimumReleaseAge": "7 days",
-  "internalChecksFilter": "strict",
-  // Automerges land overnight only (00:00-05:59 London), so a restart never hits
-  // someone using the house. Six hours because the hosted app runs every few hours.
-  // Maintenance windows: cluster/README.md#updates-and-maintenance-windows.
-  "automergeSchedule": ["* 0-5 * * *"],
-  "suppressNotifications": ["prIgnoreNotification"],
-  "kubernetes": {
-    "managerFilePatterns": ["/cluster/.+\\.ya?ml$/"],
-    "ignorePaths": ["cluster/flux/"]
+  timezone: 'Europe/London',
+  semanticCommits: 'enabled',
+  separateMinorPatch: true,
+  dependencyDashboard: {
+    enabled: true,
+    title: 'Renovate Dashboard',
   },
-  "flux": {
-    "managerFilePatterns": ["/cluster/.+\\.ya?ml$/"]
-  },
-  "helm-values": {
-    "managerFilePatterns": ["/cluster/.+\\.ya?ml$/"]
-  },
-  "customManagers": [
-    // generic matcher
-    // see https://regex101.com/r/fzaLfV/1
-    {
-      "customType": "regex",
-      "managerFilePatterns": ["/ansible/.+\\.ya?ml$/", "/cluster/.+\\.ya?ml$/", "/charts/.+\\.ya?ml$/"],
-      "matchStrings": [
-        "datasource=(?<datasource>helm) registryUrl=(?<registryUrl>\\S+) chart=(?<depName>\\S+)\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
-        "datasource=(?<datasource>docker) image=(?<depName>\\S+)\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
-        "datasource=(?<datasource>github-releases) repos=(?<depName>\\S+)\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
-        "datasource=(?<datasource>pypi) package=(?<depName>\\S+)\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
-        "datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\n.*?\"?(?<currentValue>[^-\\s]*?)\"?\n",
-      ],
-      "datasourceTemplate": "{{datasource}}",
-      "versioningTemplate": "{{#if versioning}}{{{versioning}}}{{else}}{{#if (containsString datasource 'pypi')}}pep440{{else}}semver{{/if}}{{/if}}"
-    },
-    // Charts that take the image digest in its own value: the tag stays a plain
-    // version because charts copy it into a label, which can't hold '@'. Mark the
-    // pair with "# renovate-image-digest: depName=<image>" above the tag line.
-    {
-      "customType": "regex",
-      "managerFilePatterns": ["/cluster/.+\\.ya?ml$/"],
-      "matchStrings": [
-        "# renovate-image-digest: depName=(?<depName>\\S+)\\n\\s*tag: \"?(?<currentValue>[^\\s\"@]+)\"?\\n\\s*digest: \"?(?<currentDigest>sha256:[a-f0-9]{64})\"?"
-      ],
-      "datasourceTemplate": "docker",
-      "versioningTemplate": "docker"
-    }
+  minimumReleaseAge: '7 days',
+  internalChecksFilter: 'strict',
+  automergeSchedule: [
+    '* 0-5 * * *',
   ],
-  "customDatasources": {
-    // Mojang's download API, which the bedrock image itself queries for LATEST.
-    "minecraft-bedrock": {
-      "defaultRegistryUrlTemplate": "https://net.web.minecraft-services.net/api/v1.0/download/links",
-      "format": "json",
-      "transformTemplates": [
-        "{\"releases\": [{\"version\": $match(result.links[downloadType=\"serverBedrockLinux\"].downloadUrl, /bedrock-server-([0-9.]+)\\.zip$/).groups[0]}]}"
-      ]
-    }
+  suppressNotifications: [
+    'prIgnoreNotification',
+  ],
+  kubernetes: {
+    managerFilePatterns: [
+      '/cluster/.+\\.ya?ml$/',
+    ],
+    ignorePaths: [
+      'cluster/flux/',
+    ],
   },
-  "packageRules": [
-    // Images marked renovate-image-digest are kept by that custom manager; stop
-    // helm-values from also pinning a digest into their tag.
+  flux: {
+    managerFilePatterns: [
+      '/cluster/.+\\.ya?ml$/',
+    ],
+  },
+  'helm-values': {
+    managerFilePatterns: [
+      '/cluster/.+\\.ya?ml$/',
+    ],
+  },
+  customManagers: [
     {
-      "matchManagers": ["helm-values"],
-      "matchPackageNames": ["timberio/vector"],
-      "enabled": false
-    },
-    {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
-      "automerge": true
-    },
-    // Longhorn only upgrades from the previous minor version and its pre-upgrade
-    // check fails otherwise: one PR per minor, merged by hand after the previous one is healthy.
-    {
-      "matchDatasources": ["helm"],
-      "matchPackageNames": ["longhorn"],
-      "separateMultipleMinor": true
-    },
-    {
-      "matchDatasources": ["helm"],
-      "matchPackageNames": ["longhorn"],
-      "matchUpdateTypes": ["minor", "major"],
-      "automerge": false
-    },
-    // CloudNativePG: every operator upgrade restarts each Postgres instance once, and
-    // with one instance per Cluster that's an outage. Never automerge; one PR per minor,
-    // merged by hand when a short database restart is acceptable.
-    {
-      "matchDatasources": ["helm"],
-      "matchPackageNames": ["cloudnative-pg"],
-      "separateMultipleMinor": true,
-      "automerge": false
-    },
-    // k3s: Ansible's k3s_release_version and the system-upgrade Plan in one PR. Patches
-    // merge automatically and are applied in the Plan's 01:00 Monday window; a new
-    // Kubernetes minor waits for a person, after checking Calico supports it.
-    {
-      "matchPackageNames": ["k3s-io/k3s"],
-      "groupName": "k3s",
-      "separateMinorPatch": true
-    },
-    {
-      "matchPackageNames": ["k3s-io/k3s"],
-      "matchUpdateTypes": ["minor", "major"],
-      "automerge": false
-    },
-    // The controller's kustomize ref, image and Plan CRD source move together.
-    {
-      "matchPackageNames": ["/system-upgrade-controller/"],
-      "groupName": "system-upgrade-controller"
-    },
-    // Authentik's chart and image move together.
-    {
-      "matchPackageNames": ["/authentik/"],
-      "groupName": "authentik"
-    },
-    // Envoy Gateway's chart and its CRD source (cluster/crds/envoy-gateway) move together.
-    {
-      "matchPackageNames": ["/envoyproxy/gateway/"],
-      "groupName": "envoy-gateway"
-    },
-    // datasource specific settings
-    // Clients auto-update, so the server has to follow every release. Rollout gates
-    // and rollback apply as for any image; worlds a newer server has opened may not
-    // load on the older one, so a rollback is a stopgap. Mojang's API is the source
-    // and has no timestamps, so no cooldown.
-    // Not held to the overnight window either: until the server catches up, updated
-    // clients cannot join.
-    {
-      "matchDatasources": ["custom.minecraft-bedrock"],
-      "automerge": true,
-      "minimumReleaseAge": null,
-      "automergeSchedule": ["at any time"]
-    },
-    // Pinning the digest of a tag already in use adds no new code, and registries
-    // other than Docker Hub give pins no date, which would hold them forever.
-    {
-      "matchUpdateTypes": ["pinDigest"],
-      "minimumReleaseAge": null
-    },
-    // Images Renovate cannot date, so the 7-day cooldown cannot be enforced: they
-    // automerge only early on Sunday (00:00-05:59, Saturday night) instead. That
-    // leaves Sunday to notice a breakage before the 01:00 Monday k3s upgrade
-    // (cluster/core/system-upgrade/server-plan.yaml), whose health check refuses to
-    // run if one of them broke something.
-    // - ghcr.io / registry.k8s.io only: Music Assistant, the UniFi webhook, agent-sandbox.
-    // - Docker Hub, but over its 1,000-tag anonymous paging limit, so Renovate falls
-    //   back to undated tags: Home Assistant, ESPHome, code-server. Remove these three
-    //   once a Docker Hub token is in hostRules; they then get the normal cooldown.
-    {
-      "matchDatasources": ["docker"],
-      "matchPackageNames": [
-        "ghcr.io/music-assistant/server",
-        "ghcr.io/home-operations/external-dns-unifi-webhook",
-        "registry.k8s.io/agent-sandbox/agent-sandbox-controller",
-        "homeassistant/home-assistant",
-        "esphome/esphome",
-        "codercom/code-server"
+      customType: 'regex',
+      managerFilePatterns: [
+        '/ansible/.+\\.ya?ml$/',
+        '/cluster/.+\\.ya?ml$/',
+        '/charts/.+\\.ya?ml$/',
       ],
-      "minimumReleaseAgeBehaviour": "timestamp-optional",
-      "automergeSchedule": ["* 0-5 * * 0"]
-    },
-    // Our own images and charts: we published them, so the cooldown protects nothing.
-    {
-      "matchPackageNames": ["/^ghcr\\.io/andrewmccall//"],
-      "minimumReleaseAge": null
-    },
-    {
-      "matchRegistryUrls": ["https://home-ops.andrewmccall.com/charts/stable"],
-      "minimumReleaseAge": null
-    },
-    {
-      "matchDatasources": ["helm"],
-      "addLabels": ["renovate/helm"]
-    },
-    {
-      "matchDatasources": ["docker"],
-      "addLabels": ["renovate/docker"]
-    },
-    // manager specific settings
-    {
-      "matchManagers": ["github-actions"],
-      "addLabels": ["renovate/github-actions"]
-    },
-    {
-      "matchManagers": ["pip_requirements"],
-      "addLabels": ["renovate/python"]
-    },
-    {
-      "matchManagers": ["ansible"],
-      "addLabels": ["renovate/ansible"]
-    },
-    {
-      "matchManagers": ["ansible-galaxy"],
-      "addLabels": ["renovate/ansible-galaxy"]
-    },
-    {
-      "matchManagers": ["pre-commit"],
-      "addLabels": ["renovate/pre-commit"]
-    },
-    // update types specific settings
-    {
-      "matchUpdateTypes": ["major"],
-      "addLabels": ["dependency/major"]
-    },
-    {
-      "matchUpdateTypes": ["minor"],
-      "addLabels": ["dependency/minor"]
-    },
-    {
-      "matchUpdateTypes": ["patch"],
-      "addLabels": ["dependency/patch"]
-    },
-    // group snapshot-controller
-    {
-      "matchDatasources": ["github-releases", "docker"],
-      "matchPackageNames": [
-        "/external-snapshotter/",
-        "/snapshot-controller/"
+      matchStrings: [
+        'datasource=(?<datasource>helm) registryUrl=(?<registryUrl>\\S+) chart=(?<depName>\\S+)\n.*?"?(?<currentValue>[^-\\s]*?)"?\n',
+        'datasource=(?<datasource>docker) image=(?<depName>\\S+)\n.*?"?(?<currentValue>[^-\\s]*?)"?\n',
+        'datasource=(?<datasource>github-releases) repos=(?<depName>\\S+)\n.*?"?(?<currentValue>[^-\\s]*?)"?\n',
+        'datasource=(?<datasource>pypi) package=(?<depName>\\S+)\n.*?"?(?<currentValue>[^-\\s]*?)"?\n',
+        'datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)( versioning=(?<versioning>\\S+))?\n.*?"?(?<currentValue>[^-\\s]*?)"?\n',
       ],
-      "groupName": "external-snapshotter",
-      "additionalBranchPrefix": "",
+      datasourceTemplate: '{{datasource}}',
+      versioningTemplate: "{{#if versioning}}{{{versioning}}}{{else}}{{#if (containsString datasource 'pypi')}}pep440{{else}}semver{{/if}}{{/if}}",
     },
-  ]
+    {
+      customType: 'regex',
+      managerFilePatterns: [
+        '/cluster/.+\\.ya?ml$/',
+      ],
+      matchStrings: [
+        '# renovate-image-digest: depName=(?<depName>\\S+)\\n\\s*tag: "?(?<currentValue>[^\\s"@]+)"?\\n\\s*digest: "?(?<currentDigest>sha256:[a-f0-9]{64})"?',
+      ],
+      datasourceTemplate: 'docker',
+      versioningTemplate: 'docker',
+    },
+  ],
+  customDatasources: {
+    'minecraft-bedrock': {
+      defaultRegistryUrlTemplate: 'https://net.web.minecraft-services.net/api/v1.0/download/links',
+      format: 'json',
+      transformTemplates: [
+        '{"releases": [{"version": $match(result.links[downloadType="serverBedrockLinux"].downloadUrl, /bedrock-server-([0-9.]+)\\.zip$/).groups[0]}]}',
+      ],
+    },
+  },
+  packageRules: [
+    {
+      matchManagers: [
+        'helm-values',
+      ],
+      matchPackageNames: [
+        'timberio/vector',
+      ],
+      enabled: false,
+    },
+    {
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+        'pin',
+        'digest',
+      ],
+      automerge: true,
+    },
+    {
+      matchDatasources: [
+        'helm',
+      ],
+      matchPackageNames: [
+        'longhorn',
+      ],
+      separateMultipleMinor: true,
+    },
+    {
+      matchDatasources: [
+        'helm',
+      ],
+      matchPackageNames: [
+        'longhorn',
+      ],
+      matchUpdateTypes: [
+        'minor',
+        'major',
+      ],
+      automerge: false,
+    },
+    {
+      matchDatasources: [
+        'helm',
+      ],
+      matchPackageNames: [
+        'cloudnative-pg',
+      ],
+      separateMultipleMinor: true,
+      automerge: false,
+    },
+    {
+      matchPackageNames: [
+        'k3s-io/k3s',
+      ],
+      groupName: 'k3s',
+      separateMinorPatch: true,
+    },
+    {
+      matchPackageNames: [
+        'k3s-io/k3s',
+      ],
+      matchUpdateTypes: [
+        'minor',
+        'major',
+      ],
+      automerge: false,
+    },
+    {
+      matchPackageNames: [
+        '/system-upgrade-controller/',
+      ],
+      groupName: 'system-upgrade-controller',
+    },
+    {
+      matchPackageNames: [
+        '/authentik/',
+      ],
+      groupName: 'authentik',
+    },
+    {
+      matchPackageNames: [
+        '/envoyproxy/gateway/',
+      ],
+      groupName: 'envoy-gateway',
+    },
+    {
+      matchDatasources: [
+        'custom.minecraft-bedrock',
+      ],
+      automerge: true,
+      minimumReleaseAge: null,
+      automergeSchedule: [
+        'at any time',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'pinDigest',
+      ],
+      minimumReleaseAge: null,
+    },
+    {
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'ghcr.io/music-assistant/server',
+        'ghcr.io/home-operations/external-dns-unifi-webhook',
+        'registry.k8s.io/agent-sandbox/agent-sandbox-controller',
+        'homeassistant/home-assistant',
+        'esphome/esphome',
+        'codercom/code-server',
+      ],
+      minimumReleaseAgeBehaviour: 'timestamp-optional',
+      automergeSchedule: [
+        '* 0-5 * * 0',
+      ],
+    },
+    {
+      matchPackageNames: [
+        '/^ghcr\\.io/andrewmccall//',
+      ],
+      minimumReleaseAge: null,
+    },
+    {
+      matchRegistryUrls: [
+        'https://home-ops.andrewmccall.com/charts/stable',
+      ],
+      minimumReleaseAge: null,
+    },
+    {
+      matchDatasources: [
+        'helm',
+      ],
+      addLabels: [
+        'renovate/helm',
+      ],
+    },
+    {
+      matchDatasources: [
+        'docker',
+      ],
+      addLabels: [
+        'renovate/docker',
+      ],
+    },
+    {
+      matchManagers: [
+        'github-actions',
+      ],
+      addLabels: [
+        'renovate/github-actions',
+      ],
+    },
+    {
+      matchManagers: [
+        'pip_requirements',
+      ],
+      addLabels: [
+        'renovate/python',
+      ],
+    },
+    {
+      matchManagers: [
+        'ansible',
+      ],
+      addLabels: [
+        'renovate/ansible',
+      ],
+    },
+    {
+      matchManagers: [
+        'ansible-galaxy',
+      ],
+      addLabels: [
+        'renovate/ansible-galaxy',
+      ],
+    },
+    {
+      matchManagers: [
+        'pre-commit',
+      ],
+      addLabels: [
+        'renovate/pre-commit',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'major',
+      ],
+      addLabels: [
+        'dependency/major',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'minor',
+      ],
+      addLabels: [
+        'dependency/minor',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'patch',
+      ],
+      addLabels: [
+        'dependency/patch',
+      ],
+    },
+    {
+      matchDatasources: [
+        'github-releases',
+        'docker',
+      ],
+      matchPackageNames: [
+        '/external-snapshotter/',
+        '/snapshot-controller/',
+      ],
+      groupName: 'external-snapshotter',
+      additionalBranchPrefix: '',
+    },
+  ],
 }
