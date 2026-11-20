@@ -1,0 +1,34 @@
+{
+  "harness": "codex",
+  "listen": "0.0.0.0:8443",
+  "certificateFile": "/var/run/sproozi-executor/tls.crt",
+  "keyFile": "/var/run/sproozi-executor/tls.key",
+  "workTokenFile": "/var/run/sproozi-executor/work-token",
+  "workTokenMaxDuration": "1h",
+  "principal": "owner",
+  "placementName": "vecna-codex",
+  "namespace": "sproozi-codex",
+  "budgetNamespace": "sproozi-system",
+  "templateName": "codex-session",
+  "directory": "/state/executor",
+  "instructionDigest": "c51d6a5fcaef8bc5f70ce55bc1b7c961cd9c13351695cf4a0dfad87b894c9bb6",
+  "allowances": {
+    "model.inference": {
+      "units": {"bounded": true, "value": 10000000},
+      "costMicros": {"bounded": false, "value": 0}
+    },
+    "github.pull_request": {
+      "units": {"bounded": true, "value": 200},
+      "costMicros": {"bounded": false, "value": 0}
+    },
+    "kubernetes.read": {
+      "units": {"bounded": true, "value": 5000},
+      "costMicros": {"bounded": false, "value": 0}
+    }
+  },
+  "maxCheckpointBytes": 33554432,
+  "repositories": {
+    "home-ops": {"url": "https://github.com/andrewmccall/home-ops.git", "ref": "main"},
+    "sproozi": {"url": "https://github.com/andrewmccall/sproozi.git", "ref": "main"}
+  }
+}

@@ -9,6 +9,11 @@ resources:
   - task-token.sops.yaml
   - claude-login.yaml
   - capability-proxy-github-app.sops.yaml
+  # Remote executors for Andrew's own sessions (README "Remote executors").
+  - executor-claude.yaml
+  - executor-claude-credentials.sops.yaml
+  - executor-codex.yaml
+  - executor-codex-credentials.sops.yaml
 configMapGenerator:
   # The SRE runs use Claude Code's own sign-in (a Claude subscription, in the
   # sproozi-login-claude-code-default claim), which the gateway forwards. It
@@ -21,6 +26,41 @@ configMapGenerator:
     namespace: sproozi-system
     files:
       - tasks.json
+  # Each executor's configuration and the CA the CLI trusts for it. Both are
+  # immutable, because the executor may update other ConfigMaps in its
+  # namespace. The configuration's name carries a content hash, so a change
+  # is a new ConfigMap and restarts the executor. sproozi-remote-executor is
+  # a fixed name the CLI looks up, so Flux replaces it (force) when it changes.
+  - name: sproozi-executor-profile
+    namespace: sproozi-claude
+    files:
+      - profile.json=executor-claude.json
+    options:
+      immutable: true
+  - name: sproozi-remote-executor
+    namespace: sproozi-claude
+    files:
+      - ca.crt=executor-claude-ca.crt
+    options:
+      immutable: true
+      disableNameSuffixHash: true
+      annotations:
+        kustomize.toolkit.fluxcd.io/force: enabled
+  - name: sproozi-executor-profile
+    namespace: sproozi-codex
+    files:
+      - profile.json=executor-codex.json
+    options:
+      immutable: true
+  - name: sproozi-remote-executor
+    namespace: sproozi-codex
+    files:
+      - ca.crt=executor-codex-ca.crt
+    options:
+      immutable: true
+      disableNameSuffixHash: true
+      annotations:
+        kustomize.toolkit.fluxcd.io/force: enabled
 patches:
   # The gateway refuses to start a capability whose credentials are missing.
   # Enabled: Kubernetes reads, model calls with Claude Code's own sign-in
