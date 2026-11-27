@@ -29,7 +29,7 @@ spec:
               # Docker Hub, the project's official copy: the only registry Renovate gets release
               # dates from (with a token, for repos over 1,000 tags); see renovate.json5.
               repository: esphome/esphome
-              tag: 2026.10.2@sha256:c994a49a945094643b14c213bfd500a95ffed94cd68848772828192e126bd375
+              tag: 2026.11.0@sha256:35a22f23ba41e58ed1fa63627317d86f4eaba585e526e44f1118ab082cc96041
               pullPolicy: IfNotPresent
             probes:
               startup: {enabled: true, port: 6052, spec: {periodSeconds: 10, failureThreshold: 30}}
