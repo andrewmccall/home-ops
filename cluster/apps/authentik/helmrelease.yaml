@@ -12,7 +12,7 @@ spec:
     spec:
       chart: authentik
       # renovate: datasource=helm registryUrl=https://charts.goauthentik.io chart=authentik
-      version: 2026.8.5
+      version: 2026.8.6
       sourceRef:
         kind: HelmRepository
         name: authentik
@@ -22,7 +22,7 @@ spec:
       # Docker Hub, so Renovate can date releases; same image as ghcr.io.
       image:
         repository: authentik/server
-        tag: 2026.8.5
+        tag: 2026.8.6@sha256:da89d8338a3b1889800eb033fd61f8d43f7aa9a1c5a042cb5e03d891b1f0c56c
       envFrom:
         - secretRef:
             name: authentik-secrets
